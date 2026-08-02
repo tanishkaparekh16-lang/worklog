@@ -6,8 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   // Needed when the dev server runs in a cloud editor (Replit, Codespaces).
   // Vite otherwise rejects requests from hostnames it doesn't recognise.
-  server: { host: true, allowedHosts: true },
-  preview: { host: true, allowedHosts: true },
+  server: { host: true, allowedHosts: true, port: 5000 },
+  preview: { host: true, allowedHosts: true, port: 5000 },
   plugins: [
     react(),
     tailwindcss(),
