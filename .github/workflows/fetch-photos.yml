@@ -1,0 +1,38 @@
+name: fetch-photos
+# One-shot helper: downloads the photos attached to issue #1 (GitHub's
+# runners have direct internet access, unlike the Claude sandbox) and
+# commits them to this branch so the game build can pick them up.
+# This workflow and the raw photo-drop folder are removed once the
+# photos are placed into the game.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/anay-tanishka-anniversary-game-fru2m6
+      - name: Download attachments
+        run: |
+          mkdir -p photo-drop
+          fails=0
+          while read -r n url; do
+            if ! curl -sSL --retry 3 --max-time 120 -o "photo-drop/p$n.img" "$url"; then
+              echo "FAIL $n $url"
+              fails=$((fails+1))
+            fi
+          done < photo-urls.txt
+          echo "downloaded: $(ls photo-drop | wc -l), failures: $fails"
+          file photo-drop/* | head -60
+      - name: Commit photos
+        run: |
+          git config user.name "photo-fetch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add photo-drop
+          git commit -m "Add raw photos downloaded from issue #1"
+          git push
