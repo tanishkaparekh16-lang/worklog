@@ -1,1 +1,0 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/audio/sfx.ts","./src/components/ui.tsx","./src/data/relationshipData.ts","./src/scenes/Arcade.tsx","./src/scenes/Boot.tsx","./src/scenes/MainMenu.tsx","./src/scenes/Story.tsx","./src/scenes/chapters.tsx","./src/scenes/collection.tsx","./src/state/progress.tsx"],"version":"5.9.3"}
