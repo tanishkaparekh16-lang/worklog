@@ -344,6 +344,7 @@ export function Ch2() {
             <span className="stamp stamp--big">DOCUMENTED</span>
           </div>
           <Narration lines={c.complete} dark />
+          <PhotoRow photos={c.photos} />
           <div style={{ marginTop: 'auto' }} />
           <NextBtn current="ch2" />
         </div>
@@ -865,6 +866,7 @@ export function Ch5() {
         {shown >= abilities.length && (
           <>
             <Narration lines={c.complete} dark />
+            <PhotoRow photos={c.photos} />
             <div style={{ marginTop: 'auto' }} />
             <NextBtn current="ch5" />
           </>

@@ -9,7 +9,7 @@ import {
   soundtrack,
   stats,
 } from '../data/relationshipData'
-import { HoldButton, P, SNav, SpaceBg, XP } from '../components/ui'
+import { HoldButton, P, PhotoRow, SNav, SpaceBg, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
@@ -307,6 +307,7 @@ export function Final() {
                 </p>
               ))}
             </div>
+            <PhotoRow photos={(finalLevel as { photos?: { src: string; caption: string }[] }).photos} />
             <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 20 }}>
               A LETTER HAS APPEARED IN THE MAIN MENU.
             </p>

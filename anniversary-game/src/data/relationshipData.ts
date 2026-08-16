@@ -112,6 +112,9 @@ export const chapters: Chapter[] = [
       'Neither party has offered an explanation.',
     ],
     completeNote: '',
+    photos: [
+      { src: 'assets/images/classroom.jpg', caption: 'The crime scene. Note the distance.' },
+    ],
   },
   {
     id: 'ch3',
@@ -210,6 +213,10 @@ export const chapters: Chapter[] = [
       'Apparently Everyone Likes His Work',
     ],
     statsNote: '[PLACEHOLDER — real Finanza statistics can go here, e.g. view counts]',
+    photos: [
+      { src: 'assets/images/finanza-stage.jpg', caption: 'The numbers were, in fact, up.' },
+      { src: 'assets/images/finanza-desk.jpg', caption: 'The head of digital media, at work. Allegedly.' },
+    ],
   },
   {
     id: 'ch6',
@@ -299,7 +306,13 @@ export const chapters: Chapter[] = [
       'about to throw my phone through the balcony🙏🏻',
     ],
     replyMessages: [
-      '[PLACEHOLDER — Tanishka’s actual reply goes here, word for word]',
+      'ill text u in some time',
+      'firstly, thank you for telling me how you feel, i appreciate it a lot. i loved how you put it into words, I\'ve read it like 10 times now and it brings me a smile each time.\ni saw it coming but obviously nothing prepared me for that moment\nAugust ke start se i think i also have started feeling like i like you and as i said idk how strong my feelings are as they are very recent\nI have never experienced this feeling before toh im sorry if make you awkward in any way agar aisa ho toh mujhe bata dena',
+      'this is the same for me too\ni get a lil upset when you\'re offline for hours or when you dont come to college\ni wait for your texts and lovee talking to you btw its always so much fun and easy to talk to you about anything and everything',
+      'and you\'re a really good guy, you are kind, sweet and helpful\nbut other than that, you are smart too and i would like to say you\'re emotionally intelligent too which is a very big thing for me',
+      'anyways',
+      'tldr:',
+      'i like you too, anay khimesara <3',
     ],
     /* the follow-up exchange, later that day — verbatim */
     followUp: [
@@ -382,6 +395,9 @@ export const chapters: Chapter[] = [
     game: 'flowers',
     photos: [
       { src: 'assets/images/flowers.jpg', caption: 'Exhibit A.' },
+      { src: 'assets/images/flowers-2.jpg', caption: 'Exhibit B. A pattern emerges.' },
+      { src: 'assets/images/date-cafe.jpg', caption: 'Documented mid-date.' },
+      { src: 'assets/images/date-plants.jpg', caption: 'Candid. Allegedly.' },
     ],
   },
   {
@@ -453,6 +469,7 @@ export const chapters: Chapter[] = [
     game: 'hands',
     photos: [
       { src: 'assets/images/hand-hold.jpg', caption: 'The first one. Policy since.' },
+      { src: 'assets/images/hand-hold-2.jpg', caption: 'Policy enforcement, ongoing.' },
     ],
   },
   {
@@ -498,6 +515,11 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/selfie-early.jpg', caption: 'Standard proximity.' },
       { src: 'assets/images/sunglasses-t.jpg', caption: 'Quality control, part one.' },
       { src: 'assets/images/sunglasses-a.jpg', caption: 'Quality control, part two.' },
+      { src: 'assets/images/sea-selfie.jpg', caption: 'Sea, sun, them.' },
+      { src: 'assets/images/window-city.jpg', caption: 'Watching the city mind its business.' },
+      { src: 'assets/images/garba.jpg', caption: 'Festival protocol observed.' },
+      { src: 'assets/images/birthday.jpg', caption: 'A birthday, celebrated properly.' },
+      { src: 'assets/images/cozy.jpg', caption: 'Standard proximity, again.' },
     ],
   },
   {
@@ -519,6 +541,9 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — a Pune memory: what you did, what made it fun]',
     game: 'friends',
+    photos: [
+      { src: 'assets/images/pune-friends.jpg', caption: 'The party, expanded.' },
+    ],
   },
   {
     id: 'r8',
@@ -537,6 +562,12 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — Goa memories: one line per day works, or just the best ones]',
     game: 'days',
+    photos: [
+      { src: 'assets/images/goa-beach.jpg', caption: 'Day: unknown. Mood: recorded.' },
+      { src: 'assets/images/goa-shades.jpg', caption: 'Regulation beach eyewear.' },
+      { src: 'assets/images/goa-bus.jpg', caption: 'En route. Already a memory.' },
+      { src: 'assets/images/goa-group.jpg', caption: 'The full expedition, at dusk.' },
+    ],
   },
   {
     id: 'r9',
@@ -752,6 +783,10 @@ export const finalLevel = {
   reveal: 'There isn’t really an ending.',
   journey: ['3 YEARS OF FRIENDSHIP', '2 YEARS TOGETHER', 'COUNTLESS MEMORIES'],
   newSave: 'YEAR 3',
+  photos: [
+    { src: 'assets/images/together.jpg', caption: 'The players.' },
+    { src: 'assets/images/rings.jpg', caption: 'Status: documented.' },
+  ],
   message: [
     '[PLACEHOLDER — Tanishka’s final message to Anay goes here.]',
   ],

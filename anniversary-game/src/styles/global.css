@@ -704,6 +704,8 @@ img, svg { display: block; max-width: 100%; }
 .photoslot { width: calc(50% - 7px); background: #fdf8ec; border: 1px solid #d5c8ac; padding: 8px 8px 10px; box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.5); }
 .photoslot:only-child { width: 78%; }
 .photoslot img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.photoslot img.wide { aspect-ratio: auto; object-fit: contain; }
+.photoslot:has(img.wide) { width: 100%; transform: none; }
 .photoslot .missing { aspect-ratio: 4 / 5; display: grid; place-items: center; text-align: center; border: 1.5px dashed rgba(166, 47, 42, 0.5); font-family: var(--type); font-size: 9px; letter-spacing: 0.12em; color: var(--ink-dim); line-height: 2; padding: 6px; }
 .photoslot figcaption { font-family: var(--type); font-size: 9px; letter-spacing: 0.1em; color: var(--ink-dim); text-align: center; margin-top: 8px; }
 .photoslot:nth-child(odd) { transform: rotate(-1deg); }

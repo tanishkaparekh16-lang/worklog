@@ -21,7 +21,16 @@ export function ImgSlot({ src, caption }: { src: string; caption: string }) {
   return (
     <figure className="photoslot">
       {ok ? (
-        <img src={src} alt={caption} loading="lazy" onError={() => setOk(false)} />
+        <img
+          src={src}
+          alt={caption}
+          loading="lazy"
+          onError={() => setOk(false)}
+          onLoad={(e) => {
+            const img = e.currentTarget
+            if (img.naturalWidth > img.naturalHeight * 1.25) img.classList.add('wide')
+          }}
+        />
       ) : (
         <div className="missing">
           ADD PHOTO
