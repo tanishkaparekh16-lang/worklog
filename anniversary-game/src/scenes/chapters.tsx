@@ -1,12 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { chapters, players } from '../data/relationshipData'
+import React, { useEffect, useState } from 'react'
+import {
+  apologyEmail,
+  cafeText,
+  chapters,
+  dinnerAnswer,
+  dinnerQuestion,
+  players,
+} from '../data/relationshipData'
 import { Figure, HoldButton, P, SNav, TrainScenery, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
 const ch = (id: string) => chapters.find((c) => c.id === id)!
 
-function Head({ id, dark = false }: { id: string; dark?: boolean }) {
+export function Head({ id, dark = false }: { id: string; dark?: boolean }) {
   const c = ch(id)
   return (
     <>
@@ -22,7 +29,7 @@ function Head({ id, dark = false }: { id: string; dark?: boolean }) {
   )
 }
 
-function Narration({ lines, dark = false }: { lines: readonly string[]; dark?: boolean }) {
+export function Narration({ lines, dark = false }: { lines: readonly string[]; dark?: boolean }) {
   return (
     <div style={{ marginTop: 18 }}>
       {lines.map((l, i) => (
@@ -34,49 +41,37 @@ function Narration({ lines, dark = false }: { lines: readonly string[]; dark?: b
   )
 }
 
-function NextBtn({ current }: { current: string }) {
+export function NextBtn({ current }: { current: string }) {
   const { go } = useGame()
   const i = chapters.findIndex((c) => c.id === current)
+  const cur = chapters[i]
   const next = chapters[i + 1]
+  const label = !next
+    ? 'FINAL LEVEL ▸'
+    : next.act === 2 && cur.act === 1
+      ? 'ACT II: THE RELATIONSHIP ARC ▸'
+      : `CHAPTER ${next.num} ▸`
   return (
     <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go(next ? next.id : 'final')}>
-      {next ? `CHAPTER ${next.num} ▸` : 'FINAL LEVEL ▸'}
+      {label}
     </button>
   )
+}
+
+export function shakeWrong(e: React.MouseEvent<HTMLButtonElement>) {
+  sfx.play('wrong')
+  const el = e.currentTarget
+  el.classList.remove('shake')
+  void el.offsetWidth
+  el.classList.add('shake')
 }
 
 /* ================= CHAPTER 01 — THE CAFÉ INCIDENT ================= */
 export function Ch1() {
   const { completeChapter, unlock } = useGame()
-  const [stage, setStage] = useState<'intro' | 'q' | 'list' | 'done'>('intro')
+  const [stage, setStage] = useState<'intro' | 'q' | 'done'>('intro')
   const [fb, setFb] = useState('')
-  const [picked, setPicked] = useState<number[]>([])
   const c = ch('ch1')
-
-  const cafes = [
-    'A café with genuinely good coffee.',
-    'A café that is technically a study spot.',
-    'The one she actually goes to.',
-    'A café she has never visited but recommends with total confidence.',
-    'A café that exists primarily as a landmark.',
-  ]
-
-  const wrong = (e: React.MouseEvent<HTMLButtonElement>, msg: string) => {
-    sfx.play('wrong')
-    const el = e.currentTarget
-    el.classList.remove('shake')
-    void el.offsetWidth
-    el.classList.add('shake')
-    setFb(msg)
-  }
-
-  const pick = (i: number) => {
-    sfx.play('click')
-    setPicked((prev) => {
-      const next = prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
-      return next
-    })
-  }
 
   return (
     <div className="scene scene--paper">
@@ -91,7 +86,7 @@ export function Ch1() {
           <div className="qbox" style={{ marginTop: 'auto' }}>
             <div className="who">OBJECTIVE</div>
             <p className="line" style={{ fontFamily: 'var(--type)', fontSize: 13 }}>
-              Deliver café recommendations.
+              Send the first text in recorded history.
               <br />
               DIFFICULTY: Deceptively low.
             </p>
@@ -103,56 +98,42 @@ export function Ch1() {
 
         <div className={'stage' + (stage === 'q' ? ' on' : '')}>
           <div className="qbox">
-            <div className="who">MITHIBAI COLLEGE · A CLASSROOM</div>
-            <p className="line">Anay has decided to speak to Tanishka. Select his historically documented opening move.</p>
+            <div className="who">29 AUGUST 2023 · A PHONE</div>
+            <p className="line">Anay is typing. Select the historically documented first text.</p>
           </div>
           <div className="choices">
-            <button className="choice" onClick={(e) => wrong(e, 'HISTORICALLY INACCURATE.')}>
-              “Nice weather.”
+            <button
+              className="choice"
+              onClick={(e) => {
+                shakeWrong(e)
+                setFb('HISTORICALLY INACCURATE.')
+              }}
+            >
+              “hi”
             </button>
             <button
               className="choice"
               onClick={() => {
                 sfx.play('complete')
                 setFb('')
-                setStage('list')
+                setStage('done')
+                completeChapter('ch1')
+                setTimeout(() => unlock('first-message'), 600)
               }}
             >
-              “Do you know any good cafés in Vile Parle East?”
+              “{cafeText}”
             </button>
-            <button className="choice" onClick={(e) => wrong(e, 'THE OFFLINE DEFAULT. BUT NO.')}>
-              (Say nothing. Maintain eye contact with the whiteboard.)
+            <button
+              className="choice"
+              onClick={(e) => {
+                shakeWrong(e)
+                setFb('BOLD. FICTIONAL, BUT BOLD.')
+              }}
+            >
+              “good morning, I have compiled some thoughts about you”
             </button>
           </div>
           <div className="feedback">{fb}</div>
-        </div>
-
-        <div className={'stage' + (stage === 'list' ? ' on' : '')}>
-          <div className="qbox">
-            <div className="who">PLAYING AS TANISHKA</div>
-            <p className="line">Assemble the list. Pick any three. She picked more.</p>
-          </div>
-          <div className="cafelist">
-            {cafes.map((label, i) => (
-              <button key={i} className={'cafeopt' + (picked.includes(i) ? ' picked' : '')} onClick={() => pick(i)}>
-                <span>{label}</span>
-                <span className="tick">{picked.includes(i) ? '✓' : '+'}</span>
-              </button>
-            ))}
-          </div>
-          <button
-            className="btn btn--ink"
-            style={{ marginTop: 18 }}
-            disabled={picked.length < 3}
-            onClick={() => {
-              sfx.play('complete')
-              setStage('done')
-              completeChapter('ch1')
-              setTimeout(() => unlock('first-message'), 600)
-            }}
-          >
-            DELIVER THE LIST
-          </button>
         </div>
 
         <div className={'stage' + (stage === 'done' ? ' on' : '')}>
@@ -220,7 +201,7 @@ export function Ch2() {
                     <div className="bubble bubble--t">███ ████ ██ ████ ███</div>
                   </React.Fragment>
                 ))}
-                {sent > 1 && <div className="bubble bubble--sys">FLIRTATIOUS UNDERTONES DETECTED</div>}
+                {sent > 1 && <div className="bubble bubble--sys">ROASTING DETECTED. MUTUAL. AFFECTIONATE.</div>}
               </div>
             </div>
             <div className="pane pane--offline">
@@ -293,21 +274,12 @@ export function Ch2() {
   )
 }
 
-/* ============ CHAPTER 03 — THE BIRTHDAY DINNER ============ */
+/* ============ CHAPTER 03 — RASHI'S BIRTHDAY DINNER ============ */
 export function Ch3() {
   const { completeChapter, unlock } = useGame()
   const [stage, setStage] = useState<'intro' | 'q' | 'crit' | 'sincere'>('intro')
   const [fb, setFb] = useState('')
   const c = ch('ch3')
-
-  const wrong = (e: React.MouseEvent<HTMLButtonElement>, msg: string) => {
-    sfx.play('wrong')
-    const el = e.currentTarget
-    el.classList.remove('shake')
-    void el.offsetWidth
-    el.classList.add('shake')
-    setFb(msg)
-  }
 
   return (
     <div className="scene scene--dinner">
@@ -322,7 +294,7 @@ export function Ch3() {
             <Figure who="p1" h={104} />
             <Figure who="p2" h={104} flip />
           </div>
-          <Narration lines={c.intro} dark />
+          <Narration lines={[c.intro[0]]} dark />
           <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('q')}>
             HEAR THE QUESTION
           </button>
@@ -331,10 +303,10 @@ export function Ch3() {
         <div className={'stage' + (stage === 'q' ? ' on' : '')}>
           <div className="qbox" style={{ borderColor: 'var(--rose)' }}>
             <div className="who" style={{ color: 'var(--rose)' }}>
-              THE TABLE, COLLECTIVELY
+              A GUY AT THE TABLE
             </div>
             <p className="line" style={{ color: 'var(--cream-hi)' }}>
-              “Who does everyone like from the class?”
+              “{dinnerQuestion}”
             </p>
           </div>
           <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 18 }}>
@@ -344,16 +316,22 @@ export function Ch3() {
             <button
               className="choice"
               style={{ borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' }}
-              onClick={(e) => wrong(e, 'INCORRECT. HISTORY DISAGREES.')}
+              onClick={(e) => {
+                shakeWrong(e)
+                setFb('INCORRECT. HISTORY DISAGREES.')
+              }}
             >
-              “Nobody.”
+              “nobody really”
             </button>
             <button
               className="choice"
               style={{ borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' }}
-              onClick={(e) => wrong(e, 'HE DID NOT HOLD BACK. NEITHER SHOULD YOU.')}
+              onClick={(e) => {
+                shakeWrong(e)
+                setFb('HE DID NOT DODGE. NEITHER SHOULD YOU.')
+              }}
             >
-              “I’d rather not say.”
+              “pass”
             </button>
             <button
               className="choice"
@@ -365,7 +343,7 @@ export function Ch3() {
                 setTimeout(() => unlock('public-confession'), 700)
               }}
             >
-              “Tanishka.”
+              “{dinnerAnswer}”
             </button>
           </div>
           <div className="feedback" style={{ color: 'var(--rose)' }}>
@@ -401,13 +379,7 @@ export function Ch3() {
             ))}
           </div>
           <div style={{ marginTop: 'auto' }} />
-          <button
-            className="btn btn--red"
-            style={{ marginTop: 18 }}
-            onClick={() => {
-              completeChapter('ch3')
-            }}
-          >
+          <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch3')}>
             KEEP THIS ONE
           </button>
           <NextBtn current="ch3" />
@@ -419,11 +391,18 @@ export function Ch3() {
 
 /* ============ CHAPTER 04 — THE FRIENDSHIP ARC ============ */
 export function Ch4() {
-  const { completeChapter } = useGame()
+  const { completeChapter, unlock } = useGame()
   const [cleared, setCleared] = useState(0)
+  const [emailOpen, setEmailOpen] = useState(false)
   const c = ch('ch4')
   const levels = c.levels!
   const done = cleared >= levels.length
+
+  const advance = (i: number) => {
+    sfx.play(i === levels.length - 1 ? 'complete' : 'unlock')
+    setCleared((x) => x + 1)
+    if (i === levels.length - 1) completeChapter('ch4')
+  }
 
   return (
     <div className="scene scene--lines">
@@ -444,16 +423,76 @@ export function Ch4() {
                   <P text={lv.story} />
                 </p>
               )}
-              {isNext && !done && (
-                <HoldButton
-                  label={i < 3 ? 'HOLD TO PROCESS' : 'HOLD TO RECLASSIFY'}
-                  className="btn btn--ink holdbtn"
-                  onDone={() => {
-                    sfx.play(i === levels.length - 1 ? 'complete' : 'unlock')
-                    setCleared((x) => x + 1)
-                    if (i === levels.length - 1) completeChapter('ch4')
+
+              {isNext && !done && lv.kind === 'hold' && (
+                <HoldButton label="HOLD TO PROCESS" className="btn btn--ink holdbtn" onDone={() => advance(i)} />
+              )}
+
+              {isNext && !done && lv.kind === 'block' && (
+                <button
+                  className="btn btn--red"
+                  style={{ marginTop: 14 }}
+                  onClick={() => {
+                    sfx.play('wrong')
+                    advance(i)
                   }}
-                />
+                >
+                  PLAY AS TANISHKA: BLOCK HIM
+                </button>
+              )}
+              {i === 2 && cleared > 2 && (
+                <p className="meta" style={{ marginTop: 12, color: 'var(--red)', textAlign: 'left' }}>
+                  BLOCKED. TERMS OF UNBLOCKING: ONE (1) FORMAL APOLOGY EMAIL.
+                </p>
+              )}
+
+              {isNext && !done && lv.kind === 'email' && !emailOpen && (
+                <button className="btn btn--ink" style={{ marginTop: 14 }} onClick={() => { sfx.play('notify'); setEmailOpen(true) }}>
+                  OPEN THE EMAIL
+                </button>
+              )}
+              {isNext && !done && lv.kind === 'email' && emailOpen && (
+                <>
+                  <div className="emailcard">
+                    <div className="eh">
+                      <span>FROM:</span> {apologyEmail.from}
+                    </div>
+                    <div className="eh">
+                      <span>TO:</span> {apologyEmail.to}
+                    </div>
+                    <div className="eh">
+                      <span>SUBJECT:</span> {apologyEmail.subject}
+                    </div>
+                    <div className="ebody">
+                      {apologyEmail.paragraphs.map((p, pi) => (
+                        <p key={pi}>{p}</p>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn--red"
+                    style={{ marginTop: 14 }}
+                    onClick={() => {
+                      unlock('apology-email')
+                      advance(i)
+                    }}
+                  >
+                    ACCEPT APOLOGY · RELUCTANTLY
+                  </button>
+                </>
+              )}
+
+              {isNext && !done && lv.kind === 'pizza' && (
+                <button
+                  className="btn btn--red"
+                  style={{ marginTop: 14 }}
+                  onClick={() => {
+                    unlock('pizza-diplomacy')
+                    advance(i)
+                  }}
+                >
+                  ACCEPT THE PIZZA
+                </button>
               )}
             </div>
           )
@@ -585,7 +624,7 @@ export function Ch6() {
           <>
             <Narration lines={c.complete} dark />
             <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-              SHE KNEW BEFORE FINANZA. SHE TOLD NO ONE. LEAST OF ALL HIM.
+              SHE HAD KNOWN FOR A WHILE. SHE TOLD NO ONE. LEAST OF ALL HIM.
             </p>
             <div style={{ marginTop: 'auto' }} />
             <NextBtn current="ch6" />
@@ -599,7 +638,7 @@ export function Ch6() {
 /* ============ CHAPTER 07 — THE LOCAL TRAIN ============ */
 export function Ch7() {
   const { completeChapter, unlock } = useGame()
-  const [stage, setStage] = useState<'intro' | 'ride' | 'arrived'>('intro')
+  const [stage, setStage] = useState<'intro' | 'ride' | 'arrived' | 'debrief'>('intro')
   const [wave, setWave] = useState(0)
   const [side, setSide] = useState<'l' | 'r'>('l')
   const [blocked, setBlocked] = useState(false)
@@ -635,8 +674,8 @@ export function Ch7() {
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
           <Head id="ch7" dark />
           <div className="stationboard">
-            <div className="en">VILE PARLE</div>
-            <div className="dv">विले पारले</div>
+            <div className="en">VILE PARLE → MALAD</div>
+            <div className="dv">विले पारले → मालाड</div>
           </div>
           <Narration lines={c.intro} dark />
           <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('ride')}>
@@ -656,7 +695,7 @@ export function Ch7() {
             </div>
           </div>
           <div className="trainbar">
-            <span>WESTERN LINE · SOMEWHERE AFTER VILE PARLE</span>
+            <span>WESTERN LINE · TOWARDS MALAD</span>
             <span>
               {wave + 1}/{WAVES}
             </span>
@@ -665,7 +704,6 @@ export function Ch7() {
           <div className="traincar">
             <div className="pole" style={{ left: '18%' }} />
             <div className="pole" style={{ left: '78%' }} />
-            {/* the crowd drifts in from one side */}
             <div
               className="crowd"
               style={{
@@ -674,7 +712,6 @@ export function Ch7() {
                 transform: blocked ? 'translateX(0)' : side === 'l' ? 'translateX(26px)' : 'translateX(-26px)',
               }}
             />
-            {/* P2 in the middle; P1 steps to the crowd side when blocking */}
             <div
               style={{
                 position: 'absolute',
@@ -703,20 +740,43 @@ export function Ch7() {
 
         <div className={'stage' + (stage === 'arrived' ? ' on' : '')}>
           <div className="stationboard" style={{ marginTop: 22 }}>
-            <div className="en">THE PARTY</div>
-            <div className="dv">destination reached</div>
+            <div className="en">MALAD</div>
+            <div className="dv">मालाड · destination reached</div>
           </div>
           <Narration lines={c.complete} dark />
           <div className="goldpanel">
             <div className="glow" aria-hidden="true" />
             <p className="meta" style={{ color: '#c79b5b', letterSpacing: '.3em' }}>
-              2 AUGUST 2024
+              2 AUGUST 2024 · KASAK’S BIRTHDAY
             </p>
             {c.sincere!.map((l, i) => (
               <p key={i} className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 14 }}>
                 <P text={l} />
               </p>
             ))}
+          </div>
+          <div style={{ marginTop: 'auto' }} />
+          <button className="btn" style={{ marginTop: 18 }} onClick={() => setStage('debrief')}>
+            SHORTLY AFTERWARDS —
+          </button>
+        </div>
+
+        <div className={'stage' + (stage === 'debrief' ? ' on' : '')}>
+          <div className="secretfile revealed" style={{ marginTop: 30, borderColor: 'rgba(232,163,61,.4)' }}>
+            <div className="hd" style={{ color: 'var(--amber)' }}>
+              DEBRIEF · CLASSIFIED
+            </div>
+            <p className="narr" style={{ textAlign: 'left', marginTop: 14, color: 'var(--cream-hi)' }}>
+              Anay told Rashi that he likes Tanishka.
+            </p>
+            <p className="narr" style={{ textAlign: 'left', marginTop: 10, color: 'var(--cream-hi)' }}>
+              A planning committee of two was formed on the spot.
+            </p>
+            <p className="meta" style={{ textAlign: 'left', marginTop: 14, color: 'var(--cream-dim)' }}>
+              RASHI’S STRATEGY: START WITH LITTLE HINTS.
+              <br />
+              STATUS: ADOPTED.
+            </p>
           </div>
           <div style={{ marginTop: 'auto' }} />
           <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch7')}>
@@ -729,16 +789,121 @@ export function Ch7() {
   )
 }
 
-/* ============ CHAPTER 08 — 05:00 AM ============ */
+/* ============ CHAPTER 08 — STREE 2 ============ */
+const SEAT_START = ['ANAY', 'RASHI', 'FRIEND', 'TANISHKA', 'FRIEND']
 export function Ch8() {
   const { completeChapter, unlock } = useGame()
-  const [stage, setStage] = useState<'lock' | 'msg' | 'later' | 'joined'>('lock')
+  const [stage, setStage] = useState<'intro' | 'seats' | 'done'>('intro')
+  const [seats, setSeats] = useState<string[]>(SEAT_START)
+  const [sel, setSel] = useState<number | null>(null)
   const c = ch('ch8')
+
+  const win = (arr: string[]) => {
+    const a = arr.indexOf('ANAY')
+    const t = arr.indexOf('TANISHKA')
+    return Math.abs(a - t) === 1
+  }
+
+  const tap = (i: number) => {
+    sfx.play('click')
+    if (sel === null) {
+      setSel(i)
+      return
+    }
+    if (sel === i) {
+      setSel(null)
+      return
+    }
+    const next = [...seats]
+    ;[next[sel], next[i]] = [next[i], next[sel]]
+    setSeats(next)
+    setSel(null)
+    if (win(next)) {
+      sfx.play('complete')
+      setTimeout(() => {
+        setStage('done')
+        unlock('strategic-seating')
+        completeChapter('ch8')
+      }, 600)
+    }
+  }
+
+  return (
+    <div className="scene scene--cinema">
+      <div className="col">
+        <SNav back="story" label="← CHAPTERS" where="CH. 08" />
+
+        <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
+          <Head id="ch8" dark />
+          <div className="cinescreen">STREE 2</div>
+          <Narration lines={c.intro} dark />
+          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('seats')}>
+            PLAY AS RASHI: ARRANGE THE SEATS
+          </button>
+        </div>
+
+        <div className={'stage' + (stage === 'seats' ? ' on' : '')}>
+          <div className="cinescreen">STREE 2</div>
+          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 20 }}>
+            TAP TWO SEATS TO SWAP THEM.
+            <br />
+            THE COINCIDENCE MUST LOOK NATURAL.
+          </p>
+          <div className="seats">
+            {seats.map((s, i) => (
+              <button
+                key={i}
+                className={
+                  'seat' +
+                  (sel === i ? ' sel' : '') +
+                  (s === 'ANAY' || s === 'TANISHKA' ? ' vip' : '')
+                }
+                onClick={() => tap(i)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
+            OBJECTIVE: ANAY NEXT TO TANISHKA.
+          </p>
+        </div>
+
+        <div className={'stage' + (stage === 'done' ? ' on' : '')}>
+          <div style={{ textAlign: 'center', marginTop: 30 }}>
+            <span className="stamp stamp--big">“COINCIDENCE”</span>
+          </div>
+          <Narration lines={c.complete} dark />
+          <div className="goldpanel">
+            <div className="glow" aria-hidden="true" />
+            <p className="meta" style={{ color: '#c79b5b', letterSpacing: '.3em' }}>
+              15 AUGUST 2024
+            </p>
+            <p className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 14 }}>
+              Tanishka loved that day.
+            </p>
+            <p className="narr" style={{ color: '#c8a97c', fontStyle: 'normal', marginTop: 8, fontSize: 14 }}>
+              She didn’t know the seating was planned. Now she does. So do you.
+            </p>
+          </div>
+          <div style={{ marginTop: 'auto' }} />
+          <NextBtn current="ch8" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ============ CHAPTER 09 — 05:00 AM ============ */
+export function Ch9() {
+  const { completeChapter, unlock } = useGame()
+  const [stage, setStage] = useState<'lock' | 'msg' | 'later' | 'joined'>('lock')
+  const c = ch('ch9')
 
   return (
     <div className="scene scene--phone">
       <div className="col">
-        <SNav back="story" label="← CHAPTERS" where="CH. 08" />
+        <SNav back="story" label="← CHAPTERS" where="CH. 09" />
 
         {stage === 'lock' && (
           <div className="phone">
@@ -754,8 +919,7 @@ export function Ch8() {
               <div className="app">MESSAGES · NOW</div>
               <div className="tt">
                 <b>Anay</b>
-                <br />
-                1 new message
+                <br />1 new message
               </div>
             </button>
             <p className="skipnote">TAP TO OPEN</p>
@@ -834,10 +998,10 @@ export function Ch8() {
               </div>
             </div>
             <div style={{ marginTop: 'auto' }} />
-            <button className="btn btn--red" onClick={() => completeChapter('ch8')}>
+            <button className="btn btn--red" onClick={() => completeChapter('ch9')}>
               BEGIN THE CAMPAIGN
             </button>
-            <NextBtn current="ch8" />
+            <NextBtn current="ch9" />
           </>
         )}
       </div>
@@ -845,13 +1009,13 @@ export function Ch8() {
   )
 }
 
-/* ============ CHAPTER 09 — TWO FEST HEADS ============ */
-export function Ch9() {
+/* ============ CHAPTER 10 — TWO FEST HEADS ============ */
+export function Ch10() {
   const { completeChapter, go } = useGame()
   const [a, setA] = useState(0)
   const [t, setT] = useState(0)
   const [crossed, setCrossed] = useState(false)
-  const c = ch('ch9')
+  const c = ch('ch10')
   const both = a >= 90 && t >= 34
 
   useEffect(() => {
@@ -859,7 +1023,7 @@ export function Ch9() {
       const timer = setTimeout(() => {
         sfx.play('complete')
         setCrossed(true)
-        completeChapter('ch9')
+        completeChapter('ch10')
       }, 500)
       return () => clearTimeout(timer)
     }
@@ -868,8 +1032,8 @@ export function Ch9() {
   return (
     <div className="scene scene--duo">
       <div className="col">
-        <SNav back="story" label="← CHAPTERS" where="CH. 09" />
-        <Head id="ch9" dark />
+        <SNav back="story" label="← CHAPTERS" where="CH. 10" />
+        <Head id="ch10" dark />
         <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
           TAP EACH CREST TO POWER THEM UP.
         </p>
@@ -933,8 +1097,8 @@ export function Ch9() {
             <Narration lines={c.intro} dark />
             <Narration lines={c.complete} dark />
             <div style={{ marginTop: 'auto' }} />
-            <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('final')}>
-              FINAL LEVEL ▸
+            <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('r1')}>
+              ACT II: THE RELATIONSHIP ARC ▸
             </button>
           </>
         )}

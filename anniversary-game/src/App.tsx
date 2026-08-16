@@ -5,11 +5,13 @@ import Boot from './scenes/Boot'
 import MainMenu from './scenes/MainMenu'
 import Story from './scenes/Story'
 import Arcade from './scenes/Arcade'
-import { Ch1, Ch2, Ch3, Ch4, Ch5, Ch6, Ch7, Ch8, Ch9 } from './scenes/chapters'
+import { Ch1, Ch2, Ch3, Ch4, Ch5, Ch6, Ch7, Ch8, Ch9, Ch10 } from './scenes/chapters'
+import { Milestone } from './scenes/milestones'
 import { EggCafe, Extras, Final, Letter, Soundtrack, Stats, Tapes, WorldMap } from './scenes/collection'
 
 function Router() {
   const { route } = useGame()
+  if (/^r[1-9]$/.test(route)) return <Milestone id={route} />
   switch (route) {
     case 'boot': return <Boot />
     case 'menu': return <MainMenu />
@@ -23,6 +25,7 @@ function Router() {
     case 'ch7': return <Ch7 />
     case 'ch8': return <Ch8 />
     case 'ch9': return <Ch9 />
+    case 'ch10': return <Ch10 />
     case 'final': return <Final />
     case 'arcade': return <Arcade />
     case 'ost': return <Soundtrack />

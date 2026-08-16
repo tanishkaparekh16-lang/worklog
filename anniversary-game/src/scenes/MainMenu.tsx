@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
-import { meta } from '../data/relationshipData'
+import { chapters, meta } from '../data/relationshipData'
 import { SpaceBg } from '../components/ui'
 import { useGame } from '../state/progress'
 
 export default function MainMenu() {
-  const { p, go, info, storyComplete, foundEgg, unlock } = useGame()
+  const { p, go, info, relationshipArc, foundEgg, unlock } = useGame()
   const taps = useRef(0)
 
   /* easter egg: tap the title seven times */
@@ -21,7 +21,7 @@ export default function MainMenu() {
   const arcadeOpen = p.chaptersDone.includes('ch3')
 
   return (
-    <div className={'scene scene--menu' + (storyComplete ? ' arc2' : '')}>
+    <div className={'scene scene--menu' + (relationshipArc ? ' arc2' : '')}>
       <SpaceBg />
       <div className="col">
         <div className="snav">
@@ -46,7 +46,9 @@ export default function MainMenu() {
             <div className="mlist">
               <button className="mi" onClick={() => go('story')}>
                 <span>STORY</span>
-                <span className="no">{p.chaptersDone.length}/9</span>
+                <span className="no">
+                  {p.chaptersDone.length}/{chapters.length}
+                </span>
               </button>
               <button
                 className={'mi' + (arcadeOpen ? '' : ' locked')}

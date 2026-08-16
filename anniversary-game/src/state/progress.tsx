@@ -51,6 +51,7 @@ type Ctx = {
   unlockEverything: () => void
   isChapterOpen: (id: string) => boolean
   storyComplete: boolean
+  relationshipArc: boolean
   toast: Toast
   info: (msg: string) => void
 }
@@ -137,6 +138,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         return p.chaptersDone.includes(chapters[i - 1].id)
       },
       storyComplete: chapters.every((c) => p.chaptersDone.includes(c.id)),
+      relationshipArc: p.chaptersDone.includes('ch10'),
       toast,
       info: (msg: string) => setToast({ title: msg, kind: 'info' }),
     }
