@@ -504,9 +504,10 @@ export const chapters: Chapter[] = [
     game: 'torch',
     photos: [
       { src: 'assets/images/vk-exterior.jpg', caption: 'VASANT KUNJ · वसंत कुंज. The nameplate survived.' },
-      { src: 'assets/images/vk-window.jpg', caption: 'A window with nothing left to hold.' },
       { src: 'assets/images/vk-room.jpg', caption: 'A room, mid-return to the trees.' },
-      { src: 'assets/images/vk-stairs.jpg', caption: 'Stairs to a floor that no longer exists.' },
+      { src: 'assets/images/vk-window.jpg', caption: 'A window with nothing left to hold.' },
+      { src: 'assets/images/vk-kitchen.jpg', caption: 'Somebody’s kitchen, once.' },
+      { src: 'assets/images/vk-stairs.jpg', caption: 'A balcony the garden is slowly reclaiming.' },
     ],
   },
   {
