@@ -232,6 +232,103 @@ img, svg { display: block; max-width: 100%; }
 .actlbl.locked { opacity: 0.45; }
 .mapline--rose { background: repeating-linear-gradient(180deg, rgba(201, 138, 147, 0.5) 0 8px, transparent 8px 16px); }
 
+/* ============================================================
+   VISUAL-NOVEL STAGE
+   Illustrated environment fills the viewport; chapter content
+   sits in a dialogue panel anchored to the lower part of the
+   screen. Replaces the old text-on-a-gradient layout.
+   ============================================================ */
+.vnart { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.vnart svg { width: 100%; height: 100%; display: block; }
+.vnart-fade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 6, 12, 0.55) 0%, rgba(8, 6, 12, 0.05) 16%, rgba(8, 6, 12, 0) 40%, rgba(8, 6, 12, 0.3) 62%, rgba(8, 6, 12, 0.72) 82%, rgba(8, 6, 12, 0.88) 100%);
+}
+/* paper-toned chapters need a lighter scrim so the art stays bright */
+.scene--light .vnart-fade {
+  background:
+    linear-gradient(180deg, rgba(237, 228, 208, 0.6) 0%, rgba(237, 228, 208, 0.04) 18%, rgba(237, 228, 208, 0) 42%, rgba(237, 228, 208, 0.35) 62%, rgba(237, 228, 208, 0.8) 82%, rgba(237, 228, 208, 0.95) 100%);
+}
+
+.scene--vn { background: #08060C; }
+.scene--vn.scene--light { background: var(--cream); }
+.scene--vn .col { justify-content: flex-end; padding-bottom: 26px; padding-top: 58px; }
+.scene--vn .snav {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: min(480px, 100%); padding: 14px 24px 12px; z-index: 8;
+  background: linear-gradient(180deg, rgba(8, 6, 12, 0.75), transparent);
+}
+.scene--light .snav {
+  background: linear-gradient(180deg, rgba(237, 228, 208, 0.8), transparent);
+  color: var(--ink);
+}
+@media (min-width: 760px) { .scene--vn .snav { width: min(520px, 100%); } }
+
+/* the dialogue panel */
+.scene--vn .stage.on {
+  flex: 0 0 auto;
+  background: rgba(12, 9, 16, 0.82);
+  border: 1px solid rgba(237, 224, 196, 0.22);
+  border-radius: 14px;
+  padding: 20px 18px 18px;
+  box-shadow: 0 26px 60px -26px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(245, 231, 200, 0.08);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  animation: panelin 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes panelin { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+.scene--light .stage.on {
+  background: rgba(250, 246, 236, 0.965);
+  border-color: rgba(33, 27, 18, 0.22);
+  box-shadow: 0 26px 60px -26px rgba(60, 45, 20, 0.5);
+  color: var(--ink);
+}
+.scene--light .stage.on .meta { color: var(--ink-dim); }
+/* dark panels stay legible over busy art */
+.scene--vn .stage.on { background: rgba(11, 9, 15, 0.88); }
+
+
+
+/* compact chapter header inside the panel */
+.chcard { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.chcard .n {
+  font-family: var(--type); font-size: 10px; letter-spacing: 0.24em; color: var(--cream);
+  background: var(--red); padding: 5px 9px 4px; border-radius: 3px;
+}
+.chcard .yr { font-family: var(--type); font-size: 10px; letter-spacing: 0.2em; color: var(--cream-dim); }
+.scene--light .chcard .yr { color: var(--ink-dim); }
+.chttl { font-family: var(--anton); font-size: 30px; line-height: 1.06; letter-spacing: 0.03em; color: var(--cream-hi); }
+.scene--light .chttl { color: var(--ink); }
+.chplace { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--rose); margin-top: 4px; }
+.scene--light .chplace { color: var(--red); }
+.chrule { height: 1px; background: linear-gradient(90deg, rgba(232, 163, 61, 0.6), transparent); margin: 12px 0 4px; }
+
+/* narration inside the panel reads left-aligned, not centred */
+.scene--vn .narr { text-align: left; font-size: 16px; line-height: 1.65; color: var(--cream-hi); }
+.scene--light .narr { color: var(--ink); }
+.scene--vn .meta { text-align: left; }
+
+/* characters standing on the stage, above the art, behind the panel */
+.cast {
+  position: fixed; left: 0; right: 0; top: 24vh; height: 30vh; z-index: 0; pointer-events: none;
+  display: flex; align-items: flex-end; justify-content: center; gap: 10px;
+}
+.cast--wide { gap: 48px; }
+.person { display: block; height: 100%; width: auto; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.6)); }
+.scene--light .person { filter: drop-shadow(0 14px 22px rgba(60, 45, 20, 0.35)); }
+
+@media (min-width: 760px) {
+  .cast { top: 22vh; height: 34vh; }
+  .chttl { font-size: 34px; }
+}
+@media (max-height: 720px) {
+  .cast { top: 20vh; height: 26vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene--vn .stage.on { animation: none; }
+}
+
 /* ---------- generic chapter framing ---------- */
 .redband {
   background: var(--red); color: var(--cream); font-family: var(--type); font-size: 11px;
@@ -777,3 +874,76 @@ img, svg { display: block; max-width: 100%; }
   .stamp--big { animation: none; opacity: 0.92; }
   .scene, .stage.on { animation: none; }
 }
+
+/* phone chapter keeps its device centred over the bedroom art */
+.scene--phonevn .col { justify-content: center; padding-bottom: 40px; }
+.scene--phonevn .phone { position: relative; z-index: 1; background: rgba(13, 12, 20, 0.94); backdrop-filter: blur(6px); }
+
+/* the train/cinema chapters still use their own props inside the panel */
+.scene--vn .stationboard { margin-top: 4px; }
+.scene--vn .trainwin { border-width: 4px; }
+
+/* legacy full-screen scene backgrounds are unused under the VN shell */
+.scene--vn .halft, .scene--vn .lights, .scene--vn .beams { display: none; }
+
+/* ============================================================
+   THE FOUR GAMES
+   ============================================================ */
+.gamewrap { display: flex; flex-direction: column; }
+.gamehud {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  font-family: var(--type); font-size: 10px; letter-spacing: 0.18em;
+  color: var(--amber); margin-bottom: 10px;
+}
+.gamehud .hudnote { color: var(--cream-dim); text-align: right; flex: 1; }
+.scene--light .gamehud { color: var(--red); }
+.scene--light .gamehud .hudnote { color: var(--ink-dim); }
+.gamecv {
+  display: block; width: 100%; border-radius: 8px;
+  border: 2px solid rgba(237, 224, 196, 0.25); background: #0C0A10;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* platformer / runner controls */
+.pad { display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 10px; margin-top: 12px; }
+.padbtn {
+  border: 2px solid rgba(232, 163, 61, 0.55); color: var(--amber); background: rgba(232, 163, 61, 0.07);
+  border-radius: 10px; padding: 16px 0 14px; font-family: var(--anton); font-size: 18px; letter-spacing: 0.08em;
+  touch-action: manipulation; user-select: none; -webkit-user-select: none;
+}
+.padbtn:active { background: rgba(232, 163, 61, 0.22); transform: scale(0.97); }
+.padbtn--jump { font-size: 14px; letter-spacing: 0.2em; }
+.runbar { height: 8px; background: rgba(237, 224, 196, 0.15); border-radius: 99px; overflow: hidden; margin-top: 12px; }
+.runbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--amber), var(--amber-hi)); transition: width 0.15s linear; }
+
+/* quiz */
+.quizq { font-family: var(--serif); font-size: 18px; line-height: 1.5; color: var(--cream-hi); }
+.scene--light .quizq { color: var(--ink); }
+.qopt { transition: border-color 0.25s, background 0.25s, color 0.25s; }
+.qright { border-color: var(--teal) !important; color: var(--teal) !important; background: rgba(99, 214, 192, 0.1); }
+.qwrong { border-color: var(--red) !important; color: var(--red) !important; }
+.qdim { opacity: 0.4; }
+.quizscore {
+  font-family: var(--anton); font-size: 62px; text-align: center; color: var(--amber-hi);
+  letter-spacing: 0.04em; margin: 10px 0 4px;
+}
+
+/* clue hunt */
+.cluefield {
+  position: relative; margin-top: 4px; border-radius: 8px; overflow: hidden;
+  border: 2px solid rgba(201, 138, 147, 0.35); cursor: crosshair; aspect-ratio: 4 / 3;
+}
+.clueart { width: 100%; height: 100%; display: block; }
+.cluedot {
+  position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+  border: 2px dashed transparent; transition: all 0.3s;
+}
+.cluedot.on {
+  border-color: var(--rose); background: rgba(201, 138, 147, 0.22);
+  box-shadow: 0 0 18px rgba(201, 138, 147, 0.5);
+}
+.cluecard {
+  margin-top: 12px; border-left: 3px solid var(--rose); padding: 10px 0 10px 14px;
+}
+.cluecard .t1 { font-family: var(--type); font-size: 10px; letter-spacing: 0.22em; color: var(--rose); }
+.cluecard p { font-family: var(--serif); font-size: 14.5px; line-height: 1.6; color: var(--cream-hi); margin-top: 6px; }

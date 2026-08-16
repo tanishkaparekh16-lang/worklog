@@ -1,25 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { blabberQuestion, chapters } from '../data/relationshipData'
 import { Figure, HoldButton, P, PhotoRow, SNav, TEST, XP } from '../components/ui'
+import { Person, SceneArt, SceneKind } from '../components/art'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 import { Head, Narration, NextBtn } from './chapters'
+import { ClueHunt, Platformer, Quiz, Runner } from './games'
 
 /* Act II — nine milestone chapters, one component.
    Each `game` type gets its own small interaction; narration and
    stories come from relationshipData.ts.                          */
 
-const SCENE_FOR: Record<string, string> = {
-  order: 'scene--ost',
-  flowers: 'scene--dinner',
-  rain: 'scene--kk',
-  letter: 'scene--letter',
-  hands: 'scene--duo',
-  torch: 'scene--vk',
-  montage: 'scene--paper',
-  friends: 'scene--finanza',
-  days: 'scene--goa',
-  distance: 'scene--split',
+const ART_FOR: Record<string, SceneKind> = {
+  order: 'parlour',
+  flowers: 'street',
+  rain: 'park',
+  letter: 'parlour',
+  hands: 'street',
+  torch: 'bungalow',
+  montage: 'wall',
+  friends: 'lake',
+  days: 'beach',
+  distance: 'distance',
+}
+/* chapters whose art is light-toned need the pale scrim + dark text */
+const LIGHT = new Set(['order', 'letter', 'montage', 'friends', 'days'])
+/* who stands on stage */
+const CAST_FOR: Record<string, ('p1' | 'p2')[]> = {
+  order: ['p1', 'p2'],
+  flowers: ['p1', 'p2'],
+  rain: ['p1', 'p2'],
+  letter: ['p1', 'p2'],
+  hands: ['p1', 'p2'],
+  torch: ['p1', 'p2'],
+  montage: [],
+  friends: ['p1', 'p2'],
+  days: ['p1', 'p2'],
+  distance: [],
 }
 const ACH_FOR: Record<string, string> = {
   rain: 'first-ily',
@@ -34,8 +51,9 @@ export function Milestone({ id }: { id: string }) {
   const c = chapters.find((x) => x.id === id)!
   const { completeChapter, unlock } = useGame()
   const [stage, setStage] = useState<'intro' | 'play' | 'done'>('intro')
-  const onPaper = c.game === 'montage'
-  const dark = !onPaper
+  const light = LIGHT.has(c.game!)
+  const dark = !light
+  const cast = CAST_FOR[c.game!] ?? []
 
   const finish = () => {
     sfx.play('complete')
@@ -46,16 +64,22 @@ export function Milestone({ id }: { id: string }) {
   }
 
   return (
-    <div className={'scene ' + SCENE_FOR[c.game!]}>
-      {c.game === 'order' && <div className="beams" aria-hidden="true" />}
-      {c.game === 'flowers' && <div className="lights" aria-hidden="true" />}
+    <div className={'scene scene--vn' + (light ? ' scene--light' : '')}>
+      <SceneArt kind={ART_FOR[c.game!]} />
+      {cast.length > 0 && (
+        <div className={'cast' + (cast.length > 1 ? ' cast--wide' : '')}>
+          {cast.map((w, i) => (
+            <Person key={w} who={w} h={w === 'p1' ? 152 : 146} flip={i > 0} />
+          ))}
+        </div>
+      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where={`CH. ${c.num}`} />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
-          <Head id={c.id} dark={dark} />
+          <Head id={c.id} />
           <Narration lines={c.intro} dark={dark} />
-          <button className={'btn' + (onPaper ? ' btn--ink' : '')} style={{ marginTop: 'auto' }} onClick={() => setStage('play')}>
+          <button className={'btn' + (light ? ' btn--ink' : '')} style={{ marginTop: 16 }} onClick={() => setStage('play')}>
             {INTRO_BTN[c.game!]}
           </button>
         </div>
@@ -87,7 +111,6 @@ export function Milestone({ id }: { id: string }) {
             </p>
           )}
           <PhotoRow photos={c.photos} />
-          <div style={{ marginTop: 'auto' }} />
           <NextBtn current={c.id} />
         </div>
       </div>
@@ -123,7 +146,7 @@ const DONE_STAMP: Record<string, string> = {
 function Game({ kind, onDone }: { kind: string; onDone: () => void }) {
   switch (kind) {
     case 'order':
-      return <OrderGame onDone={onDone} />
+      return <Quiz onDone={onDone} />
     case 'flowers':
       return <FlowersGame onDone={onDone} />
     case 'rain':
@@ -133,7 +156,7 @@ function Game({ kind, onDone }: { kind: string; onDone: () => void }) {
     case 'hands':
       return <HandsGame onDone={onDone} />
     case 'torch':
-      return <TorchGame onDone={onDone} />
+      return <Platformer onDone={onDone} />
     case 'montage':
       return <MontageGame onDone={onDone} />
     case 'friends':
@@ -219,7 +242,7 @@ function OrderGame({ onDone }: { onDone: () => void }) {
           <div className="shake-glass" />
           <div className="shake-glass" />
         </div>
-        <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('notify'); setPhase('vibe') }}>
+        <button className="btn btn--red" style={{ marginTop: 16 }} onClick={() => { sfx.play('notify'); setPhase('vibe') }}>
           NOW — KEEP THE VIBE
         </button>
       </>
@@ -281,7 +304,7 @@ function FlowersGame({ onDone }: { onDone: () => void }) {
           <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
             FLOWERS, MANNERS, CONSISTENCY. THE FULL PACKAGE.
           </p>
-          <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
             CONFIRM GENTLEMAN STATUS
           </button>
         </>
@@ -309,7 +332,7 @@ function RainGame({ onDone }: { onDone: () => void }) {
           <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
             KK PARK. A BENCH. A CONVERSATION WITH NO INTENTION OF ENDING.
           </p>
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('notify'); setPhase('rain') }}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => { sfx.play('notify'); setPhase('rain') }}>
             THEN THE SKY OPENED
           </button>
         </>
@@ -357,7 +380,7 @@ function RainGame({ onDone }: { onDone: () => void }) {
             <Figure who="p1" h={110} />
             <Figure who="p2" h={110} flip />
           </div>
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('complete'); setPhase('said') }}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => { sfx.play('complete'); setPhase('said') }}>
             AND THEN HE SAID IT
           </button>
         </>
@@ -379,7 +402,7 @@ function RainGame({ onDone }: { onDone: () => void }) {
               The weather never stood a chance.
             </p>
           </div>
-          <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
             CHAI &amp; SAMOSAS ▸
           </button>
         </>
@@ -470,7 +493,7 @@ function HandsGame({ onDone }: { onDone: () => void }) {
           }}
         />
       ) : (
-        <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+        <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
           MAKE IT PERMANENT
         </button>
       )}
@@ -512,7 +535,7 @@ function TorchGame({ onDone }: { onDone: () => void }) {
         ))}
       </div>
       {all && (
-        <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+        <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
           AND IN THE QUIET CORNER —
         </button>
       )}
@@ -546,7 +569,7 @@ function MontageGame({ onDone }: { onDone: () => void }) {
         </button>
       ))}
       {open >= slots.length && (
-        <button className="btn btn--ink" style={{ marginTop: 'auto' }} onClick={onDone}>
+        <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
           THE ALBUM NEVER REALLY ENDS
         </button>
       )}
@@ -585,7 +608,7 @@ function FriendsGame({ onDone }: { onDone: () => void }) {
           <p className="meta" style={{ color: 'var(--amber)', marginTop: 18 }}>
             UNANIMOUS. IT WAS NEVER REALLY IN DOUBT.
           </p>
-          <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
             SHE UNDERSTOOD WHAT THIS MEANT
           </button>
         </>
@@ -594,40 +617,20 @@ function FriendsGame({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* r8 — seven days of Goa */
+/* r8 — Goa needs no minigame. Seven days speak for themselves. */
 function DaysGame({ onDone }: { onDone: () => void }) {
-  const [done, setDone] = useState(0)
   return (
     <>
-      <p className="meta" style={{ color: 'var(--cream-hi)', marginTop: 14 }}>
-        SEVEN DAYS. TAP THROUGH THEM.
+      <p className="narr" style={{ marginTop: 10 }}>
+        Seven days. One rented stretch of coast. A group of friends who will
+        never quite tell this story the same way twice.
       </p>
-      <div className="daychips">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <button
-            key={i}
-            className={'daychip' + (i < done ? ' spent' : '')}
-            onClick={() => {
-              if (i === done) {
-                sfx.play('click')
-                setDone(done + 1)
-              }
-            }}
-          >
-            {i < done ? '✓' : `DAY ${i + 1}`}
-          </button>
-        ))}
-      </div>
-      {done >= 7 && (
-        <>
-          <p className="meta" style={{ color: 'var(--cream-hi)', marginTop: 18 }}>
-            MEMORY COUNT: UNRECORDABLE. CLOSENESS: RECORD HIGH.
-          </p>
-          <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
-            COME BACK CLOSER
-          </button>
-        </>
-      )}
+      <p className="meta" style={{ color: 'var(--ink-dim)', marginTop: 14, textAlign: 'left' }}>
+        MEMORY COUNT: UNRECORDABLE. CLOSENESS: RECORD HIGH.
+      </p>
+      <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
+        COME BACK CLOSER
+      </button>
     </>
   )
 }
@@ -648,7 +651,7 @@ function DistanceGame({ onDone }: { onDone: () => void }) {
       <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
         BOTH BARS FULL. ONLY ONE OF THEM MATTERED.
       </p>
-      <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+      <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
         OUTLAST GEOGRAPHY
       </button>
     </>

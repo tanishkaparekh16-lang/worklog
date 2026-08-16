@@ -8,23 +8,24 @@ import {
   players,
 } from '../data/relationshipData'
 import { Figure, HoldButton, P, PhotoRow, SNav, TEST, TrainScenery, XP } from '../components/ui'
+import { Person, SceneArt } from '../components/art'
+import { ClueHunt, Runner } from './games'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
 const ch = (id: string) => chapters.find((c) => c.id === id)!
 
-export function Head({ id, dark = false }: { id: string; dark?: boolean }) {
+export function Head({ id }: { id: string; dark?: boolean }) {
   const c = ch(id)
   return (
     <>
-      <div className="redband">
-        CHAPTER {c.num} · {c.year}
+      <div className="chcard">
+        <span className="n">CH {c.num}</span>
+        <span className="yr">{c.year}</span>
       </div>
-      <div className="chhead" style={dark ? { color: 'var(--cream-hi)' } : undefined}>
-        <div className="num">EVENT CLASSIFICATION: {c.classification.toUpperCase()}</div>
-        <h2>{c.title}</h2>
-        <div className="place">{c.place}</div>
-      </div>
+      <h2 className="chttl">{c.title}</h2>
+      <div className="chplace">{c.place}</div>
+      <div className="chrule" />
     </>
   )
 }
@@ -74,16 +75,18 @@ export function Ch1() {
   const c = ch('ch1')
 
   return (
-    <div className="scene scene--paper">
-      <div className="halft" aria-hidden="true" />
+    <div className="scene scene--vn">
+      <SceneArt kind="cafe" />
+      <div className="cast">
+        <Person who="p1" h={168} />
+      </div>
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 01" />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
           <Head id="ch1" />
-          <div className="cup" aria-hidden="true" />
           <Narration lines={c.intro} />
-          <div className="qbox" style={{ marginTop: 'auto' }}>
+          <div className="qbox" style={{ marginTop: 16 }}>
             <div className="who">OBJECTIVE</div>
             <p className="line" style={{ fontFamily: 'var(--type)', fontSize: 13 }}>
               Send the first text in recorded history.
@@ -142,11 +145,10 @@ export function Ch1() {
           </div>
           <Narration lines={c.complete} />
           <PhotoRow photos={c.photos} />
-          <p className="meta" style={{ marginTop: 20, color: 'var(--ink-dim)' }}>
+          <p className="meta" style={{ marginTop: 16, color: 'var(--cream-dim)' }}>
             {c.completeNote.toUpperCase()}
           </p>
-          <div style={{ marginTop: 'auto' }} />
-          <NextBtn current="ch1" />
+                    <NextBtn current="ch1" />
         </div>
       </div>
     </div>
@@ -154,198 +156,127 @@ export function Ch1() {
 }
 
 /* ============ CHAPTER 02 — ONLINE FRIENDSHIP, OFFLINE NPC ============
-   Game: REPLY STREAK. Messages land at random moments and expire fast.
-   Reply before they fade to build a streak of 8. Missing one gets you
-   seen-zoned and costs streak. Then Real Life Mode, which never works. */
-const NEED_STREAK = 8
+   No fail state. You run the same conversation in both modes and
+   watch one of them work.                                        */
 export function Ch2() {
   const { completeChapter } = useGame()
-  const [stage, setStage] = useState<'intro' | 'play' | 'rl' | 'done'>('intro')
-  const [streak, setStreak] = useState(0)
-  const [best, setBest] = useState(0)
-  const [bubble, setBubble] = useState<{ id: number; until: number } | null>(null)
-  const [fb, setFb] = useState('')
-  const [rlTries, setRlTries] = useState(0)
-  const idc = useRef(0)
-  const timers = useRef<number[]>([])
+  const [stage, setStage] = useState<'intro' | 'play' | 'done'>('intro')
+  const [sent, setSent] = useState(0)
+  const [rl, setRl] = useState(0)
   const c = ch('ch2')
 
-  const clearTimers = () => {
-    timers.current.forEach(clearTimeout)
-    timers.current = []
-  }
-
-  const spawn = (curStreak: number) => {
-    clearTimers()
-    const delay = 350 + Math.random() * 800
-    timers.current.push(
-      window.setTimeout(() => {
-        idc.current += 1
-        const id = idc.current
-        const windowMs = TEST ? 60000 : Math.max(650, 1250 - curStreak * 70)
-        setBubble({ id, until: performance.now() + windowMs })
-        sfx.play('notify')
-        timers.current.push(
-          window.setTimeout(() => {
-            /* expired — seen-zoned */
-            setBubble((b) => {
-              if (!b || b.id !== id) return b
-              sfx.play('wrong')
-              setFb('SEEN. NOT REPLIED. THE STREAK IS DEAD.')
-              setStreak((s2) => {
-                const ns = Math.max(0, s2 - 3)
-                spawn(ns)
-                return ns
-              })
-              return null
-            })
-          }, windowMs),
-        )
-      }, delay),
-    )
-  }
-
-  useEffect(() => () => clearTimers(), [])
-
-  const startPlay = () => {
-    setStage('play')
-    setFb('')
-    spawn(0)
-  }
-
-  const reply = () => {
-    if (!bubble) return
-    clearTimers()
-    setBubble(null)
-    sfx.play('click')
-    setFb('')
-    setStreak((s) => {
-      const ns = s + 1
-      setBest((b) => Math.max(b, ns))
-      if (ns >= NEED_STREAK) {
-        sfx.play('complete')
-        setTimeout(() => setStage('rl'), 500)
-      } else {
-        spawn(ns)
-      }
-      return ns
-    })
-  }
-
-  const rlFails = [
-    'ATTEMPT LOGGED. NO WORDS WERE PRODUCED.',
-    'A NOD OCCURRED. HISTORIANS REMAIN DIVIDED ON WHETHER IT COUNTED.',
-    'CONVERSATION POSTPONED. AGAIN. THE ANOMALY IS CONFIRMED.',
+  const online = [
+    ['a', 'so about those cafes'],
+    ['t', 'i have a list. it is long.'],
+    ['a', 'how long is long'],
+    ['t', 'you will be busy till december'],
+    ['a', 'perfect'],
+    ['t', 'you havent been to a single one'],
+    ['a', 'i am building anticipation'],
+    ['t', 'unbelievable'],
   ]
+  const offline = [
+    'ATTEMPT LOGGED. NO WORDS WERE PRODUCED.',
+    'A NOD OCCURRED. HISTORIANS REMAIN DIVIDED.',
+    'EYE CONTACT MADE, THEN IMMEDIATELY WITHDRAWN.',
+    'CONVERSATION POSTPONED. AGAIN.',
+  ]
+  const ready = sent >= 4 && rl >= 2
 
   return (
-    <div className="scene scene--split">
+    <div className="scene scene--vn">
+      <SceneArt kind="classroom" />
+      {stage === 'intro' && (
+        <div className="cast cast--wide">
+          <Person who="p1" h={150} />
+          <Person who="p2" h={144} flip />
+        </div>
+      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 02" />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
-          <Head id="ch2" dark />
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 40, marginTop: 26 }}>
-            <Figure who="p1" h={110} />
-            <Figure who="p2" h={110} flip />
-          </div>
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 10 }}>
+          <Head id="ch2" />
+          <p className="meta" style={{ color: 'var(--cream-dim)' }}>
             SAME CLASSROOM. EVERY DAY.
           </p>
           <Narration lines={c.intro} dark />
-          <div className="qbox" style={{ borderColor: 'rgba(237,224,196,.4)', marginTop: 'auto' }}>
-            <div className="who" style={{ color: 'var(--teal)' }}>
-              CHALLENGE
-            </div>
-            <p className="line" style={{ color: 'var(--cream-hi)', fontFamily: 'var(--type)', fontSize: 12.5 }}>
-              Keep the chat alive. Reply before the message fades.
-              <br />
-              STREAK REQUIRED: {NEED_STREAK}. They get faster.
-            </p>
-          </div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={startPlay}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('play')}>
             RUN THE EXPERIMENT
           </button>
         </div>
 
         <div className={'stage' + (stage === 'play' ? ' on' : '')}>
-          <div className="streakbar">
-            <span className="tw">
-              STREAK {streak}/{NEED_STREAK}
-            </span>
-            <span className="tw" style={{ color: 'var(--cream-dim)' }}>
-              BEST {best}
-            </span>
-          </div>
-          <div className="chatfield">
-            {bubble ? (
-              <button key={bubble.id} className="rbubble" onClick={reply}>
-                <span className="rb-msg">███ ████ ██ ████</span>
-                <span className="rb-cta">REPLY ▸</span>
-                <span
-                  className="rb-fuse"
-                  style={{ animationDuration: `${TEST ? 60 : Math.max(0.65, 1.25 - streak * 0.07)}s` }}
-                />
-              </button>
-            ) : (
-              <p className="meta" style={{ color: 'var(--cream-dim)' }}>…</p>
-            )}
-          </div>
-          <div className="feedback" style={{ color: 'var(--rose)' }}>
-            {fb}
-          </div>
-          <XP label="ONLINE CONVERSATION" value={Math.min(100, (streak / NEED_STREAK) * 100)} animate={false} />
-        </div>
-
-        <div className={'stage' + (stage === 'rl' ? ' on' : '')}>
-          <p className="meta" style={{ color: 'var(--teal)', marginTop: 26, letterSpacing: '.3em' }}>
-            ONLINE MODE: MASTERED
-          </p>
-          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 16 }}>
-            Now do it in person.
-          </p>
-          <div className="pane pane--offline" style={{ marginTop: 20 }}>
-            <div className="hd">REAL LIFE MODE</div>
-            <div className="bd">
-              {Array.from({ length: rlTries }).map((_, i) => (
-                <div key={i} className="bubble bubble--sys">
-                  {rlFails[Math.min(i, rlFails.length - 1)]}
-                </div>
-              ))}
-              {rlTries === 0 && <div className="bubble bubble--sys">NO ACTIVITY RECORDED</div>}
+          <div className="split">
+            <div className="pane pane--online">
+              <div className="hd">ONLINE</div>
+              <div className="bd">
+                {online.slice(0, sent).map(([who, txt], i) => (
+                  <div key={i} className={'bubble ' + (who === 'a' ? 'bubble--a' : 'bubble--t')}>
+                    {txt}
+                  </div>
+                ))}
+                {sent === 0 && <div className="bubble bubble--sys">TAP BELOW</div>}
+              </div>
+            </div>
+            <div className="pane pane--offline">
+              <div className="hd">IN PERSON</div>
+              <div className="bd">
+                {Array.from({ length: rl }).map((_, i) => (
+                  <div key={i} className="bubble bubble--sys">
+                    {offline[Math.min(i, offline.length - 1)]}
+                  </div>
+                ))}
+                {rl === 0 && <div className="bubble bubble--sys">NO ACTIVITY RECORDED</div>}
+              </div>
             </div>
           </div>
-          <button
-            className="btn btn--ghost"
-            style={{ marginTop: 16 }}
-            onClick={() => {
-              sfx.play('wrong')
-              setRlTries((s) => Math.min(3, s + 1))
-            }}
-          >
-            SAY SOMETHING IN PERSON
-          </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
+            <button
+              className="btn"
+              onClick={() => {
+                sfx.play('notify')
+                setSent((x) => Math.min(online.length, x + 2))
+              }}
+            >
+              TEXT HER
+            </button>
+            <button
+              className="btn btn--ghost"
+              onClick={() => {
+                sfx.play('click')
+                setRl((x) => Math.min(offline.length, x + 1))
+              }}
+            >
+              SAY IT
+              <br />
+              OUT LOUD
+            </button>
+          </div>
+          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 12 }}>
+            ONE OF THESE BUTTONS WORKS.
+          </p>
           <button
             className="btn btn--red"
-            style={{ marginTop: 'auto' }}
-            disabled={rlTries < 3}
+            style={{ marginTop: 12 }}
+            disabled={!ready}
             onClick={() => {
               sfx.play('complete')
               completeChapter('ch2')
               setStage('done')
             }}
           >
-            {rlTries < 3 ? 'KEEP TRYING. FOR SCIENCE.' : 'DOCUMENT THE ANOMALY'}
+            {ready ? 'DOCUMENT THE ANOMALY' : 'TRY BOTH A FEW TIMES'}
           </button>
         </div>
 
         <div className={'stage' + (stage === 'done' ? ' on' : '')}>
-          <div style={{ textAlign: 'center', marginTop: 34 }}>
+          <div style={{ textAlign: 'center', marginTop: 22 }}>
             <span className="stamp stamp--big">DOCUMENTED</span>
           </div>
           <Narration lines={c.complete} dark />
           <PhotoRow photos={c.photos} />
-          <div style={{ marginTop: 'auto' }} />
           <NextBtn current="ch2" />
         </div>
       </div>
@@ -361,20 +292,19 @@ export function Ch3() {
   const c = ch('ch3')
 
   return (
-    <div className="scene scene--dinner">
-      <div className="lights" aria-hidden="true" />
+    <div className="scene scene--vn">
+      <SceneArt kind="restaurant" />
+      <div className="cast cast--wide">
+        <Person who="p1" h={150} />
+        <Person who="p2" h={144} flip />
+      </div>
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 03" />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
-          <Head id="ch3" dark />
-          <div className="dinnertable">
-            <div className="tabletop" aria-hidden="true" />
-            <Figure who="p1" h={104} />
-            <Figure who="p2" h={104} flip />
-          </div>
+          <Head id="ch3" />
           <Narration lines={[c.intro[0]]} dark />
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('q')}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('q')}>
             HEAR THE QUESTION
           </button>
         </div>
@@ -440,7 +370,7 @@ export function Ch3() {
           <div className="flustermeter">
             <XP label="TANISHKA — FLUSTER LEVEL" value={100} rose />
           </div>
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('sincere')}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('sincere')}>
             AND THEN, QUIETLY —
           </button>
         </div>
@@ -457,177 +387,12 @@ export function Ch3() {
               </p>
             ))}
           </div>
-          <div style={{ marginTop: 'auto' }} />
-          <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch3')}>
+                    <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch3')}>
             KEEP THIS ONE
           </button>
           <NextBtn current="ch3" />
         </div>
       </div>
-    </div>
-  )
-}
-
-/* ---- Ch4 game: ROAST RALLY — return the roast while the marker is
-   in your zone. Ten returns to clear; the rally speeds up. ---- */
-function RoastRally({ onWin }: { onWin: () => void }) {
-  const NEED = 10
-  const [hits, setHits] = useState(0)
-  const [fb, setFb] = useState('')
-  const pos = useRef(0)
-  const dir = useRef(1)
-  const speed = useRef(0.055)
-  const [, force] = useState(0)
-  const raf = useRef<number | null>(null)
-  const won = useRef(false)
-
-  useEffect(() => {
-    let last = performance.now()
-    const tick = (t: number) => {
-      const dt = t - last
-      last = t
-      pos.current += dir.current * speed.current * dt
-      if (pos.current >= 100) {
-        pos.current = 100
-        dir.current = -1
-      }
-      if (pos.current <= 0) {
-        pos.current = 0
-        dir.current = 1
-      }
-      force((x) => x + 1)
-      raf.current = requestAnimationFrame(tick)
-    }
-    raf.current = requestAnimationFrame(tick)
-    return () => {
-      if (raf.current) cancelAnimationFrame(raf.current)
-    }
-  }, [])
-
-  const inZone = TEST || pos.current >= 72
-  const ret = () => {
-    if (won.current) return
-    if (inZone) {
-      sfx.play('click')
-      setFb('')
-      speed.current = Math.min(0.13, speed.current * 1.12)
-      dir.current = -1
-      setHits((h) => {
-        const nh = h + 1
-        if (nh >= NEED) {
-          won.current = true
-          sfx.play('complete')
-          setTimeout(onWin, 400)
-        }
-        return nh
-      })
-    } else {
-      sfx.play('wrong')
-      setFb('TOO EARLY. THE ROAST WHIFFED.')
-    }
-  }
-
-  return (
-    <div style={{ marginTop: 14 }}>
-      <p className="meta" style={{ textAlign: 'left', color: 'var(--ink-dim)' }}>
-        RETURN THE ROAST WHILE IT’S IN YOUR ZONE. {hits}/{NEED}
-      </p>
-      <div className="rallybar">
-        <div className="zone" />
-        <div className="marker" style={{ left: `${pos.current}%` }} />
-      </div>
-      <button className="btn btn--ink" style={{ marginTop: 12 }} onClick={ret}>
-        RETURN THE ROAST
-      </button>
-      <div className="feedback">{fb}</div>
-    </div>
-  )
-}
-
-/* ---- Ch4 game: PRANK WHACK — pranks pop up on a grid and vanish
-   fast. Block eight before they land. They get quicker. ---- */
-function PrankWhack({ onWin }: { onWin: () => void }) {
-  const NEED = 8
-  const [blocked, setBlocked] = useState(0)
-  const [landed, setLanded] = useState(0)
-  const [cell, setCell] = useState<{ idx: number; id: number } | null>(null)
-  const idc = useRef(0)
-  const timers = useRef<number[]>([])
-  const won = useRef(false)
-
-  const clearT = () => {
-    timers.current.forEach(clearTimeout)
-    timers.current = []
-  }
-
-  const spawn = (nb: number) => {
-    clearT()
-    timers.current.push(
-      window.setTimeout(() => {
-        idc.current += 1
-        const id = idc.current
-        setCell({ idx: Math.floor(Math.random() * 9), id })
-        const up = TEST ? 60000 : Math.max(500, 880 - nb * 45)
-        timers.current.push(
-          window.setTimeout(() => {
-            setCell((cur) => {
-              if (!cur || cur.id !== id) return cur
-              sfx.play('wrong')
-              setLanded((l) => l + 1)
-              spawn(nb)
-              return null
-            })
-          }, up),
-        )
-      }, 260 + Math.random() * 480),
-    )
-  }
-
-  useEffect(() => {
-    spawn(0)
-    return clearT
-  }, [])
-
-  const whack = (idx: number) => {
-    if (!cell || cell.idx !== idx || won.current) return
-    clearT()
-    setCell(null)
-    sfx.play('unlock')
-    setBlocked((b) => {
-      const nb = b + 1
-      if (nb >= NEED) {
-        won.current = true
-        sfx.play('complete')
-        setTimeout(onWin, 400)
-      } else {
-        spawn(nb)
-      }
-      return nb
-    })
-  }
-
-  return (
-    <div style={{ marginTop: 14 }}>
-      <p className="meta" style={{ textAlign: 'left', color: 'var(--ink-dim)' }}>
-        BLOCK THE PRANKS. {blocked}/{NEED} BLOCKED · {landed} LANDED
-      </p>
-      <div className="prankgrid">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <button
-            key={i}
-            className={'pcell' + (cell?.idx === i ? ' up' : '')}
-            onClick={() => whack(i)}
-            aria-label={cell?.idx === i ? 'Incoming prank' : 'Empty desk'}
-          >
-            {cell?.idx === i ? '!' : ''}
-          </button>
-        ))}
-      </div>
-      {landed > 2 && (
-        <p className="meta" style={{ textAlign: 'left', color: 'var(--red)', marginTop: 8 }}>
-          STATISTICALLY, MOST PRANKS LANDED. THIS MATCHES THE HISTORICAL RECORD.
-        </p>
-      )}
     </div>
   )
 }
@@ -648,9 +413,11 @@ export function Ch4() {
   }
 
   return (
-    <div className="scene scene--lines">
+    <div className="scene scene--vn scene--light">
+      <SceneArt kind="corridor" />
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 04" />
+        <div className="stage on">
         <Head id="ch4" />
         <Narration lines={c.intro} />
 
@@ -667,9 +434,11 @@ export function Ch4() {
                 </p>
               )}
 
-              {isNext && !done && lv.kind === 'rally' && <RoastRally onWin={() => advance(i)} />}
-
-              {isNext && !done && lv.kind === 'whack' && <PrankWhack onWin={() => advance(i)} />}
+              {isNext && !done && (lv.kind === 'rally' || lv.kind === 'whack') && (
+                <button className="btn btn--ink" style={{ marginTop: 14 }} onClick={() => advance(i)}>
+                  {lv.kind === 'rally' ? 'ROAST HER BACK' : 'ALLOW THE PRANK'}
+                </button>
+              )}
 
               {isNext && !done && lv.kind === 'block' && (
                 <button
@@ -750,47 +519,28 @@ export function Ch4() {
             <NextBtn current="ch4" />
           </>
         )}
+        </div>
       </div>
     </div>
   )
 }
 
 /* ============ CHAPTER 05 — FINANZA ============
-   Game: POST AT THE RIGHT MOMENT. A cursor sweeps the timing bar;
-   post inside the golden window to go viral. Three virals to clear.
-   Misses flop. The cursor speeds up.                                */
+   Post three things and watch the numbers climb. Nothing to miss. */
 export function Ch5() {
   const { completeChapter } = useGame()
   const [posts, setPosts] = useState(0)
   const [views, setViews] = useState(0)
-  const [fb, setFb] = useState('')
   const [shown, setShown] = useState(0)
-  const done = posts >= 3
+  const target = useRef(0)
+  const raf = useRef<number | null>(null)
   const c = ch('ch5')
   const abilities = c.abilities!
-  const pos = useRef(0)
-  const dir = useRef(1)
-  const speed = useRef(0.06)
-  const [, force] = useState(0)
-  const raf = useRef<number | null>(null)
-  const viewTarget = useRef(0)
+  const done = posts >= 3
 
   useEffect(() => {
-    let last = performance.now()
-    const tick = (t: number) => {
-      const dt = t - last
-      last = t
-      pos.current += dir.current * speed.current * dt
-      if (pos.current >= 100) {
-        pos.current = 100
-        dir.current = -1
-      }
-      if (pos.current <= 0) {
-        pos.current = 0
-        dir.current = 1
-      }
-      setViews((v) => (v < viewTarget.current ? Math.min(viewTarget.current, v + Math.ceil((viewTarget.current - v) * 0.06) + 7) : v))
-      force((x) => x + 1)
+    const tick = () => {
+      setViews((v) => (v < target.current ? v + Math.max(1, Math.ceil((target.current - v) * 0.07)) : v))
       raf.current = requestAnimationFrame(tick)
     }
     raf.current = requestAnimationFrame(tick)
@@ -799,284 +549,183 @@ export function Ch5() {
     }
   }, [])
 
-  const inZone = TEST || (pos.current >= 40 && pos.current <= 60)
   const post = () => {
     if (done) return
-    if (inZone) {
-      sfx.play('unlock')
-      setFb('')
-      speed.current = Math.min(0.15, speed.current * 1.35)
-      viewTarget.current += 40000 + Math.floor(Math.random() * 30000)
-      setPosts((p) => {
-        const np = p + 1
-        if (np >= 3) {
-          sfx.play('complete')
-          abilities.forEach((_, i) => setTimeout(() => setShown(i + 1), 420 * i + 400))
-          completeChapter('ch5')
-        }
-        return np
-      })
-    } else {
-      sfx.play('wrong')
-      viewTarget.current = Math.max(0, viewTarget.current - 4000)
-      setFb('FLOPPED. THE ALGORITHM HAS NO MERCY.')
-    }
+    sfx.play('unlock')
+    target.current += 48000 + Math.floor(Math.random() * 26000)
+    setPosts((p) => {
+      const np = p + 1
+      if (np >= 3) {
+        sfx.play('complete')
+        abilities.forEach((_, i) => setTimeout(() => setShown(i + 1), 420 * i + 400))
+        completeChapter('ch5')
+      }
+      return np
+    })
   }
 
+  const POST_LABELS = ['POST THE TEASER', 'POST THE REEL', 'POST THE AFTERMOVIE']
+
   return (
-    <div className="scene scene--finanza">
+    <div className="scene scene--vn">
+      <SceneArt kind="stage" />
+      {posts === 0 && (
+        <div className="cast">
+          <Person who="p1" h={162} />
+        </div>
+      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 05" />
-        <Head id="ch5" dark />
-        <div className="crest">DM</div>
-        <Narration lines={c.intro.slice(0, 1)} dark />
+        <div className="stage on">
+          <Head id="ch5" />
+          <Narration lines={c.intro.slice(0, 1)} dark />
 
-        {!done && (
-          <>
-            <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
-              POST WHEN THE CURSOR HITS THE GOLDEN WINDOW.
-              <br />
-              VIRAL POSTS: {posts}/3 · IT GETS FASTER.
-            </p>
-            <div className="rallybar rallybar--gold">
-              <div className="zone" />
-              <div className="marker" style={{ left: `${pos.current}%` }} />
-            </div>
-            <button className="btn" style={{ marginTop: 12 }} onClick={post}>
-              POST
+          <div className="viewcount">
+            {views.toLocaleString('en-IN')}
+            <span className="lbl">VIEWS · ILLUSTRATIVE — REAL NUMBERS PENDING</span>
+          </div>
+
+          {!done && (
+            <button className="btn" style={{ marginTop: 14 }} onClick={post}>
+              {POST_LABELS[posts]}
             </button>
-            <div className="feedback">{fb}</div>
-          </>
-        )}
+          )}
 
-        <div className="viewcount">
-          {views.toLocaleString('en-IN')}
-          <span className="lbl">VIEWS · ILLUSTRATIVE — REAL NUMBERS PENDING</span>
+          <div className="abilities">
+            {abilities.map((a, i) => (
+              <div key={a} className={'ability' + (i < shown ? ' show' : '')}>
+                <span className="st">◆</span>
+                <span>{a.toUpperCase()}</span>
+              </div>
+            ))}
+          </div>
+
+          {shown >= abilities.length && (
+            <>
+              <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 10 }}>
+                <P text={c.statsNote!} />
+              </p>
+              <Narration lines={c.complete} dark />
+              <PhotoRow photos={c.photos} />
+              <NextBtn current="ch5" />
+            </>
+          )}
         </div>
-
-        <div className="abilities">
-          {abilities.map((a, i) => (
-            <div key={a} className={'ability' + (i < shown ? ' show' : '')}>
-              <span className="st">◆</span>
-              <span>{a.toUpperCase()}</span>
-            </div>
-          ))}
-        </div>
-
-        {shown >= abilities.length && (
-          <>
-            <Narration lines={c.complete} dark />
-            <PhotoRow photos={c.photos} />
-            <div style={{ marginTop: 'auto' }} />
-            <NextBtn current="ch5" />
-          </>
-        )}
       </div>
     </div>
   )
 }
 
-/* ============ CHAPTER 06 — TANISHKA'S SECRET QUEST ============ */
+/* ============ CHAPTER 06 — TANISHKA'S SECRET QUEST ============
+   Game: THE EVIDENCE. Search her room for five tells. No timer,
+   nothing to fail — the case assembles itself.                  */
 export function Ch6() {
   const { completeChapter } = useGame()
-  const [revealed, setRevealed] = useState(false)
+  const [stage, setStage] = useState<'intro' | 'hunt' | 'done'>('intro')
   const c = ch('ch6')
 
   return (
-    <div className="scene scene--secret">
+    <div className="scene scene--vn">
+      <SceneArt kind="darkroom" />
+      {stage === 'intro' && (
+        <div className="cast">
+          <Person who="p2" h={156} />
+        </div>
+      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 06" />
-        <Head id="ch6" dark />
-        <Narration lines={c.intro} dark />
 
-        <div className={'secretfile' + (revealed ? ' revealed' : '')}>
-          <div className="hd">SIDE QUEST DETECTED</div>
-          <p className="narr" style={{ textAlign: 'left', marginTop: 14, color: 'var(--cream-hi)' }}>
-            “<span className="redacted">TANISHKA’S FEELINGS</span>”
-          </p>
-          <p className="meta" style={{ textAlign: 'left', marginTop: 12, color: 'var(--cream-dim)' }}>
-            STATUS: <span className="redacted">NOT DISCLOSED</span>
-          </p>
-          <XP label="PROGRESS" value={revealed ? 82 : 0} rose />
-          <p className="meta" style={{ textAlign: 'left', marginTop: 12, color: 'var(--rose)' }}>
-            THIS QUEST CANNOT CURRENTLY BE DISCUSSED WITH PLAYER 1.
-          </p>
+        <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
+          <Head id="ch6" />
+          <Narration lines={c.intro} dark />
+          <div className="qbox" style={{ marginTop: 16, borderColor: 'var(--rose)' }}>
+            <div className="who" style={{ color: 'var(--rose)' }}>
+              SIDE QUEST DETECTED
+            </div>
+            <p className="line" style={{ fontFamily: 'var(--type)', fontSize: 12.5, color: 'var(--cream-hi)' }}>
+              Status: NOT DISCLOSED.
+              <br />
+              This quest cannot currently be discussed with Player 1.
+            </p>
+          </div>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('hunt')}>
+            SEARCH THE ROOM
+          </button>
         </div>
 
-        {!revealed ? (
-          <HoldButton
-            label="DECLASSIFY · QUIETLY"
-            ms={2200}
-            className="btn holdbtn"
-            onDone={() => {
-              sfx.play('unlock')
-              setRevealed(true)
-              completeChapter('ch6')
-            }}
-          />
-        ) : (
-          <>
-            <Narration lines={c.complete} dark />
-            <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-              SHE HAD KNOWN FOR A WHILE. SHE TOLD NO ONE. LEAST OF ALL HIM.
-            </p>
-            <div style={{ marginTop: 'auto' }} />
-            <NextBtn current="ch6" />
-          </>
-        )}
+        <div className={'stage' + (stage === 'hunt' ? ' on' : '')}>
+          {stage === 'hunt' && (
+            <ClueHunt
+              onDone={() => {
+                completeChapter('ch6')
+                setStage('done')
+              }}
+            />
+          )}
+        </div>
+
+        <div className={'stage' + (stage === 'done' ? ' on' : '')}>
+          <div style={{ textAlign: 'center', marginTop: 22 }}>
+            <span className="stamp stamp--big" style={{ fontSize: 20, color: 'var(--rose)', borderColor: 'var(--rose)' }}>
+              CASE CLOSED
+            </span>
+          </div>
+          <Narration lines={c.complete} dark />
+          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
+            SHE HAD KNOWN FOR A WHILE. SHE TOLD NO ONE. LEAST OF ALL HIM.
+          </p>
+          <NextBtn current="ch6" />
+        </div>
       </div>
     </div>
   )
 }
 
-/* ============ CHAPTER 07 — THE LOCAL TRAIN ============ */
+/* ============ CHAPTER 07 — THE LOCAL TRAIN ============
+   Game: PLATFORM DASH. A side-scrolling run to catch the train.
+   Collisions slow you; they never end the run.                  */
 export function Ch7() {
   const { completeChapter, unlock } = useGame()
-  const [stage, setStage] = useState<'intro' | 'ride' | 'arrived' | 'debrief'>('intro')
-  const [wave, setWave] = useState(0)
-  const [side, setSide] = useState<'l' | 'r'>('l')
-  const [blocked, setBlocked] = useState(false)
-  const [fb, setFb] = useState('')
-  const prog = useRef(0)
-  const [, force] = useState(0)
-  const raf = useRef<number | null>(null)
+  const [stage, setStage] = useState<'intro' | 'run' | 'arrived' | 'debrief'>('intro')
   const c = ch('ch7')
-  const WAVES = 4
-
-  /* the crowd drifts in over a shrinking window; step in while it's
-     mid-approach — too early looks suspicious, too late is contact */
-  useEffect(() => {
-    if (stage !== 'ride') return
-    setSide(Math.random() > 0.5 ? 'l' : 'r')
-    setBlocked(false)
-    setFb('')
-    prog.current = 0
-    const dur = TEST ? 30000 : Math.max(950, 1700 - wave * 220)
-    let last = performance.now()
-    const tick = (t: number) => {
-      const dt = t - last
-      last = t
-      prog.current = Math.min(100, prog.current + (dt / dur) * 100)
-      force((x) => x + 1)
-      if (prog.current >= 100) {
-        sfx.play('wrong')
-        setFb('CROWD CONTACT. UNACCEPTABLE. AGAIN.')
-        prog.current = 0
-        last = performance.now()
-      }
-      raf.current = requestAnimationFrame(tick)
-    }
-    raf.current = requestAnimationFrame(tick)
-    return () => {
-      if (raf.current) cancelAnimationFrame(raf.current)
-    }
-  }, [wave, stage])
-
-  const stepIn = () => {
-    if (blocked || stage !== 'ride') return
-    const p = prog.current
-    const ok = TEST || (p >= 30 && p <= 85)
-    if (!ok) {
-      sfx.play('wrong')
-      setFb(p < 30 ? 'TOO EAGER. SUSPICIOUSLY PROTECTIVE.' : 'TOO LATE.')
-      prog.current = 0
-      return
-    }
-    if (raf.current) cancelAnimationFrame(raf.current)
-    sfx.play('click')
-    setBlocked(true)
-    setFb('')
-    setTimeout(() => {
-      if (wave + 1 >= WAVES) {
-        sfx.play('complete')
-        setStage('arrived')
-        setTimeout(() => unlock('local-train'), 800)
-      } else {
-        setWave((w) => w + 1)
-      }
-    }, 650)
-  }
 
   return (
-    <div className="scene scene--train">
+    <div className="scene scene--vn">
+      <SceneArt kind="train" />
+      {stage === 'intro' && (
+        <div className="cast cast--wide">
+          <Person who="p1" h={150} />
+          <Person who="p2" h={144} flip />
+        </div>
+      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 07" />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
-          <Head id="ch7" dark />
+          <Head id="ch7" />
           <div className="stationboard">
             <div className="en">VILE PARLE → MALAD</div>
             <div className="dv">विले पारले → मालाड</div>
           </div>
           <Narration lines={c.intro} dark />
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('ride')}>
-            BOARD THE TRAIN
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('run')}>
+            RUN FOR IT
           </button>
         </div>
 
-        <div className={'stage' + (stage === 'ride' ? ' on' : '')}>
-          <div className="trainwin">
-            <div className="scroller">
-              <div className="cityrow">
-                <TrainScenery />
-              </div>
-              <div className="cityrow">
-                <TrainScenery />
-              </div>
-            </div>
-          </div>
-          <div className="trainbar">
-            <span>WESTERN LINE · TOWARDS MALAD</span>
-            <span>
-              {wave + 1}/{WAVES}
-            </span>
-          </div>
-
-          <div className="traincar">
-            <div className="pole" style={{ left: '18%' }} />
-            <div className="pole" style={{ left: '78%' }} />
-            <div
-              className="crowd"
-              style={{
-                left: side === 'l' ? 10 : undefined,
-                right: side === 'r' ? 10 : undefined,
-                transition: 'none',
-                transform: blocked
-                  ? 'translateX(0)'
-                  : `translateX(${(side === 'l' ? 1 : -1) * (prog.current / 100) * 74}px)`,
+        <div className={'stage' + (stage === 'run' ? ' on' : '')}>
+          {stage === 'run' && (
+            <Runner
+              onDone={() => {
+                setStage('arrived')
+                setTimeout(() => unlock('local-train'), 700)
               }}
             />
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 8,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'flex',
-                gap: 6,
-                flexDirection: side === 'l' ? 'row' : 'row-reverse',
-                transition: 'all .4s',
-              }}
-            >
-              {blocked && <Figure who="p1" h={96} flip={side === 'r'} />}
-              <Figure who="p2" h={92} />
-              {!blocked && <span style={{ width: 43 }} />}
-            </div>
-          </div>
-
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-            THE CROWD LEANS {side === 'l' ? 'LEFT' : 'RIGHT'}. TIME IT.
-          </p>
-          <button className="btn btn--red" style={{ marginTop: 12 }} onClick={stepIn} disabled={blocked}>
-            {blocked ? 'POSITION HELD' : 'ANAY: STEP IN'}
-          </button>
-          <div className="feedback" style={{ color: 'var(--rose)' }}>
-            {fb}
-          </div>
+          )}
         </div>
 
         <div className={'stage' + (stage === 'arrived' ? ' on' : '')}>
-          <div className="stationboard" style={{ marginTop: 22 }}>
+          <div className="stationboard" style={{ marginTop: 4 }}>
             <div className="en">MALAD</div>
             <div className="dv">मालाड · destination reached</div>
           </div>
@@ -1087,36 +736,34 @@ export function Ch7() {
               2 AUGUST 2024 · KASAK’S BIRTHDAY
             </p>
             {c.sincere!.map((l, i) => (
-              <p key={i} className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 14 }}>
+              <p key={i} className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 14, textAlign: 'center' }}>
                 <P text={l} />
               </p>
             ))}
           </div>
-          <div style={{ marginTop: 'auto' }} />
-          <button className="btn" style={{ marginTop: 18 }} onClick={() => setStage('debrief')}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('debrief')}>
             SHORTLY AFTERWARDS —
           </button>
         </div>
 
         <div className={'stage' + (stage === 'debrief' ? ' on' : '')}>
-          <div className="secretfile revealed" style={{ marginTop: 30, borderColor: 'rgba(232,163,61,.4)' }}>
+          <div className="secretfile revealed" style={{ marginTop: 4, borderColor: 'rgba(232,163,61,.4)' }}>
             <div className="hd" style={{ color: 'var(--amber)' }}>
               DEBRIEF · CLASSIFIED
             </div>
-            <p className="narr" style={{ textAlign: 'left', marginTop: 14, color: 'var(--cream-hi)' }}>
+            <p className="narr" style={{ marginTop: 12, color: 'var(--cream-hi)' }}>
               Anay told Rashi that he likes Tanishka.
             </p>
-            <p className="narr" style={{ textAlign: 'left', marginTop: 10, color: 'var(--cream-hi)' }}>
+            <p className="narr" style={{ marginTop: 8, color: 'var(--cream-hi)' }}>
               A planning committee of two was formed on the spot.
             </p>
-            <p className="meta" style={{ textAlign: 'left', marginTop: 14, color: 'var(--cream-dim)' }}>
+            <p className="meta" style={{ marginTop: 12, color: 'var(--cream-dim)' }}>
               RASHI’S STRATEGY: START WITH LITTLE HINTS.
               <br />
               STATUS: ADOPTED.
             </p>
           </div>
-          <div style={{ marginTop: 'auto' }} />
-          <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch7')}>
+          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={() => completeChapter('ch7')}>
             REMEMBER THIS ONE
           </button>
           <NextBtn current="ch7" />
@@ -1181,15 +828,15 @@ export function Ch8() {
   }
 
   return (
-    <div className="scene scene--cinema">
+    <div className="scene scene--vn">
+      <SceneArt kind="cinema" />
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 08" />
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
-          <Head id="ch8" dark />
-          <div className="cinescreen">STREE 2</div>
+          <Head id="ch8" />
           <Narration lines={c.intro} dark />
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('seats')}>
+          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('seats')}>
             PLAY AS RASHI: ARRANGE THE SEATS
           </button>
         </div>
@@ -1243,8 +890,7 @@ export function Ch8() {
               She didn’t know the seating was planned. Now she does. So do you.
             </p>
           </div>
-          <div style={{ marginTop: 'auto' }} />
-          <NextBtn current="ch8" />
+                    <NextBtn current="ch8" />
         </div>
       </div>
     </div>
@@ -1258,7 +904,8 @@ export function Ch9() {
   const c = ch('ch9')
 
   return (
-    <div className="scene scene--phone">
+    <div className="scene scene--vn scene--phonevn">
+      <SceneArt kind="bedroom" />
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 09" />
 
@@ -1392,8 +1039,7 @@ export function Ch9() {
                 <Figure who="p2" h={110} flip />
               </div>
             </div>
-            <div style={{ marginTop: 'auto' }} />
-            <button className="btn btn--red" onClick={() => completeChapter('ch9')}>
+                        <button className="btn btn--red" onClick={() => completeChapter('ch9')}>
               BEGIN THE CAMPAIGN
             </button>
             <NextBtn current="ch9" />
@@ -1425,10 +1071,12 @@ export function Ch10() {
   }, [both, crossed])
 
   return (
-    <div className="scene scene--duo">
+    <div className="scene scene--vn">
+      <SceneArt kind="fest" />
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 10" />
-        <Head id="ch10" dark />
+        <div className="stage on">
+        <Head id="ch10" />
         <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
           TAP EACH CREST TO POWER THEM UP.
         </p>
@@ -1492,12 +1140,12 @@ export function Ch10() {
             <Narration lines={c.intro} dark />
             <PhotoRow photos={c.photos} />
             <Narration lines={c.complete} dark />
-            <div style={{ marginTop: 'auto' }} />
             <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('r1')}>
               ACT II: THE RELATIONSHIP ARC ▸
             </button>
           </>
         )}
+        </div>
       </div>
     </div>
   )

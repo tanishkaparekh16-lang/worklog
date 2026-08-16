@@ -250,8 +250,7 @@ export function Final() {
                 RECOMMENDED STRATEGY: {finalLevel.bossStrategy.toUpperCase()}
               </p>
             </div>
-            <div style={{ marginTop: 'auto' }} />
-            <button className="btn btn--red" onClick={attack}>
+                        <button className="btn btn--red" onClick={attack}>
               {tries === 0 ? 'ATTACK' : tries === 1 ? 'ATTACK, HARDER' : 'FINE. CONTINUE.'}
             </button>
             {tries > 0 && (
@@ -276,8 +275,7 @@ export function Final() {
             </div>
             {shownLines >= finalLevel.journey.length && (
               <>
-                <div style={{ marginTop: 'auto' }} />
-                <button className="btn btn--red" onClick={() => setStage('save')}>
+                                <button className="btn btn--red" onClick={() => setStage('save')}>
                   NEW SAVE FILE
                 </button>
               </>
@@ -311,8 +309,7 @@ export function Final() {
             <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 20 }}>
               A LETTER HAS APPEARED IN THE MAIN MENU.
             </p>
-            <div style={{ marginTop: 'auto' }} />
-            <button className="btn" onClick={() => go('letter')}>
+                        <button className="btn" onClick={() => go('letter')}>
               READ IT ▸
             </button>
             <button className="btn btn--ghost" style={{ marginTop: 12 }} onClick={() => go('menu')}>
@@ -433,8 +430,7 @@ export function Extras() {
           <br />
           THEY ARE NOT LISTED HERE. THAT WOULD DEFEAT THE PURPOSE.
         </p>
-        <div style={{ marginTop: 'auto' }} />
-        <p className="meta" style={{ color: 'rgba(237,224,196,.35)' }}>
+                <p className="meta" style={{ color: 'rgba(237,224,196,.35)' }}>
           BUILT FOR TWO PLAYERS ONLY.
         </p>
       </div>
@@ -475,8 +471,7 @@ export function EggCafe() {
             — THE NARRATOR, WHO WAS THERE
           </p>
         </div>
-        <div style={{ marginTop: 'auto' }} />
-        <button className="btn" onClick={() => go('menu')}>
+                <button className="btn" onClick={() => go('menu')}>
           PRETEND THIS DIDN’T HAPPEN
         </button>
       </div>
