@@ -7,7 +7,7 @@ import {
   dinnerQuestion,
   players,
 } from '../data/relationshipData'
-import { Figure, HoldButton, P, SNav, TrainScenery, XP } from '../components/ui'
+import { Figure, HoldButton, P, PhotoRow, SNav, TrainScenery, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
@@ -141,6 +141,7 @@ export function Ch1() {
             <span className="stamp stamp--big">QUEST COMPLETE</span>
           </div>
           <Narration lines={c.complete} />
+          <PhotoRow photos={c.photos} />
           <p className="meta" style={{ marginTop: 20, color: 'var(--ink-dim)' }}>
             {c.completeNote.toUpperCase()}
           </p>
@@ -897,7 +898,7 @@ export function Ch8() {
 /* ============ CHAPTER 09 — 05:00 AM ============ */
 export function Ch9() {
   const { completeChapter, unlock } = useGame()
-  const [stage, setStage] = useState<'lock' | 'msg' | 'later' | 'joined'>('lock')
+  const [stage, setStage] = useState<'lock' | 'msg' | 'later' | 'follow' | 'joined'>('lock')
   const c = ch('ch9')
 
   return (
@@ -907,7 +908,7 @@ export function Ch9() {
 
         {stage === 'lock' && (
           <div className="phone">
-            <div className="ptime">05:00</div>
+            <div className="ptime">05:38</div>
             <div className="pdate">19 AUGUST 2024 · MONDAY</div>
             <button
               className="notif"
@@ -919,9 +920,14 @@ export function Ch9() {
               <div className="app">MESSAGES · NOW</div>
               <div className="tt">
                 <b>Anay</b>
-                <br />1 new message
+                <br />7 new messages
               </div>
             </button>
+            <p className="skipnote">
+              THE REPORT SAYS 5 AM.
+              <br />
+              THE EVIDENCE SAYS 5:38. HISTORY ROUNDS DOWN.
+            </p>
             <p className="skipnote">TAP TO OPEN</p>
           </div>
         )}
@@ -929,11 +935,15 @@ export function Ch9() {
         {stage === 'msg' && (
           <div className="phone">
             <p className="skipnote" style={{ marginTop: 4 }}>
-              ANAY · 05:00
+              ANAY · 05:38
             </p>
             <div className="msgs">
               {c.confessionMessages!.map((m, i) => (
-                <div key={i} className="bubble bubble--a" style={{ fontSize: 12, animationDelay: `${i * 0.5}s` }}>
+                <div
+                  key={i}
+                  className="bubble bubble--a"
+                  style={{ fontSize: 12, whiteSpace: 'pre-line', animationDelay: `${Math.min(i * 0.4, 2)}s` }}
+                >
                   <P text={m} />
                 </div>
               ))}
@@ -962,12 +972,41 @@ export function Ch9() {
               style={{ marginTop: 14 }}
               onClick={() => {
                 sfx.play('complete')
+                setStage('follow')
+              }}
+            >
+              SEND
+            </button>
+          </div>
+        )}
+
+        {stage === 'follow' && (
+          <div className="phone">
+            <p className="skipnote" style={{ marginTop: 4 }}>
+              THE FOLLOW-UP INTERROGATION
+            </p>
+            <div className="msgs">
+              {c.followUp!.map((m, i) => (
+                <div
+                  key={i}
+                  className={'bubble ' + (m.who === 'a' ? 'bubble--a' : 'bubble--t')}
+                  style={{ fontSize: 12, whiteSpace: 'pre-line' }}
+                >
+                  <P text={m.text} />
+                </div>
+              ))}
+            </div>
+            <button
+              className="btn btn--red"
+              style={{ marginTop: 14 }}
+              onClick={() => {
+                sfx.play('complete')
                 setStage('joined')
                 setTimeout(() => unlock('five-am'), 600)
                 setTimeout(() => unlock('player-2'), 1700)
               }}
             >
-              SEND
+              AND JUST LIKE THAT —
             </button>
           </div>
         )}

@@ -33,6 +33,29 @@ Netlify set the project root to `anniversary-game/`.
 | Arcade mini-games | `src/scenes/Arcade.tsx` |
 | Soundtrack, achievements, stats, map, final level, letter | `src/scenes/collection.tsx` |
 
+## Photos — exact filenames
+
+Drop these files into `public/assets/images/` (JPG, any reasonable size —
+they'll be cropped to fit). Each one has a slot waiting in the game that
+lights up automatically:
+
+| Filename | Where it appears |
+| --- | --- |
+| `first-text.jpg` | Ch 01 — the café-text screenshot |
+| `chocolate-heaven.jpg` | Ch 11 — Anay at the first date |
+| `chandelier.jpg` | Ch 11 — the café ceiling |
+| `flowers.jpg` | Ch 12 — the bouquet |
+| `kk-rain-park.jpg` | Ch 13 — the emptied park |
+| `kk-rain-selfie.jpg` | Ch 13 — the soaked selfie |
+| `kk-chai.jpg` | Ch 13 — chai after the rain |
+| `hand-hold.jpg` | Ch 15 — the first hand-hold |
+| `selfie-early.jpg` | Ch 17 — early close-up selfie |
+| `sunglasses-t.jpg` | Ch 17 — Tanishka, lilac sunglasses |
+| `sunglasses-a.jpg` | Ch 17 — Anay, giant black sunglasses |
+| `plane.jpg` | Ch 20 — long distance |
+
+Also `memory-01…05` for the arcade (replace the placeholder SVGs).
+
 ## Filling in the real content
 
 Open `src/data/relationshipData.ts`. Every string that starts with

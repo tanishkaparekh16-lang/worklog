@@ -63,9 +63,11 @@ export type Chapter = {
   statsNote?: string
   confessionMessages?: string[]
   replyMessages?: string[]
+  followUp?: { who: 'a' | 't'; text: string }[]
   emailParagraphs?: string[]
   story?: string
-  game?: 'order' | 'flowers' | 'letter' | 'hands' | 'torch' | 'montage' | 'friends' | 'days' | 'distance'
+  game?: 'order' | 'flowers' | 'rain' | 'letter' | 'hands' | 'torch' | 'montage' | 'friends' | 'days' | 'distance'
+  photos?: { src: string; caption: string }[]
 }
 
 export const chapters: Chapter[] = [
@@ -89,6 +91,9 @@ export const chapters: Chapter[] = [
       'Consequences: currently unknown.',
     ],
     completeNote: 'Historians agree this is where the file begins.',
+    photos: [
+      { src: 'assets/images/first-text.jpg', caption: 'The actual text. Preserved for the record.' },
+    ],
   },
   {
     id: 'ch2',
@@ -282,13 +287,35 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Player 2 has joined your party.'],
     completeNote: '',
-    /* THE CONFESSION — replace with the real texts / screenshots.
-       Each string is one message bubble. DO NOT INVENT. */
+    /* THE CONFESSION — transcribed verbatim from the screenshots.
+       Each string is one message bubble. */
     confessionMessages: [
-      '[PLACEHOLDER — Anay’s actual 5 AM confession texts go here, word for word, from the screenshots]',
+      'okay this might just be because of the late night feels, but here goes nothing. I know I\'m risking a lot here but fuck it? also apologies for the long ass formal paragraph(s) that im about to drop but i have a lot to say:\n\ntanishka parekh, I like you; not just as a friend, but more. I am also aware that you perceive me just as a friend, probably a very close friend but I cannot keep bottling up my feelings for you. I don\'t think it was a very good idea to do this to you this early in the morning, that too over text, but this might just give you enough time to process everything.\n\navoid the next paragraph if you don\'t like me back (gross):',
+      'aha so you do like me back, that\'s a good start or maybe you just want my perspective and a ego boost for yourself. either way, its the way i smile like an idiot to your texts, the way i check my phone everytime i hear a *ting* to see if its a text from you AND get disappointed if its not. the way I want to talk to you all the time. the way you reciprocate my humour no matter how rock bottom it goes, the way I like it when you poke my sides, when you roast me, when you make fun of me, and the validation I feel only when you appreciate me.',
+      'see if you have read it till the end, and you hate me for doing this, I\'m really sorry, and I have fucked up big time. but maybe just consider this as an ego booster no brainer activity conducted by an idiot? OR start considering me as the superior being that I\'m that you would absolutely allow to like you. its mostly the first one but hey, on a serious note, please let me know if this made you uncomfortable in any way, I\'ll try my best to make it up to you or avoid interacting with you, if you would want that.',
+      'fuck fuck fuck im crazy',
+      'you\'re soon going to wake up to this madness',
+      'good morning toh aaj shayad nahi hone waala tera😭',
+      'about to throw my phone through the balcony🙏🏻',
     ],
     replyMessages: [
       '[PLACEHOLDER — Tanishka’s actual reply goes here, word for word]',
+    ],
+    /* the follow-up exchange, later that day — verbatim */
+    followUp: [
+      { who: 't', text: 'why do u like me' },
+      {
+        who: 'a',
+        text: 'okay now that you wanna know, the actual reason is that you\'ve an awesome sexy smart brother whom I love so much that due to collateral somehow you\'ve been targeted too. okay but seriously, I love that you\'re very simple and self-content; you don\'t seek attention by being extra unlike most other girls. you\'re also very shy, which I like for some reason. you and I have sooo much in common, you and I love tea, we love to sleep, we both have similar experiences, similar cultures, similar humour (broken) and just so much more.',
+      },
+      {
+        who: 't',
+        text: '[PLACEHOLDER — Tanishka’s full apology message, the one starting “im sorry ki i kept you waiting for so long…”]',
+      },
+      {
+        who: 'a',
+        text: 'its okayyy, ho rha tha nervous toh aaj kaafi lekin im glad ki you took your time and made a decision after that',
+      },
     ],
   },
   {
@@ -331,6 +358,10 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — any extra detail from the first date you want remembered]',
     game: 'order',
+    photos: [
+      { src: 'assets/images/chocolate-heaven.jpg', caption: 'Subject, observed mid-date.' },
+      { src: 'assets/images/chandelier.jpg', caption: 'The ceiling situation. Approved.' },
+    ],
   },
   {
     id: 'r2',
@@ -349,11 +380,46 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — a favourite moment from those early dates]',
     game: 'flowers',
+    photos: [
+      { src: 'assets/images/flowers.jpg', caption: 'Exhibit A.' },
+    ],
+  },
+  {
+    id: 'kk',
+    act: 2,
+    num: '13',
+    title: 'KK PARK',
+    place: 'KK Park, in the rain',
+    year: 'YEAR ONE',
+    classification: '“Meteorological event”',
+    intro: [
+      'One of those dates was at KK Park.',
+      'The conversation was good.',
+      'The weather decided to test it.',
+    ],
+    complete: [
+      'They danced in the rain. They listened to songs.',
+      'Later: chai and samosas.',
+      'A movie could not have written it better. It didn’t need to.',
+    ],
+    completeNote: '',
+    sincere: [
+      'It started raining. The park emptied. They didn’t move.',
+      'He said “I love you” first.',
+      'She hugged him in the rain and said it back.',
+    ],
+    story: '',
+    game: 'rain',
+    photos: [
+      { src: 'assets/images/kk-rain-park.jpg', caption: 'The park, freshly emptied.' },
+      { src: 'assets/images/kk-rain-selfie.jpg', caption: 'Soaked. Undefeated.' },
+      { src: 'assets/images/kk-chai.jpg', caption: 'The chai after. Essential.' },
+    ],
   },
   {
     id: 'r3',
     act: 2,
-    num: '13',
+    num: '14',
     title: 'BLABBER',
     place: 'Blabber',
     year: 'YEAR ONE',
@@ -372,7 +438,7 @@ export const chapters: Chapter[] = [
   {
     id: 'r4',
     act: 2,
-    num: '14',
+    num: '15',
     title: 'THE HAND THING',
     place: 'Somewhere unremarkable, now historic',
     year: 'YEAR ONE',
@@ -385,11 +451,14 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — where and when the first hand-hold happened, if you want it told]',
     game: 'hands',
+    photos: [
+      { src: 'assets/images/hand-hold.jpg', caption: 'The first one. Policy since.' },
+    ],
   },
   {
     id: 'r5',
     act: 2,
-    num: '15',
+    num: '16',
     title: 'VASANT KUNJ',
     place: 'An abandoned bungalow',
     year: 'YEAR ONE',
@@ -411,7 +480,7 @@ export const chapters: Chapter[] = [
   {
     id: 'r6',
     act: 2,
-    num: '16',
+    num: '17',
     title: 'PRACTICALLY INSEPARABLE',
     place: 'Everywhere',
     year: 'YEAR ONE – TWO',
@@ -425,11 +494,16 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — everyday memories from this era: three short ones work best]',
     game: 'montage',
+    photos: [
+      { src: 'assets/images/selfie-early.jpg', caption: 'Standard proximity.' },
+      { src: 'assets/images/sunglasses-t.jpg', caption: 'Quality control, part one.' },
+      { src: 'assets/images/sunglasses-a.jpg', caption: 'Quality control, part two.' },
+    ],
   },
   {
     id: 'r7',
     act: 2,
-    num: '17',
+    num: '18',
     title: 'PUNE',
     place: 'Pune',
     year: 'YEAR TWO',
@@ -449,7 +523,7 @@ export const chapters: Chapter[] = [
   {
     id: 'r8',
     act: 2,
-    num: '18',
+    num: '19',
     title: 'GOA',
     place: 'Goa, with friends',
     year: 'YEAR TWO',
@@ -467,7 +541,7 @@ export const chapters: Chapter[] = [
   {
     id: 'r9',
     act: 2,
-    num: '19',
+    num: '20',
     title: 'LONG DISTANCE',
     place: 'Two different cities',
     year: 'A FEW MONTHS IN THERE',
@@ -483,6 +557,9 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — anything about the long-distance months you want remembered]',
     game: 'distance',
+    photos: [
+      { src: 'assets/images/plane.jpg', caption: 'Geography’s preferred vehicle.' },
+    ],
   },
 ]
 
@@ -639,6 +716,7 @@ export const achievements = [
   { id: 'strategic-seating', title: 'STRATEGIC SEATING', desc: 'Stree 2, and a coincidence that wasn’t.' },
   { id: 'five-am', title: '05:00 AM', desc: 'Questionable timing. Excellent outcome.' },
   { id: 'player-2', title: 'PLAYER 2 JOINED', desc: 'The party has been expanded.' },
+  { id: 'first-ily', title: 'SAID IN THE RAIN', desc: 'Everyone left. They stayed. He said it first.' },
   { id: 'boyfriend-official', title: 'OFFICIAL', desc: 'She asked. In writing. In verse. He said yes.' },
   { id: 'first-kiss', title: 'VASANT KUNJ', desc: 'Not on any map. On theirs.' },
   { id: 'met-the-friends', title: 'PUNE APPROVED', desc: 'Introduced to the original party members.' },
@@ -690,6 +768,7 @@ export const mapNodes = [
   { id: 'map-stree', label: 'STREE 2', sub: 'Strategic seating', chapter: 'ch8' },
   { id: 'map-5am', label: '05:00 AM', sub: 'A decision', chapter: 'ch9' },
   { id: 'map-choc', label: 'CHOCOLATE HEAVEN', sub: 'First date', chapter: 'r1' },
+  { id: 'map-kk', label: 'KK PARK', sub: 'The rain level', chapter: 'kk' },
   { id: 'map-blabber', label: 'BLABBER', sub: 'A poem, a question', chapter: 'r3' },
   { id: 'map-vk', label: 'VASANT KUNJ', sub: 'Off the map', chapter: 'r5' },
   { id: 'map-pune', label: 'PUNE', sub: 'The friends', chapter: 'r7' },

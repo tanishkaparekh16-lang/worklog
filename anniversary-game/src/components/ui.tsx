@@ -10,6 +10,36 @@ export function P({ text }: { text: string }) {
   return <>{text}</>
 }
 
+/* photo that shows a labeled slot until the real file is added */
+export function ImgSlot({ src, caption }: { src: string; caption: string }) {
+  const [ok, setOk] = useState(true)
+  return (
+    <figure className="photoslot">
+      {ok ? (
+        <img src={src} alt={caption} loading="lazy" onError={() => setOk(false)} />
+      ) : (
+        <div className="missing">
+          ADD PHOTO
+          <br />
+          {src.split('/').pop()}
+        </div>
+      )}
+      <figcaption>{caption}</figcaption>
+    </figure>
+  )
+}
+
+export function PhotoRow({ photos }: { photos?: { src: string; caption: string }[] }) {
+  if (!photos || photos.length === 0) return null
+  return (
+    <div className="photorow">
+      {photos.map((p) => (
+        <ImgSlot key={p.src} src={p.src} caption={p.caption} />
+      ))}
+    </div>
+  )
+}
+
 export function Grain() {
   return (
     <>

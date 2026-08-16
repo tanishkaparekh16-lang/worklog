@@ -649,6 +649,25 @@ img, svg { display: block; max-width: 100%; }
   box-shadow: 0 0 30px rgba(245, 201, 123, 0.2); font-size: 8.5px; letter-spacing: 0.12em; padding: 6px 8px;
 }
 
+/* ---------- KK Park rain ---------- */
+.scene--kk { background: radial-gradient(120% 90% at 50% 0%, #14231c 0%, #0b120e 60%, #080c0a 100%); }
+.rain { position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: 0.55;
+  background:
+    repeating-linear-gradient(14deg, transparent 0 9px, rgba(200, 222, 255, 0.28) 9px 10px, transparent 10px 26px),
+    repeating-linear-gradient(14deg, transparent 0 17px, rgba(200, 222, 255, 0.16) 17px 18px, transparent 18px 41px);
+  animation: rainfall 0.6s linear infinite; }
+@keyframes rainfall { from { background-position: 0 0, 0 0 } to { background-position: -18px 72px, -12px 48px } }
+
+/* ---------- photo slots ---------- */
+.photorow { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 22px; justify-content: center; }
+.photoslot { width: calc(50% - 7px); background: #fdf8ec; border: 1px solid #d5c8ac; padding: 8px 8px 10px; box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.5); }
+.photoslot:only-child { width: 78%; }
+.photoslot img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.photoslot .missing { aspect-ratio: 4 / 5; display: grid; place-items: center; text-align: center; border: 1.5px dashed rgba(166, 47, 42, 0.5); font-family: var(--type); font-size: 9px; letter-spacing: 0.12em; color: var(--ink-dim); line-height: 2; padding: 6px; }
+.photoslot figcaption { font-family: var(--type); font-size: 9px; letter-spacing: 0.1em; color: var(--ink-dim); text-align: center; margin-top: 8px; }
+.photoslot:nth-child(odd) { transform: rotate(-1deg); }
+.photoslot:nth-child(even) { transform: rotate(0.8deg); }
+
 /* ---------- R6 polaroids ---------- */
 .polaroid {
   display: block; width: 100%; margin-top: 14px; background: #fdf8ec; border: 1px solid #d5c8ac;

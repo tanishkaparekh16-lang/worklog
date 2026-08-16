@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { blabberQuestion, chapters } from '../data/relationshipData'
-import { Figure, HoldButton, P, SNav, XP } from '../components/ui'
+import { Figure, HoldButton, P, PhotoRow, SNav, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 import { Head, Narration, NextBtn } from './chapters'
@@ -12,6 +12,7 @@ import { Head, Narration, NextBtn } from './chapters'
 const SCENE_FOR: Record<string, string> = {
   order: 'scene--ost',
   flowers: 'scene--dinner',
+  rain: 'scene--kk',
   letter: 'scene--letter',
   hands: 'scene--duo',
   torch: 'scene--vk',
@@ -21,6 +22,7 @@ const SCENE_FOR: Record<string, string> = {
   distance: 'scene--split',
 }
 const ACH_FOR: Record<string, string> = {
+  rain: 'first-ily',
   letter: 'boyfriend-official',
   torch: 'first-kiss',
   friends: 'met-the-friends',
@@ -84,6 +86,7 @@ export function Milestone({ id }: { id: string }) {
               <P text={c.story} />
             </p>
           )}
+          <PhotoRow photos={c.photos} />
           <div style={{ marginTop: 'auto' }} />
           <NextBtn current={c.id} />
         </div>
@@ -95,6 +98,7 @@ export function Milestone({ id }: { id: string }) {
 const INTRO_BTN: Record<string, string> = {
   order: 'SIT DOWN. ACT NORMAL.',
   flowers: 'ARRIVE AT THE DATE',
+  rain: 'GO TO KK PARK',
   letter: 'HAND OVER THE LETTER',
   hands: 'WALK SIDE BY SIDE',
   torch: 'STEP INSIDE',
@@ -106,6 +110,7 @@ const INTRO_BTN: Record<string, string> = {
 const DONE_STAMP: Record<string, string> = {
   order: 'ZERO AWKWARDNESS',
   flowers: 'GENTLEMAN: VERIFIED',
+  rain: 'NOBODY MOVED',
   letter: 'OFFICIAL',
   hands: 'POLICY ADOPTED',
   torch: 'OFF THE MAP',
@@ -121,6 +126,8 @@ function Game({ kind, onDone }: { kind: string; onDone: () => void }) {
       return <OrderGame onDone={onDone} />
     case 'flowers':
       return <FlowersGame onDone={onDone} />
+    case 'rain':
+      return <RainGame onDone={onDone} />
     case 'letter':
       return <LetterGame onDone={onDone} />
     case 'hands':
@@ -213,6 +220,104 @@ function FlowersGame({ onDone }: { onDone: () => void }) {
           </p>
           <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
             CONFIRM GENTLEMAN STATUS
+          </button>
+        </>
+      )}
+    </>
+  )
+}
+
+/* kk — the rain, and the first I love you */
+function RainGame({ onDone }: { onDone: () => void }) {
+  const [phase, setPhase] = useState<'talk' | 'rain' | 'stay' | 'said'>('talk')
+  const [fb, setFb] = useState('')
+  const dark = { borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' } as const
+
+  return (
+    <>
+      {(phase === 'rain' || phase === 'stay' || phase === 'said') && <div className="rain" aria-hidden="true" />}
+
+      {phase === 'talk' && (
+        <>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 14, marginTop: 30 }}>
+            <Figure who="p1" h={110} />
+            <Figure who="p2" h={110} flip />
+          </div>
+          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
+            KK PARK. A BENCH. A CONVERSATION WITH NO INTENTION OF ENDING.
+          </p>
+          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('notify'); setPhase('rain') }}>
+            THEN THE SKY OPENED
+          </button>
+        </>
+      )}
+
+      {phase === 'rain' && (
+        <>
+          <p className="meta" style={{ color: 'var(--cream-hi)', marginTop: 26 }}>
+            IT STARTED RAINING.
+            <br />
+            EVERYONE IS LEAVING THE PARK.
+          </p>
+          <div className="choices">
+            <button
+              className="choice"
+              style={dark}
+              onClick={(e) => {
+                sfx.play('wrong')
+                const el = e.currentTarget
+                el.classList.remove('shake')
+                void el.offsetWidth
+                el.classList.add('shake')
+                setFb('HISTORICALLY IMPOSSIBLE.')
+              }}
+            >
+              Leave. Obviously. It’s raining.
+            </button>
+            <button className="choice" style={dark} onClick={() => { sfx.play('unlock'); setFb(''); setPhase('stay') }}>
+              Stay.
+            </button>
+          </div>
+          <div className="feedback">{fb}</div>
+        </>
+      )}
+
+      {phase === 'stay' && (
+        <>
+          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 30 }}>
+            The park emptied.
+          </p>
+          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 8 }}>
+            Two people did not notice.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 26 }}>
+            <Figure who="p1" h={110} />
+            <Figure who="p2" h={110} flip />
+          </div>
+          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('complete'); setPhase('said') }}>
+            AND THEN HE SAID IT
+          </button>
+        </>
+      )}
+
+      {phase === 'said' && (
+        <>
+          <div className="goldpanel" style={{ marginTop: 30 }}>
+            <div className="glow" aria-hidden="true" />
+            <p className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', fontSize: 20 }}>
+              “I love you.”
+            </p>
+            <p className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 12 }}>
+              She hugged him in the rain and said it back.
+            </p>
+            <p className="narr" style={{ color: '#c8a97c', fontStyle: 'normal', marginTop: 12, fontSize: 14 }}>
+              They danced. They played songs into the rain.
+              <br />
+              The weather never stood a chance.
+            </p>
+          </div>
+          <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
+            CHAI &amp; SAMOSAS ▸
           </button>
         </>
       )}

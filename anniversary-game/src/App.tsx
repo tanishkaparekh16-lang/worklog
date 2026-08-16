@@ -1,4 +1,5 @@
 import React from 'react'
+import { chapters } from './data/relationshipData'
 import { GameProvider, useGame } from './state/progress'
 import { Grain, Toast } from './components/ui'
 import Boot from './scenes/Boot'
@@ -11,7 +12,7 @@ import { EggCafe, Extras, Final, Letter, Soundtrack, Stats, Tapes, WorldMap } fr
 
 function Router() {
   const { route } = useGame()
-  if (/^r[1-9]$/.test(route)) return <Milestone id={route} />
+  if (chapters.some((c) => c.id === route && c.act === 2)) return <Milestone id={route} />
   switch (route) {
     case 'boot': return <Boot />
     case 'menu': return <MainMenu />
