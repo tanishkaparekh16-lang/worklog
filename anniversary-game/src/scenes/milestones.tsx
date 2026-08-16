@@ -388,16 +388,22 @@ function RainGame({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* r3 — the Blabber letter */
+/* r3 — the Blabber letter, with the real poem */
 function LetterGame({ onDone }: { onDone: () => void }) {
   const [fb, setFb] = useState('')
+  const poem = chapters.find((c) => c.id === 'r3')!.poem ?? []
   return (
     <>
       <div className="paper" style={{ marginTop: 10 }}>
-        <p style={{ fontFamily: 'var(--hand)', fontSize: 21, lineHeight: 1.6 }}>
-          <P text="[PLACEHOLDER — the actual poem Tanishka wrote goes here, line by line]" />
-        </p>
-        <p style={{ fontFamily: 'var(--hand)', fontSize: 24, marginTop: 18, fontWeight: 600 }}>
+        {poem.map((stanza, i) => (
+          <p
+            key={i}
+            style={{ fontFamily: 'var(--hand)', fontSize: 20, lineHeight: 1.55, whiteSpace: 'pre-line', marginTop: i ? 16 : 0 }}
+          >
+            <P text={stanza} />
+          </p>
+        ))}
+        <p style={{ fontFamily: 'var(--hand)', fontSize: 24, marginTop: 22, fontWeight: 600 }}>
           {blabberQuestion}?
         </p>
       </div>

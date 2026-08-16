@@ -66,6 +66,7 @@ export type Chapter = {
   followUp?: { who: 'a' | 't'; text: string }[]
   emailParagraphs?: string[]
   story?: string
+  poem?: string[]
   game?: 'order' | 'flowers' | 'rain' | 'letter' | 'hands' | 'torch' | 'montage' | 'friends' | 'days' | 'distance'
   photos?: { src: string; caption: string }[]
 }
@@ -412,10 +413,22 @@ export const chapters: Chapter[] = [
     complete: ['He said yes.', 'Effective immediately.'],
     completeNote: '',
     /* the actual poem goes here, one string per line/stanza */
-    story: '[PLACEHOLDER — the actual poem Tanishka wrote, if she wants it displayed]',
+    story: '',
+    /* the actual poem, verbatim, as handed over at Blabber */
+    poem: [
+      'everytime i look at you, there are oceans of words i want to spill,\nbut everytime i look at you, my mind and body go completely still.\nand im too scared to write about you\nbecause it would make everything i feel real and true.\nand how can i admit it?\nwhen im too scared to even feel it.\nhow do i tell you?\nthat you\'re the best boy I\'ve ever spoken to.',
+      'isnt it absolutely deranged of me\nto be thinking of you constantly,\nto be feeling the happiness of a child getting a toy\neverytime i make you laugh with liberal joy',
+      'now your presence is starting to feel like heaven\nhate how im starting to need you 24×7\nis my mind playing trick after trick?\ncause i see the way i yearn for your texts like a goddamn lunatic',
+      'one glance at your face is enough to make me smile\nand when you\'re not there, all my efforts go futile\nlike why did i even put on my new earrings or my new jeans or my new lipstick,\nwhen you\'re not the one seeing all of it?',
+      'and I\'ve always been ever so curious\nbut ive reached new heights now, borderline delirious\ncause i wanna know your likes and dislikes\ni wanna know your daily, weekly, monthly highlights\nand be a part of them too\ni wanna know, do you like me like i like you?\ni wanna know the feel of your touch\nand im sorry if this is too soon or too much\ni wanna be called silly nicknames by you\nno matter if you\'re winning or losing, i want a share too\ni wanna know the exact colour of your eyes\ni wanna hear every thought, no matter how stupid or wise',
+      'ive given you my firsts\nand ive told everyone about us\ni know i cannot express it enough\nmainly because im new to this stuff\nbut ive finally written about you\nand now all of this is real and true.',
+      '<3',
+    ],
     game: 'letter',
     photos: [
-      { src: 'assets/images/chocolate-heaven.jpg', caption: 'Blabber. Moments before the question.' },
+      { src: 'assets/images/blabber-letter-1.jpg', caption: 'The reader, reading.' },
+      { src: 'assets/images/blabber-letter-2.jpg', caption: 'Halfway through. No comments yet.' },
+      { src: 'assets/images/chocolate-heaven.jpg', caption: 'Moments around the question.' },
       { src: 'assets/images/chandelier.jpg', caption: 'The venue looked on.' },
     ],
   },
@@ -543,6 +556,7 @@ export const chapters: Chapter[] = [
     game: 'friends',
     photos: [
       { src: 'assets/images/pune-friends.jpg', caption: 'The party, expanded.' },
+      { src: 'assets/images/pune-lake.jpg', caption: 'The full party, by the lake.' },
     ],
   },
   {
@@ -566,7 +580,6 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/goa-beach.jpg', caption: 'Day: unknown. Mood: recorded.' },
       { src: 'assets/images/goa-shades.jpg', caption: 'Regulation beach eyewear.' },
       { src: 'assets/images/goa-bus.jpg', caption: 'En route. Already a memory.' },
-      { src: 'assets/images/goa-group.jpg', caption: 'The full expedition, at dusk.' },
     ],
   },
   {
