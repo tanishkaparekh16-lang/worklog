@@ -112,9 +112,6 @@ export const chapters: Chapter[] = [
       'Neither party has offered an explanation.',
     ],
     completeNote: '',
-    photos: [
-      { src: 'assets/images/classroom.jpg', caption: 'The crime scene. Note the distance.' },
-    ],
   },
   {
     id: 'ch3',
@@ -347,6 +344,9 @@ export const chapters: Chapter[] = [
     ],
     complete: ['THE FRIENDSHIP ARC is over.', 'A new campaign begins.'],
     completeNote: '',
+    photos: [
+      { src: 'assets/images/classroom.jpg', caption: 'Two department heads, freshly appointed. Note the advisors on their heads.' },
+    ],
   },
 
   /* ================= ACT II — THE RELATIONSHIP ARC ================= */
@@ -371,10 +371,6 @@ export const chapters: Chapter[] = [
     completeNote: '',
     story: '[PLACEHOLDER — any extra detail from the first date you want remembered]',
     game: 'order',
-    photos: [
-      { src: 'assets/images/chocolate-heaven.jpg', caption: 'Subject, observed mid-date.' },
-      { src: 'assets/images/chandelier.jpg', caption: 'The ceiling situation. Approved.' },
-    ],
   },
   {
     id: 'r2',
@@ -418,6 +414,10 @@ export const chapters: Chapter[] = [
     /* the actual poem goes here, one string per line/stanza */
     story: '[PLACEHOLDER — the actual poem Tanishka wrote, if she wants it displayed]',
     game: 'letter',
+    photos: [
+      { src: 'assets/images/chocolate-heaven.jpg', caption: 'Blabber. Moments before the question.' },
+      { src: 'assets/images/chandelier.jpg', caption: 'The venue looked on.' },
+    ],
   },
   {
     id: 'kk',

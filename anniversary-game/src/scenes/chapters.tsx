@@ -1490,6 +1490,7 @@ export function Ch10() {
         {crossed && (
           <>
             <Narration lines={c.intro} dark />
+            <PhotoRow photos={c.photos} />
             <Narration lines={c.complete} dark />
             <div style={{ marginTop: 'auto' }} />
             <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('r1')}>
