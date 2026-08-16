@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { achievements, chapters } from '../data/relationshipData'
 import { sfx } from '../audio/sfx'
 
-const KEY = 'at-adventure-save-v1'
+const KEY = 'at-adventure-save-v2'
 
 export type Progress = {
   booted: boolean
