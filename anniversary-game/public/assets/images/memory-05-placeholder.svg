@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#d8c9a8"/>
+  <rect x="12" y="12" width="376" height="276" fill="none" stroke="#a62f2a" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="200" y="140" text-anchor="middle" font-family="Courier New, monospace" font-size="16" fill="#6b5b3e">PHOTO PENDING</text>
+  <text x="200" y="168" text-anchor="middle" font-family="Courier New, monospace" font-size="12" fill="#6b5b3e">replace memory-05-placeholder.svg</text>
+</svg>
