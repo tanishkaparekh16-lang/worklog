@@ -252,7 +252,7 @@ export const chapters: Chapter[] = [
       'Passive ability. Has been detected.',
     ],
     sincere: [
-      '[PLACEHOLDER — one honest sentence about how Tanishka felt on that journey]',
+      'I felt safe.',
     ],
     /* the debrief after the party — rendered as a classified file */
     completeNote:
@@ -318,10 +318,6 @@ export const chapters: Chapter[] = [
       {
         who: 'a',
         text: 'okay now that you wanna know, the actual reason is that you\'ve an awesome sexy smart brother whom I love so much that due to collateral somehow you\'ve been targeted too. okay but seriously, I love that you\'re very simple and self-content; you don\'t seek attention by being extra unlike most other girls. you\'re also very shy, which I like for some reason. you and I have sooo much in common, you and I love tea, we love to sleep, we both have similar experiences, similar cultures, similar humour (broken) and just so much more.',
-      },
-      {
-        who: 't',
-        text: '[PLACEHOLDER — Tanishka’s full apology message, the one starting “im sorry ki i kept you waiting for so long…”]',
       },
       {
         who: 'a',
@@ -426,8 +422,8 @@ export const chapters: Chapter[] = [
     ],
     game: 'letter',
     photos: [
-      { src: 'assets/images/blabber-letter-1.jpg', caption: 'The reader, reading.' },
-      { src: 'assets/images/blabber-letter-2.jpg', caption: 'Halfway through. No comments yet.' },
+      { src: 'assets/images/blabber-letter-1.jpg', caption: 'The letter, delivered. Subject stalling.' },
+      { src: 'assets/images/blabber-letter-2.jpg', caption: 'Reading. No comments were offered at this time.' },
       { src: 'assets/images/chocolate-heaven.jpg', caption: 'Moments around the question.' },
       { src: 'assets/images/chandelier.jpg', caption: 'The venue looked on.' },
     ],
@@ -506,6 +502,12 @@ export const chapters: Chapter[] = [
     ],
     story: '[PLACEHOLDER — anything about that day you want remembered here]',
     game: 'torch',
+    photos: [
+      { src: 'assets/images/vk-exterior.jpg', caption: 'VASANT KUNJ · वसंत कुंज. The nameplate survived.' },
+      { src: 'assets/images/vk-window.jpg', caption: 'A window with nothing left to hold.' },
+      { src: 'assets/images/vk-room.jpg', caption: 'A room, mid-return to the trees.' },
+      { src: 'assets/images/vk-stairs.jpg', caption: 'Stairs to a floor that no longer exists.' },
+    ],
   },
   {
     id: 'r6',
