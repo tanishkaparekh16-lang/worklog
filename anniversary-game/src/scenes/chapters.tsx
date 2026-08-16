@@ -75,7 +75,7 @@ export function Ch1() {
   const c = ch('ch1')
 
   return (
-    <div className="scene scene--vn">
+    <div className="scene scene--vn scene--light">
       <SceneArt kind="cafe" />
       <div className="cast">
         <Person who="p1" h={168} />
@@ -184,7 +184,7 @@ export function Ch2() {
   const ready = sent >= 4 && rl >= 2
 
   return (
-    <div className="scene scene--vn">
+    <div className="scene scene--vn scene--light">
       <SceneArt kind="classroom" />
       {stage === 'intro' && (
         <div className="cast cast--wide">

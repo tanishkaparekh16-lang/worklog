@@ -63,91 +63,95 @@ const Floor = ({ y, top, bottom }: { y: number; top: string; bottom: string }) =
   </>
 )
 
-/* ---------- 01 · café interior ---------- */
+/* ---------- 01 · café interior, mid-morning ---------- */
 function Cafe() {
   return (
     <>
       <defs>
         <linearGradient id="cafeWall" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3A2A1C" />
-          <stop offset="1" stopColor="#221710" />
+          <stop offset="0" stopColor="#F0E4CC" />
+          <stop offset="1" stopColor="#D8C4A2" />
         </linearGradient>
         <linearGradient id="cafeWin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F0C98A" />
-          <stop offset="1" stopColor="#C98A4E" />
+          <stop offset="0" stopColor="#FFF8E6" />
+          <stop offset="1" stopColor="#F2D9A8" />
         </linearGradient>
       </defs>
       <rect width="390" height="844" fill="url(#cafeWall)" />
-      {/* window with daylight */}
-      <rect x="34" y="120" width="150" height="190" rx="4" fill="url(#cafeWin)" opacity=".55" />
-      <rect x="34" y="120" width="150" height="190" rx="4" fill="none" stroke="#5C4326" strokeWidth="5" />
-      <line x1="109" y1="120" x2="109" y2="310" stroke="#5C4326" strokeWidth="5" />
-      <line x1="34" y1="215" x2="184" y2="215" stroke="#5C4326" strokeWidth="5" />
+      {/* big sunlit window */}
+      <rect x="26" y="104" width="168" height="216" rx="4" fill="url(#cafeWin)" />
+      <rect x="26" y="104" width="168" height="216" rx="4" fill="none" stroke="#A8875C" strokeWidth="6" />
+      <line x1="110" y1="104" x2="110" y2="320" stroke="#A8875C" strokeWidth="6" />
+      <line x1="26" y1="212" x2="194" y2="212" stroke="#A8875C" strokeWidth="6" />
+      {/* light spilling onto the floor */}
+      <path d="M26 320 L194 320 L250 560 L60 560 Z" fill="#FFF3D4" opacity=".45" />
       {/* shelf + jars */}
-      <rect x="228" y="196" width="140" height="7" fill="#4A3524" />
-      <rect x="240" y="168" width="20" height="28" rx="3" fill="#6B4E30" />
-      <rect x="270" y="160" width="16" height="36" rx="3" fill="#7C5B39" />
-      <rect x="296" y="172" width="22" height="24" rx="3" fill="#5C4326" />
-      <rect x="330" y="164" width="18" height="32" rx="3" fill="#6B4E30" />
-      {/* hanging bulbs */}
-      <line x1="120" y1="0" x2="120" y2="86" stroke="#4A3524" strokeWidth="2" />
-      <line x1="230" y1="0" x2="230" y2="60" stroke="#4A3524" strokeWidth="2" />
-      <line x1="318" y1="0" x2="318" y2="104" stroke="#4A3524" strokeWidth="2" />
-      <Bulb x={120} y={92} r={7} />
-      <Bulb x={230} y={66} r={6} />
-      <Bulb x={318} y={110} r={7} />
+      <rect x="232" y="206" width="140" height="8" fill="#B08F63" />
+      <rect x="244" y="176" width="22" height="30" rx="3" fill="#C9A97A" />
+      <rect x="276" y="166" width="18" height="40" rx="3" fill="#D8BC90" />
+      <rect x="304" y="180" width="24" height="26" rx="3" fill="#BE9C6E" />
+      <rect x="340" y="172" width="20" height="34" rx="3" fill="#C9A97A" />
+      {/* hanging lamps */}
+      <line x1="126" y1="0" x2="126" y2="72" stroke="#A8875C" strokeWidth="2" />
+      <line x1="252" y1="0" x2="252" y2="52" stroke="#A8875C" strokeWidth="2" />
+      <line x1="330" y1="0" x2="330" y2="88" stroke="#A8875C" strokeWidth="2" />
+      <path d="M110 72 h32 l-8 -14 h-16 z" fill="#8A6A42" />
+      <path d="M238 52 h28 l-7 -12 h-14 z" fill="#8A6A42" />
+      <path d="M314 88 h32 l-8 -14 h-16 z" fill="#8A6A42" />
+      <Bulb x={126} y={78} r={5} c="#FFE9B0" />
+      <Bulb x={252} y={56} r={4} c="#FFE9B0" />
+      <Bulb x={330} y={94} r={5} c="#FFE9B0" />
       {/* counter */}
-      <rect x="0" y="392" width="390" height="26" fill="#5C4326" />
-      <rect x="0" y="418" width="390" height="120" fill="#3A2A1C" />
-      {/* cups on counter */}
-      <g fill="#EDE0C4" opacity=".9">
-        <rect x="52" y="372" width="26" height="20" rx="3" />
-        <rect x="74" y="376" width="8" height="10" rx="4" fill="none" stroke="#EDE0C4" strokeWidth="3" />
-        <rect x="150" y="376" width="22" height="16" rx="3" />
-        <rect x="286" y="370" width="28" height="22" rx="3" />
+      <rect x="0" y="392" width="390" height="28" fill="#9C7C52" />
+      <rect x="0" y="420" width="390" height="130" fill="#8A6A44" />
+      <g fill="#FFFBF0">
+        <rect x="52" y="368" width="28" height="22" rx="3" />
+        <rect x="150" y="372" width="24" height="18" rx="3" />
+        <rect x="286" y="366" width="30" height="24" rx="3" />
       </g>
-      <Floor y={538} top="#2A1D14" bottom="#150E09" />
+      <Floor y={550} top="#C4A87E" bottom="#A98A60" />
     </>
   )
 }
 
-/* ---------- 02 · classroom ---------- */
+/* ---------- 02 · classroom, daylight ---------- */
 function Classroom() {
   return (
     <>
       <defs>
         <linearGradient id="clWall" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#20283A" />
-          <stop offset="1" stopColor="#141A28" />
+          <stop offset="0" stopColor="#E8E6DC" />
+          <stop offset="1" stopColor="#CFCEC2" />
         </linearGradient>
       </defs>
       <rect width="390" height="844" fill="url(#clWall)" />
       {/* whiteboard */}
-      <rect x="46" y="118" width="220" height="130" rx="3" fill="#DAD6C6" opacity=".22" />
-      <rect x="46" y="118" width="220" height="130" rx="3" fill="none" stroke="#4A5570" strokeWidth="4" />
-      <g stroke="#8FA3C4" strokeWidth="3" opacity=".5" strokeLinecap="round">
-        <line x1="66" y1="150" x2="180" y2="150" />
-        <line x1="66" y1="172" x2="220" y2="172" />
-        <line x1="66" y1="194" x2="150" y2="194" />
+      <rect x="40" y="112" width="230" height="140" rx="3" fill="#FBFAF4" />
+      <rect x="40" y="112" width="230" height="140" rx="3" fill="none" stroke="#9AA0A6" strokeWidth="5" />
+      <g stroke="#7C93B8" strokeWidth="3.5" opacity=".8" strokeLinecap="round">
+        <line x1="62" y1="146" x2="186" y2="146" />
+        <line x1="62" y1="170" x2="228" y2="170" />
+        <line x1="62" y1="194" x2="152" y2="194" />
       </g>
-      {/* windows right */}
-      <rect x="300" y="128" width="70" height="150" rx="3" fill="#3E5A8C" opacity=".5" />
-      <rect x="300" y="128" width="70" height="150" rx="3" fill="none" stroke="#39415A" strokeWidth="5" />
-      <line x1="300" y1="203" x2="370" y2="203" stroke="#39415A" strokeWidth="5" />
-      {/* ceiling lights */}
-      <rect x="80" y="34" width="90" height="9" rx="4" fill="#C9D6EA" opacity=".55" />
-      <rect x="230" y="34" width="90" height="9" rx="4" fill="#C9D6EA" opacity=".4" />
-      {/* desk rows receding */}
+      {/* windows with daylight */}
+      <rect x="298" y="120" width="76" height="170" rx="3" fill="#CFE4F5" />
+      <rect x="298" y="120" width="76" height="170" rx="3" fill="none" stroke="#9AA0A6" strokeWidth="6" />
+      <line x1="298" y1="205" x2="374" y2="205" stroke="#9AA0A6" strokeWidth="6" />
+      <path d="M298 290 L374 290 L340 560 L250 560 Z" fill="#EAF4FF" opacity=".55" />
+      {/* tube lights */}
+      <rect x="70" y="30" width="100" height="10" rx="5" fill="#FFFFFF" opacity=".9" />
+      <rect x="226" y="30" width="100" height="10" rx="5" fill="#FFFFFF" opacity=".75" />
+      {/* desks */}
       <g>
-        <rect x="-10" y="470" width="410" height="16" rx="3" fill="#4A3A28" />
-        <rect x="10" y="486" width="60" height="60" fill="#2A3145" />
-        <rect x="160" y="486" width="60" height="60" fill="#2A3145" />
-        <rect x="310" y="486" width="60" height="60" fill="#2A3145" />
-        <rect x="-10" y="576" width="410" height="18" rx="3" fill="#553F2C" />
-        <rect x="30" y="594" width="70" height="70" fill="#232941" />
-        <rect x="200" y="594" width="70" height="70" fill="#232941" />
+        <rect x="-10" y="470" width="410" height="18" rx="3" fill="#B08F63" />
+        <rect x="10" y="488" width="62" height="62" fill="#9AA6B4" />
+        <rect x="162" y="488" width="62" height="62" fill="#9AA6B4" />
+        <rect x="312" y="488" width="62" height="62" fill="#9AA6B4" />
+        <rect x="-10" y="580" width="410" height="20" rx="3" fill="#9C7C52" />
+        <rect x="30" y="600" width="72" height="72" fill="#8D99A8" />
+        <rect x="204" y="600" width="72" height="72" fill="#8D99A8" />
       </g>
-      <Floor y={664} top="#1A2032" bottom="#0D1220" />
+      <Floor y={672} top="#C7C2B4" bottom="#AAA598" />
     </>
   )
 }
@@ -547,16 +551,16 @@ function Park() {
     <>
       <defs>
         <linearGradient id="pkSky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#14231C" />
-          <stop offset="1" stopColor="#0B120E" />
+          <stop offset="0" stopColor="#24402F" />
+          <stop offset="1" stopColor="#132119" />
         </linearGradient>
       </defs>
       <rect width="390" height="844" fill="url(#pkSky)" />
       {/* tree canopies */}
       <g fill="#132A1E">
-        <ellipse cx="60" cy="150" rx="120" ry="90" />
-        <ellipse cx="200" cy="96" rx="130" ry="80" />
-        <ellipse cx="340" cy="160" rx="120" ry="92" />
+        <ellipse cx="60" cy="150" rx="120" ry="90" fill="#1E3A28" />
+        <ellipse cx="200" cy="96" rx="130" ry="80" fill="#22412D" />
+        <ellipse cx="340" cy="160" rx="120" ry="92" fill="#1E3A28" />
       </g>
       <g fill="#0D2016">
         <ellipse cx="110" cy="212" rx="90" ry="60" />
@@ -577,7 +581,7 @@ function Park() {
         <rect x="156" y="496" width="8" height="40" />
       </g>
       {/* wet ground with lamp reflection */}
-      <Floor y={540} top="#0F1A14" bottom="#070C09" />
+      <Floor y={540} top="#1B2F22" bottom="#101C15" />
       <ellipse cx="198" cy="640" rx="86" ry="26" fill="#EBD9A0" opacity=".06" />
       <ellipse cx="198" cy="700" rx="140" ry="30" fill="#EBD9A0" opacity=".04" />
     </>
@@ -827,18 +831,18 @@ export function Person({
 }) {
   const p1 = who === 'p1'
   const id = useMemo(() => Math.random().toString(36).slice(2, 8), [])
-  const skin = '#D9AE86'
-  const skinShade = '#BE9068'
-  const hair = '#1C1410'
-  const hairHi = '#2E211A'
-  const top = p1 ? '#2A3A5E' : '#7E2B35'
-  const topShade = p1 ? '#1E2B47' : '#5F1F27'
+  const skin = p1 ? '#D8A87E' : '#D9AC84'
+  const skinShade = p1 ? '#B98A62' : '#BC8E68'
+  const hair = '#171009'
+  const hairHi = '#2C1F14'
+  const top = p1 ? '#22304E' : '#7E2B35'
+  const topShade = p1 ? '#182338' : '#5F1F27'
   const accent = p1 ? '#E8A33D' : '#E2A8AE'
-  const legs = p1 ? '#1A2236' : '#33223A'
+  const legs = p1 ? '#161D2E' : '#31203A'
 
   return (
     <svg
-      className={'person ' + className}
+      className={'person person--' + who + ' ' + className}
       width={h * 0.44}
       height={h}
       viewBox="0 0 88 200"
@@ -848,61 +852,81 @@ export function Person({
       <defs>
         <linearGradient id={`t${id}`} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor={top} />
-          <stop offset=".62" stopColor={top} />
+          <stop offset=".6" stopColor={top} />
           <stop offset="1" stopColor={topShade} />
         </linearGradient>
         <linearGradient id={`s${id}`} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor={skin} />
-          <stop offset=".7" stopColor={skin} />
+          <stop offset=".68" stopColor={skin} />
           <stop offset="1" stopColor={skinShade} />
         </linearGradient>
       </defs>
 
       {/* legs */}
-      <path d={`M26 118 h14 v66 q0 6 -6 6 h-4 q-6 0 -6 -6 z`} fill={legs} />
-      <path d={`M48 118 h14 v66 q0 6 -6 6 h-4 q-6 0 -6 -6 z`} fill={legs} opacity=".85" />
-      {/* shoes */}
-      <path d="M22 186 h20 q4 0 4 5 h-26 q0 -5 2 -5 z" fill="#15100C" />
-      <path d="M46 186 h20 q4 0 4 5 h-26 q0 -5 2 -5 z" fill="#15100C" />
+      <path d="M26 118 h14 v66 q0 6 -6 6 h-4 q-6 0 -6 -6 z" fill={legs} />
+      <path d="M48 118 h14 v66 q0 6 -6 6 h-4 q-6 0 -6 -6 z" fill={legs} opacity=".86" />
+      <path d="M22 186 h20 q4 0 4 5 h-26 q0 -5 2 -5 z" fill="#120D08" />
+      <path d="M46 186 h20 q4 0 4 5 h-26 q0 -5 2 -5 z" fill="#120D08" />
 
-      {/* torso */}
-      <path
-        d={`M28 52 q16 -6 32 0 l6 14 q4 30 -2 58 h-40 q-6 -28 -2 -58 z`}
-        fill={`url(#t${id})`}
-      />
-      {/* accent band (scarf / dupatta) */}
-      <path
-        d={p1 ? 'M26 66 q18 8 36 0 l1 8 q-19 8 -38 0 z' : 'M25 62 q19 10 38 0 l2 10 q-21 11 -42 0 z'}
-        fill={accent}
-        opacity=".92"
-      />
-      {/* arms */}
-      <path d={`M28 56 q-10 4 -11 14 l-2 34 q-1 7 5 8 q6 1 7 -6 l3 -30 z`} fill={`url(#t${id})`} />
-      <path d={`M60 56 q10 4 11 14 l2 34 q1 7 -5 8 q-6 1 -7 -6 l-3 -30 z`} fill={topShade} />
-      {/* hands */}
-      <circle cx="20" cy="112" r="5.5" fill={`url(#s${id})`} />
-      <circle cx="68" cy="112" r="5.5" fill={skinShade} />
+      {/* the breathing part — torso, arms, head all drift together */}
+      <g className="idle">
+        {p1 ? (
+          /* Anay: open shirt over a tee */
+          <>
+            <path d="M28 52 q16 -6 32 0 l6 14 q4 30 -2 58 h-40 q-6 -28 -2 -58 z" fill="#2E2B33" />
+            <path d="M36 50 h16 l3 12 q2 30 -1 62 h-20 q-3 -32 -1 -62 z" fill={`url(#t${id})`} />
+            <path d="M28 52 q6 -3 9 -2 l-2 74 h-9 q-6 -28 -2 -58 z" fill={topShade} />
+            <path d="M60 52 q-6 -3 -9 -2 l2 74 h9 q6 -28 2 -58 z" fill={topShade} opacity=".85" />
+          </>
+        ) : (
+          <>
+            <path d="M28 52 q16 -6 32 0 l6 14 q4 30 -2 58 h-40 q-6 -28 -2 -58 z" fill={`url(#t${id})`} />
+            <path d="M25 62 q19 10 38 0 l2 10 q-21 11 -42 0 z" fill={accent} opacity=".92" />
+          </>
+        )}
+        {/* arms */}
+        <path d="M28 56 q-10 4 -11 14 l-2 34 q-1 7 5 8 q6 1 7 -6 l3 -30 z" fill={p1 ? '#2E2B33' : `url(#t${id})`} />
+        <path d="M60 56 q10 4 11 14 l2 34 q1 7 -5 8 q-6 1 -7 -6 l-3 -30 z" fill={topShade} />
+        <circle cx="20" cy="112" r="5.5" fill={`url(#s${id})`} />
+        <circle cx="68" cy="112" r="5.5" fill={skinShade} />
 
-      {/* neck + head */}
-      <rect x="39" y="42" width="10" height="12" rx="4" fill={skinShade} />
-      <ellipse cx="44" cy="28" rx="16" ry="18" fill={`url(#s${id})`} />
-      {/* ears */}
-      <circle cx="28" cy="30" r="3.4" fill={skinShade} />
-      <circle cx="60" cy="30" r="3.4" fill={skinShade} />
-      {/* hair */}
-      {p1 ? (
-        <>
-          <path d="M28 26 q0 -18 16 -18 t16 18 q-3 -9 -16 -9 t-16 9 z" fill={hair} />
-          <path d="M28 26 q2 -12 16 -12 q9 0 13 7 q-9 -3 -18 1 q-8 3 -11 4 z" fill={hairHi} />
-        </>
-      ) : (
-        <>
-          <path d="M27 28 q-1 -20 17 -20 t17 20 q0 -11 -17 -11 t-17 11 z" fill={hair} />
-          <path d="M27 26 q-4 24 -1 44 q1 6 6 5 q4 -1 3 -7 q-3 -18 -1 -34 z" fill={hair} />
-          <path d="M61 26 q4 24 1 44 q-1 6 -6 5 q-4 -1 -3 -7 q3 -18 1 -34 z" fill={hair} />
-          <path d="M30 22 q6 -10 14 -10 q9 0 13 8 q-10 -4 -18 -1 q-6 2 -9 3 z" fill={hairHi} />
-        </>
-      )}
+        {/* neck + head */}
+        <rect x="39" y="42" width="10" height="12" rx="4" fill={skinShade} />
+        <ellipse cx="44" cy="28" rx="16" ry="18" fill={`url(#s${id})`} />
+        <circle cx="28" cy="30" r="3.4" fill={skinShade} />
+        <circle cx="60" cy="30" r="3.4" fill={skinShade} />
+
+        {p1 ? (
+          <>
+            {/* thick side-parted hair */}
+            <path d="M27 27 q-1 -19 17 -19 t17 19 q-2 -10 -12 -11 q-9 -1 -14 4 q-5 4 -8 7 z" fill={hair} />
+            <path d="M29 20 q7 -9 16 -8 q10 1 13 8 q-9 -5 -17 -2 q-7 2 -12 2 z" fill={hairHi} />
+            {/* his glasses — the single most recognisable thing about him */}
+            <g fill="none" stroke="#15100B" strokeWidth="2.2">
+              <rect x="30" y="24" width="13" height="10" rx="3.5" />
+              <rect x="45" y="24" width="13" height="10" rx="3.5" />
+              <line x1="43" y1="28" x2="45" y2="28" />
+              <line x1="30" y1="27" x2="26" y2="29" />
+              <line x1="58" y1="27" x2="62" y2="29" />
+            </g>
+            <g fill="#CFE4F0" opacity=".22">
+              <rect x="31" y="25" width="11" height="8" rx="3" />
+              <rect x="46" y="25" width="11" height="8" rx="3" />
+            </g>
+          </>
+        ) : (
+          <>
+            {/* long wavy hair, past the shoulders */}
+            <path d="M26 28 q-1 -21 18 -21 t18 21 q0 -12 -18 -12 t-18 12 z" fill={hair} />
+            <path d="M26 26 q-6 26 -3 50 q1 8 6 9 q5 1 4 -8 q-3 -14 -2 -28 q1 -12 2 -18 z" fill={hair} />
+            <path d="M62 26 q6 26 3 50 q-1 8 -6 9 q-5 1 -4 -8 q3 -14 2 -28 q-1 -12 -2 -18 z" fill={hair} />
+            {/* a couple of waves so it isn't a slab */}
+            <path d="M27 44 q6 5 4 12 q-2 6 1 12" fill="none" stroke={hairHi} strokeWidth="1.6" opacity=".7" />
+            <path d="M61 44 q-6 5 -4 12 q2 6 -1 12" fill="none" stroke={hairHi} strokeWidth="1.6" opacity=".7" />
+            <path d="M30 22 q6 -10 14 -10 q10 0 14 9 q-11 -5 -19 -2 q-6 2 -9 3 z" fill={hairHi} />
+          </>
+        )}
+      </g>
     </svg>
   )
 }

@@ -947,3 +947,158 @@ img, svg { display: block; max-width: 100%; }
 }
 .cluecard .t1 { font-family: var(--type); font-size: 10px; letter-spacing: 0.22em; color: var(--rose); }
 .cluecard p { font-family: var(--serif); font-size: 14.5px; line-height: 1.6; color: var(--cream-hi); margin-top: 6px; }
+
+/* ============================================================
+   LIGHT-SCENE CONTRAST
+   Anything that ships a cream/amber colour by default needs an
+   ink-toned counterpart when the panel is pale.
+   ============================================================ */
+.scene--light .stage.on,
+.scene--light .stage.on p,
+.scene--light .stage.on span,
+.scene--light .stage.on div { color: var(--ink); }
+.scene--light .quizq,
+.scene--light .quizscore { color: var(--ink); }
+.scene--light .quizscore { color: var(--red); }
+.scene--light .choice,
+.scene--light .qopt { border-color: rgba(33, 27, 18, 0.55); color: var(--ink); }
+.scene--light .qright { border-color: #1F7A66 !important; color: #1F7A66 !important; background: rgba(31, 122, 102, 0.1); }
+.scene--light .qwrong { border-color: var(--red) !important; color: var(--red) !important; }
+.scene--light .cluecard p { color: var(--ink); }
+.scene--light .cluecard .t1 { color: var(--red); }
+.scene--light .btn { border-color: rgba(33, 27, 18, 0.6); color: var(--ink); }
+.scene--light .btn--red { background: var(--red); border-color: var(--red); color: var(--cream); }
+.scene--light .btn--ghost { border-color: rgba(33, 27, 18, 0.35); color: var(--ink-dim); }
+.scene--light .btn[disabled] { opacity: 0.4; }
+.scene--light .padbtn { border-color: rgba(166, 47, 42, 0.6); color: var(--red); background: rgba(166, 47, 42, 0.07); }
+.scene--light .runbar { background: rgba(33, 27, 18, 0.15); }
+.scene--light .gamecv { border-color: rgba(33, 27, 18, 0.3); }
+.scene--light .qbox .line { color: var(--ink); }
+.scene--light .xbar { background: rgba(33, 27, 18, 0.15); }
+.scene--light .statrow .lbl { color: var(--ink-dim); }
+.scene--light .exrow { color: var(--ink); border-bottom-color: rgba(33, 27, 18, 0.18); }
+.scene--light .exrow .v { color: var(--red); }
+/* the gold panel keeps its own warm palette even on pale scenes */
+.scene--light .goldpanel p,
+.scene--light .goldpanel div,
+.scene--light .goldpanel span { color: inherit; }
+.scene--light .goldpanel .narr { color: #f5e7c8 !important; }
+
+/* ============================================================
+   DESKTOP — a landscape stage, not a stretched phone.
+   The art gets room, the cast gets bigger, and the dialogue
+   panel becomes a wide bottom bar with the text and the media
+   side by side.
+   ============================================================ */
+@media (min-width: 900px) {
+  .col { max-width: 860px; padding: 0 32px 48px; }
+  .col--wide { max-width: 1100px; }
+
+  /* --- visual-novel scenes --- */
+  .scene--vn .col { max-width: 1080px; padding-bottom: 40px; padding-top: 70px; }
+  .scene--vn .snav { width: 100%; max-width: none; padding: 18px 44px 14px; font-size: 12px; }
+  .scene--vn .stage.on { padding: 28px 34px 26px; border-radius: 18px; }
+
+  .cast { top: 12vh; height: 52vh; }
+  .cast--wide { gap: 90px; }
+
+  .chcard { margin-bottom: 14px; }
+  .chttl { font-size: 46px; }
+  .chplace { font-size: 18px; }
+  .scene--vn .narr { font-size: 18px; line-height: 1.7; }
+  .scene--vn .meta { font-size: 12.5px; }
+
+  /* panel content in two columns once there is room */
+  .scene--vn .stage.on { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 8px 34px; align-items: start; }
+  .scene--vn .stage.on > * { grid-column: 1; }
+  .scene--vn .stage.on > .photorow,
+  .scene--vn .stage.on > .gamewrap,
+  .scene--vn .stage.on > .split,
+  .scene--vn .stage.on > .goldpanel,
+  .scene--vn .stage.on > .emailcard,
+  .scene--vn .stage.on > .paper,
+  .scene--vn .stage.on > .cluefield { grid-column: 2; grid-row: 1 / span 20; align-self: center; margin-top: 0; }
+  /* a panel with no second-column content collapses back to one */
+  .scene--vn .stage.on:not(:has(.photorow, .gamewrap, .split, .goldpanel, .emailcard, .paper, .cluefield)) {
+    display: block; max-width: 720px;
+  }
+  .photorow { margin-top: 0; }
+  .photoslot { width: calc(50% - 8px); }
+  .photoslot:only-child { width: 100%; }
+
+  /* --- boot / menu --- */
+  .scene--boot .col { max-width: 560px; }
+  .glass { min-height: 500px; }
+  .osd { font-size: 15px; }
+  .ptitle { font-size: 60px; }
+  .poster { margin-top: 18px; }
+  .mi { font-size: 17px; padding: 15px 8px 13px; }
+
+  /* --- lists and grids --- */
+  .cabgrid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .pairgrid { max-width: 620px; margin-left: auto; margin-right: auto; }
+  .slidegrid { width: 360px; }
+  .mazewrap { width: 420px; }
+  .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tape { margin-top: 0; }
+  .scene--tapes .col > .tape { max-width: none; }
+  .statcard { display: inline-block; width: calc(50% - 10px); vertical-align: top; margin-right: 12px; }
+  .statcard:nth-of-type(even) { margin-right: 0; }
+  .duo { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .seats { max-width: 620px; margin-left: auto; margin-right: auto; }
+  .gamecv { max-height: 46vh; object-fit: contain; }
+  .cluefield { max-width: 520px; }
+  .paper { padding: 44px 46px 40px; }
+
+  /* two-column chapter list */
+  .actlbl { grid-column: 1 / -1; }
+  .scene--story .col > div[style*="position: relative"] { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; }
+  .scene--story .mapline { display: none; }
+  .chnode { padding: 12px 0; }
+}
+
+@media (min-width: 1300px) {
+  .scene--vn .col { max-width: 1180px; }
+  .cast { height: 56vh; }
+  .chttl { font-size: 52px; }
+}
+
+/* achievements read better as a grid on any wide screen */
+@media (min-width: 900px) {
+  .scene--tapes .col { max-width: 900px; }
+  .scene--tapes .col { display: block; }
+  .tapegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+}
+
+/* ============================================================
+   FIXES — light panels must beat the generic dark panel rule,
+   and desktop panels must sit centred, not hugged to the left.
+   ============================================================ */
+.scene--vn.scene--light .stage.on {
+  background: rgba(250, 246, 236, 0.97);
+  border-color: rgba(33, 27, 18, 0.22);
+  color: var(--ink);
+}
+.scene--vn.scene--light .stage.on .chttl { color: var(--ink); }
+.scene--vn.scene--light .stage.on .chplace { color: var(--red); }
+.scene--vn.scene--light .stage.on .narr { color: var(--ink); }
+.scene--vn.scene--light .stage.on .meta { color: var(--ink-dim); }
+.scene--vn.scene--light .stage.on .chcard .yr { color: var(--ink-dim); }
+
+@media (min-width: 900px) {
+  .scene--vn .stage.on { margin-left: auto; margin-right: auto; width: 100%; }
+  .scene--vn .stage.on:not(:has(.photorow, .gamewrap, .split, .goldpanel, .emailcard, .paper, .cluefield)) {
+    max-width: 780px;
+  }
+  .cast { top: 8vh; height: 52vh; }
+}
+
+/* characters breathe, and shift their weight now and then */
+.person .idle { transform-origin: 44px 120px; animation: breathe 4.2s ease-in-out infinite; }
+.person--p2 .idle { animation-duration: 4.9s; animation-delay: -1.4s; }
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-1.6px) rotate(-0.5deg); }
+  70% { transform: translateY(-0.6px) rotate(0.4deg); }
+}
+@media (prefers-reduced-motion: reduce) { .person .idle { animation: none; } }

@@ -18,31 +18,30 @@ import { TEST } from '../components/ui'
 type Plat = { x: number; y: number; w: number; h: number; k?: 'floor' | 'brick' | 'ledge' }
 
 const LEVEL: Plat[] = [
-  // ground
+  // ground — one long safe floor
   { x: 0, y: 560, w: 900, h: 60, k: 'floor' },
-  // lower ruin
-  { x: 120, y: 486, w: 90, h: 16, k: 'brick' },
-  { x: 260, y: 432, w: 80, h: 16, k: 'brick' },
-  { x: 400, y: 486, w: 110, h: 16, k: 'brick' },
-  { x: 560, y: 430, w: 90, h: 16, k: 'brick' },
-  { x: 720, y: 486, w: 120, h: 16, k: 'brick' },
-  // mid floor (broken)
-  { x: 40, y: 360, w: 140, h: 18, k: 'ledge' },
-  { x: 250, y: 330, w: 120, h: 18, k: 'ledge' },
-  { x: 470, y: 350, w: 130, h: 18, k: 'ledge' },
-  { x: 700, y: 320, w: 150, h: 18, k: 'ledge' },
+  // first climb: short, wide steps
+  { x: 110, y: 492, w: 130, h: 16, k: 'brick' },
+  { x: 285, y: 430, w: 130, h: 16, k: 'brick' },
+  { x: 460, y: 492, w: 150, h: 16, k: 'brick' },
+  { x: 650, y: 430, w: 150, h: 16, k: 'brick' },
+  // mid floor — broad landings
+  { x: 30, y: 366, w: 200, h: 18, k: 'ledge' },
+  { x: 275, y: 312, w: 190, h: 18, k: 'ledge' },
+  { x: 510, y: 366, w: 200, h: 18, k: 'ledge' },
+  { x: 740, y: 312, w: 160, h: 18, k: 'ledge' },
   // upper floor
-  { x: 140, y: 232, w: 120, h: 18, k: 'ledge' },
-  { x: 360, y: 210, w: 110, h: 18, k: 'ledge' },
-  { x: 580, y: 236, w: 120, h: 18, k: 'ledge' },
-  // the top — the quiet corner
-  { x: 300, y: 110, w: 240, h: 20, k: 'ledge' },
+  { x: 120, y: 244, w: 200, h: 18, k: 'ledge' },
+  { x: 370, y: 196, w: 180, h: 18, k: 'ledge' },
+  { x: 600, y: 244, w: 200, h: 18, k: 'ledge' },
+  // the top — a wide, unmissable landing
+  { x: 260, y: 118, w: 340, h: 20, k: 'ledge' },
 ]
 
 const PICKUPS = [
-  { x: 300, y: 396, label: 'A STAIRCASE' },
-  { x: 745, y: 284, label: 'A ROOM WITH NO ROOF' },
-  { x: 176, y: 196, label: 'AN OPEN WINDOW' },
+  { x: 130, y: 330, label: 'A STAIRCASE' },
+  { x: 360, y: 276, label: 'A ROOM WITH NO ROOF' },
+  { x: 210, y: 208, label: 'AN OPEN WINDOW' },
 ]
 
 export function Platformer({ onDone }: { onDone: () => void }) {
@@ -52,6 +51,8 @@ export function Platformer({ onDone }: { onDone: () => void }) {
   const gotRef = useRef<number[]>([])
   const doneRef = useRef(false)
   const keys = useRef<Record<string, boolean>>({})
+  const coyote = useRef(0)
+  const buffer = useRef(0)
   const p = useRef({ x: 40, y: 500, vx: 0, vy: 0, onGround: false, face: 1 })
 
   useEffect(() => {
@@ -98,14 +99,19 @@ export function Platformer({ onDone }: { onDone: () => void }) {
         me.vx *= 0.78
         if (Math.abs(me.vx) < 0.05) me.vx = 0
       }
-      if (jump && me.onGround) {
-        me.vy = -9.4
+      /* coyote time + jump buffering: forgiving, like the good ones */
+      if (jump) buffer.current = 8
+      else buffer.current = Math.max(0, buffer.current - 1)
+      if (buffer.current > 0 && coyote.current > 0) {
+        me.vy = -10.6
         me.onGround = false
+        coyote.current = 0
+        buffer.current = 0
         sfx.play('click')
       }
 
-      /* gravity */
-      me.vy = Math.min(13, me.vy + 0.52)
+      /* gravity, a touch floatier so jumps are easy to judge */
+      me.vy = Math.min(13, me.vy + 0.46)
 
       /* move + collide, axis at a time */
       const PW = 16
@@ -131,6 +137,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
           me.vy = 0
         }
       }
+      coyote.current = me.onGround ? 8 : Math.max(0, coyote.current - 1)
       if (me.x < 0) me.x = 0
       if (me.x > 900 - PW) me.x = 900 - PW
       /* fell off the world — put them back, no penalty */
@@ -144,7 +151,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
       /* pickups */
       PICKUPS.forEach((pk, i) => {
         if (gotRef.current.includes(i)) return
-        if (Math.abs(me.x + PW / 2 - pk.x) < 26 && Math.abs(me.y + PH / 2 - pk.y) < 30) {
+        if (Math.abs(me.x + PW / 2 - pk.x) < 40 && Math.abs(me.y + PH / 2 - pk.y) < 44) {
           sfx.play('unlock')
           setNote(pk.label)
           setGot((g) => (g.includes(i) ? g : [...g, i]))
@@ -153,7 +160,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
 
       /* the goal */
       const allGot = gotRef.current.length >= PICKUPS.length
-      if (allGot && !doneRef.current && me.x > 340 && me.x < 520 && me.y < 120 && me.onGround) {
+      if (allGot && !doneRef.current && me.x > 250 && me.x < 600 && me.y < 130) {
         doneRef.current = true
         sfx.play('complete')
         setTimeout(onDone, 500)
@@ -228,7 +235,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
 
       /* goal marker */
       if (allGot) {
-        const gx = 420 - camX
+        const gx = 430 - camX
         const gy = 110 - camY
         ctx.fillStyle = 'rgba(201,138,147,.25)'
         ctx.fillRect(gx - 26, gy - 54, 52, 54)
