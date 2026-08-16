@@ -218,15 +218,17 @@ function Timeline({ onWin }: { onWin: () => void }) {
 
 /* ---------------- game 3: maze ---------------- */
 const MAZE = [
-  '#########',
-  '#S..#...#',
-  '#.#.#.#.#',
-  '#.#...#.#',
-  '#.###.#.#',
-  '#...#.#.#',
-  '#.#.#.#.#',
-  '#.#...#G#',
-  '#########',
+  '###########',
+  '#S#.....#.#',
+  '#.#.###.#.#',
+  '#...#.#...#',
+  '###.#.###.#',
+  '#...#...#.#',
+  '#.#####.#.#',
+  '#.#...#.#.#',
+  '#.#.#.#.#.#',
+  '#...#...#G#',
+  '###########',
 ]
 function Maze({ onWin }: { onWin: () => void }) {
   const start = { x: 1, y: 1 }
@@ -294,12 +296,14 @@ function Maze({ onWin }: { onWin: () => void }) {
   )
 }
 
-/* ---------------- game 4: reaction ---------------- */
+/* ---------------- game 4: reaction (with decoys) ---------------- */
 const RNOTES = ['anay sent a message', 'anay liked your story', 'anay replied', 'anay is typing…', 'anay sent a reel', 'anay: “btw”', 'anay again', 'still anay']
+const DECOYS = ['low battery', 'system update available', 'win a free car!!', 'screen time report', '47 unread emails']
 function Reaction({ onWin }: { onWin: () => void }) {
-  const NEED = 8
+  const NEED = 10
   const [caught, setCaught] = useState(0)
-  const [note, setNote] = useState<{ x: number; y: number; t: string; id: number } | null>(null)
+  const [fb, setFb] = useState('')
+  const [note, setNote] = useState<{ x: number; y: number; t: string; id: number; decoy: boolean } | null>(null)
   const idc = useRef(0)
   const alive = useRef(true)
 
@@ -314,23 +318,34 @@ function Reaction({ onWin }: { onWin: () => void }) {
   const spawn = () => {
     if (!alive.current) return
     idc.current += 1
+    const decoy = Math.random() < 0.35
     setNote({
-      x: Math.random() * 62 + 4,
+      x: Math.random() * 58 + 4,
       y: Math.random() * 78 + 6,
-      t: RNOTES[Math.floor(Math.random() * RNOTES.length)],
+      t: decoy ? DECOYS[Math.floor(Math.random() * DECOYS.length)] : RNOTES[Math.floor(Math.random() * RNOTES.length)],
       id: idc.current,
+      decoy,
     })
   }
 
   const catchIt = () => {
+    if (!note) return
+    setNote(null)
+    if (note.decoy) {
+      sfx.play('wrong')
+      setFb('THAT WAS NOT ANAY. FOCUS.')
+      setCaught((n) => Math.max(0, n - 1))
+      setTimeout(spawn, 300 + Math.random() * 400)
+      return
+    }
     sfx.play('notify')
+    setFb('')
     const n = caught + 1
     setCaught(n)
-    setNote(null)
     if (n >= NEED) {
       setTimeout(onWin, 500)
     } else {
-      setTimeout(spawn, 320 + Math.random() * 550)
+      setTimeout(spawn, 260 + Math.random() * 500)
     }
   }
 
@@ -338,7 +353,7 @@ function Reaction({ onWin }: { onWin: () => void }) {
     <>
       <div className="bigttl">NOTIFICATIONS</div>
       <div className="bigsub">
-        CATCH THEM ALL. {caught}/{NEED} — THEY KEPT COMING IN 2023 TOO.
+        TAP ONLY ANAY. {caught}/{NEED} — DECOYS COST YOU.
       </div>
       <div className="reactfield">
         {note && (
@@ -352,6 +367,7 @@ function Reaction({ onWin }: { onWin: () => void }) {
           </button>
         )}
       </div>
+      <div className="feedback" style={{ color: 'var(--rose)' }}>{fb}</div>
     </>
   )
 }

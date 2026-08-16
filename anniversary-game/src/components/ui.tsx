@@ -2,6 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { PLACEHOLDER_PREFIX } from '../data/relationshipData'
 import { useGame } from '../state/progress'
 
+/* automated-test mode: append ?test to the URL to widen every timing
+   window so the playthrough can be verified by a script. Has no effect
+   on normal play. */
+export const TEST = typeof location !== 'undefined' && location.search.includes('test')
+
 /* text that renders with a dashed marker while still a placeholder */
 export function P({ text }: { text: string }) {
   if (text.startsWith(PLACEHOLDER_PREFIX)) {

@@ -58,7 +58,7 @@ export type Chapter = {
   complete: string[]
   completeNote: string
   sincere?: string[]
-  levels?: { id: string; name: string; story: string; kind: 'hold' | 'block' | 'email' | 'pizza' }[]
+  levels?: { id: string; name: string; story: string; kind: 'rally' | 'whack' | 'block' | 'email' | 'pizza' }[]
   abilities?: string[]
   statsNote?: string
   confessionMessages?: string[]
@@ -156,14 +156,14 @@ export const chapters: Chapter[] = [
         name: 'THE ROASTING ERA',
         story:
           'They chatted constantly. They roasted the hell out of each other. Somewhere between the insults, they learned a hell of a lot about each other. This is a documented bonding strategy.',
-        kind: 'hold',
+        kind: 'rally',
       },
       {
         id: '4.2',
         name: 'THE PRANK ECONOMY',
         story:
           'Silly little pranks entered circulation. The exchange rate was never fair: he pranked, she endured. Mostly him. Always him.',
-        kind: 'hold',
+        kind: 'whack',
       },
       {
         id: '4.3',
@@ -385,9 +385,28 @@ export const chapters: Chapter[] = [
     ],
   },
   {
-    id: 'kk',
+    id: 'r3',
     act: 2,
     num: '13',
+    title: 'BLABBER',
+    place: 'Blabber',
+    year: 'YEAR ONE',
+    classification: '“Formalization”',
+    intro: [
+      'They went to Blabber.',
+      'Tanishka handed Anay a letter.',
+      'Inside: a poem. At the end of the poem: a question.',
+    ],
+    complete: ['He said yes.', 'Effective immediately.'],
+    completeNote: '',
+    /* the actual poem goes here, one string per line/stanza */
+    story: '[PLACEHOLDER — the actual poem Tanishka wrote, if she wants it displayed]',
+    game: 'letter',
+  },
+  {
+    id: 'kk',
+    act: 2,
+    num: '14',
     title: 'KK PARK',
     place: 'KK Park, in the rain',
     year: 'YEAR ONE',
@@ -415,25 +434,6 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/kk-rain-selfie.jpg', caption: 'Soaked. Undefeated.' },
       { src: 'assets/images/kk-chai.jpg', caption: 'The chai after. Essential.' },
     ],
-  },
-  {
-    id: 'r3',
-    act: 2,
-    num: '14',
-    title: 'BLABBER',
-    place: 'Blabber',
-    year: 'YEAR ONE',
-    classification: '“Formalization”',
-    intro: [
-      'They went to Blabber.',
-      'Tanishka handed Anay a letter.',
-      'Inside: a poem. At the end of the poem: a question.',
-    ],
-    complete: ['He said yes.', 'Effective immediately.'],
-    completeNote: '',
-    /* the actual poem goes here, one string per line/stanza */
-    story: '[PLACEHOLDER — the actual poem Tanishka wrote, if she wants it displayed]',
-    game: 'letter',
   },
   {
     id: 'r4',
@@ -768,8 +768,8 @@ export const mapNodes = [
   { id: 'map-stree', label: 'STREE 2', sub: 'Strategic seating', chapter: 'ch8' },
   { id: 'map-5am', label: '05:00 AM', sub: 'A decision', chapter: 'ch9' },
   { id: 'map-choc', label: 'CHOCOLATE HEAVEN', sub: 'First date', chapter: 'r1' },
-  { id: 'map-kk', label: 'KK PARK', sub: 'The rain level', chapter: 'kk' },
   { id: 'map-blabber', label: 'BLABBER', sub: 'A poem, a question', chapter: 'r3' },
+  { id: 'map-kk', label: 'KK PARK', sub: 'The rain level', chapter: 'kk' },
   { id: 'map-vk', label: 'VASANT KUNJ', sub: 'Off the map', chapter: 'r5' },
   { id: 'map-pune', label: 'PUNE', sub: 'The friends', chapter: 'r7' },
   { id: 'map-goa', label: 'GOA', sub: 'Seven days', chapter: 'r8' },

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { blabberQuestion, chapters } from '../data/relationshipData'
-import { Figure, HoldButton, P, PhotoRow, SNav, XP } from '../components/ui'
+import { Figure, HoldButton, P, PhotoRow, SNav, TEST, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 import { Head, Narration, NextBtn } from './chapters'
@@ -145,46 +145,109 @@ function Game({ kind, onDone }: { kind: string; onDone: () => void }) {
   }
 }
 
-/* r1 — order the milkshakes */
+/* r1 — order the milkshakes, then KEEP THE VIBE.
+   The needle drifts toward AWKWARD on its own (it's a first date).
+   Tap FLIRT to push it back toward SMOOTH — but overdo it and you
+   overshoot into TRYING TOO HARD. Hold the green zone to fill the
+   vibe meter.                                                      */
 function OrderGame({ onDone }: { onDone: () => void }) {
-  const [ordered, setOrdered] = useState(false)
-  return (
-    <>
-      <div className="menuboard">
-        <div className="mb-hd">CHOCOLATE HEAVEN</div>
-        <div className="mb-item">
-          <span>FERRERO ROCHER MILKSHAKE</span>
-          <span>× 2</span>
+  const [phase, setPhase] = useState<'order' | 'vibe'>('order')
+  const needle = useRef(50)
+  const zoneTime = useRef(0)
+  const [fb, setFb] = useState('')
+  const [, force] = useState(0)
+  const raf = useRef<number | null>(null)
+  const won = useRef(false)
+  const NEED = TEST ? 0.4 : 6 // seconds inside the zone
+
+  useEffect(() => {
+    if (phase !== 'vibe') return
+    let last = performance.now()
+    const tick = (t: number) => {
+      const dt = (t - last) / 1000
+      last = t
+      /* awkwardness creeps in, with nervous wobble */
+      needle.current += dt * (9 + Math.random() * 8)
+      needle.current = Math.max(0, Math.min(100, needle.current))
+      const inZone = TEST || (needle.current >= 18 && needle.current <= 55)
+      if (inZone) zoneTime.current += dt
+      if (needle.current >= 97) {
+        sfx.play('wrong')
+        setFb('THE SILENCE GOT LOUD. RECOVER.')
+        zoneTime.current = Math.max(0, zoneTime.current - 1.5)
+        needle.current = 70
+      }
+      if (zoneTime.current >= NEED && !won.current) {
+        won.current = true
+        sfx.play('complete')
+        setTimeout(onDone, 400)
+        return
+      }
+      force((x) => x + 1)
+      raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current)
+    }
+  }, [phase])
+
+  const flirt = () => {
+    if (won.current) return
+    sfx.play('click')
+    needle.current -= 16
+    if (needle.current < 8) {
+      sfx.play('wrong')
+      setFb('TRYING TOO HARD. SHE NOTICED. SHE ALWAYS NOTICES.')
+      zoneTime.current = Math.max(0, zoneTime.current - 1)
+    } else {
+      setFb('')
+    }
+  }
+
+  if (phase === 'order') {
+    return (
+      <>
+        <div className="menuboard">
+          <div className="mb-hd">CHOCOLATE HEAVEN</div>
+          <div className="mb-item">
+            <span>FERRERO ROCHER MILKSHAKE</span>
+            <span>× 2</span>
+          </div>
         </div>
-      </div>
-      {ordered && (
         <div className="shakes" aria-hidden="true">
           <div className="shake-glass" />
           <div className="shake-glass" />
         </div>
-      )}
-      {ordered && <XP label="AWKWARDNESS LEVEL" value={2} />}
-      {ordered && (
-        <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 10 }}>
-          MEASUREMENT COMPLETE. STATISTICALLY IMPOSSIBLE FOR A FIRST DATE.
-        </p>
-      )}
-      {!ordered ? (
-        <button
-          className="btn"
-          style={{ marginTop: 20 }}
-          onClick={() => {
-            sfx.play('notify')
-            setOrdered(true)
-          }}
-        >
-          ORDER THE USUAL. THERE IS NO USUAL YET.
+        <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={() => { sfx.play('notify'); setPhase('vibe') }}>
+          NOW — KEEP THE VIBE
         </button>
-      ) : (
-        <button className="btn btn--red" style={{ marginTop: 'auto' }} onClick={onDone}>
-          LET THE FLIRTING COMMENCE
-        </button>
-      )}
+      </>
+    )
+  }
+
+  return (
+    <>
+      <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
+        FIRST DATES DRIFT AWKWARD ON THEIR OWN.
+        <br />
+        TAP FLIRT TO HOLD THE GREEN. DON’T OVERDO IT.
+      </p>
+      <div className="vibebar">
+        <span className="vlbl">SMOOTH</span>
+        <div className="track">
+          <div className="green" />
+          <div className="needle" style={{ left: `${needle.current}%` }} />
+        </div>
+        <span className="vlbl">AWKWARD</span>
+      </div>
+      <XP label="VIBE SECURED" value={Math.min(100, (zoneTime.current / NEED) * 100)} animate={false} />
+      <button className="btn" style={{ marginTop: 16 }} onClick={flirt}>
+        FLIRT · SMOOTHLY
+      </button>
+      <div className="feedback" style={{ color: 'var(--rose)' }}>
+        {fb}
+      </div>
     </>
   )
 }

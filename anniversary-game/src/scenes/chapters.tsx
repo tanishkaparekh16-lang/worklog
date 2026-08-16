@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   apologyEmail,
   cafeText,
@@ -7,7 +7,7 @@ import {
   dinnerQuestion,
   players,
 } from '../data/relationshipData'
-import { Figure, HoldButton, P, PhotoRow, SNav, TrainScenery, XP } from '../components/ui'
+import { Figure, HoldButton, P, PhotoRow, SNav, TEST, TrainScenery, XP } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
@@ -153,23 +153,90 @@ export function Ch1() {
   )
 }
 
-/* ============ CHAPTER 02 — ONLINE FRIENDSHIP, OFFLINE NPC ============ */
+/* ============ CHAPTER 02 — ONLINE FRIENDSHIP, OFFLINE NPC ============
+   Game: REPLY STREAK. Messages land at random moments and expire fast.
+   Reply before they fade to build a streak of 8. Missing one gets you
+   seen-zoned and costs streak. Then Real Life Mode, which never works. */
+const NEED_STREAK = 8
 export function Ch2() {
   const { completeChapter } = useGame()
-  const [stage, setStage] = useState<'intro' | 'play' | 'done'>('intro')
-  const [sent, setSent] = useState(0)
+  const [stage, setStage] = useState<'intro' | 'play' | 'rl' | 'done'>('intro')
+  const [streak, setStreak] = useState(0)
+  const [best, setBest] = useState(0)
+  const [bubble, setBubble] = useState<{ id: number; until: number } | null>(null)
+  const [fb, setFb] = useState('')
   const [rlTries, setRlTries] = useState(0)
+  const idc = useRef(0)
+  const timers = useRef<number[]>([])
   const c = ch('ch2')
+
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout)
+    timers.current = []
+  }
+
+  const spawn = (curStreak: number) => {
+    clearTimers()
+    const delay = 350 + Math.random() * 800
+    timers.current.push(
+      window.setTimeout(() => {
+        idc.current += 1
+        const id = idc.current
+        const windowMs = TEST ? 60000 : Math.max(650, 1250 - curStreak * 70)
+        setBubble({ id, until: performance.now() + windowMs })
+        sfx.play('notify')
+        timers.current.push(
+          window.setTimeout(() => {
+            /* expired — seen-zoned */
+            setBubble((b) => {
+              if (!b || b.id !== id) return b
+              sfx.play('wrong')
+              setFb('SEEN. NOT REPLIED. THE STREAK IS DEAD.')
+              setStreak((s2) => {
+                const ns = Math.max(0, s2 - 3)
+                spawn(ns)
+                return ns
+              })
+              return null
+            })
+          }, windowMs),
+        )
+      }, delay),
+    )
+  }
+
+  useEffect(() => () => clearTimers(), [])
+
+  const startPlay = () => {
+    setStage('play')
+    setFb('')
+    spawn(0)
+  }
+
+  const reply = () => {
+    if (!bubble) return
+    clearTimers()
+    setBubble(null)
+    sfx.play('click')
+    setFb('')
+    setStreak((s) => {
+      const ns = s + 1
+      setBest((b) => Math.max(b, ns))
+      if (ns >= NEED_STREAK) {
+        sfx.play('complete')
+        setTimeout(() => setStage('rl'), 500)
+      } else {
+        spawn(ns)
+      }
+      return ns
+    })
+  }
 
   const rlFails = [
     'ATTEMPT LOGGED. NO WORDS WERE PRODUCED.',
     'A NOD OCCURRED. HISTORIANS REMAIN DIVIDED ON WHETHER IT COUNTED.',
-    'CONVERSATION POSTPONED. AGAIN.',
+    'CONVERSATION POSTPONED. AGAIN. THE ANOMALY IS CONFIRMED.',
   ]
-
-  const online = Math.min(100, sent * 25 + 25)
-  const offline = Math.min(18, rlTries * 6)
-  const canFinish = sent >= 3 && rlTries >= 1
 
   return (
     <div className="scene scene--split">
@@ -186,79 +253,89 @@ export function Ch2() {
             SAME CLASSROOM. EVERY DAY.
           </p>
           <Narration lines={c.intro} dark />
-          <button className="btn" style={{ marginTop: 'auto' }} onClick={() => setStage('play')}>
+          <div className="qbox" style={{ borderColor: 'rgba(237,224,196,.4)', marginTop: 'auto' }}>
+            <div className="who" style={{ color: 'var(--teal)' }}>
+              CHALLENGE
+            </div>
+            <p className="line" style={{ color: 'var(--cream-hi)', fontFamily: 'var(--type)', fontSize: 12.5 }}>
+              Keep the chat alive. Reply before the message fades.
+              <br />
+              STREAK REQUIRED: {NEED_STREAK}. They get faster.
+            </p>
+          </div>
+          <button className="btn" style={{ marginTop: 16 }} onClick={startPlay}>
             RUN THE EXPERIMENT
           </button>
         </div>
 
         <div className={'stage' + (stage === 'play' ? ' on' : '')}>
-          <div className="split">
-            <div className="pane pane--online">
-              <div className="hd">ONLINE MODE</div>
-              <div className="bd">
-                {Array.from({ length: sent }).map((_, i) => (
-                  <React.Fragment key={i}>
-                    <div className="bubble bubble--a">████ ███ ████ ██</div>
-                    <div className="bubble bubble--t">███ ████ ██ ████ ███</div>
-                  </React.Fragment>
-                ))}
-                {sent > 1 && <div className="bubble bubble--sys">ROASTING DETECTED. MUTUAL. AFFECTIONATE.</div>}
-              </div>
-            </div>
-            <div className="pane pane--offline">
-              <div className="hd">REAL LIFE MODE</div>
-              <div className="bd">
-                {Array.from({ length: rlTries }).map((_, i) => (
-                  <div key={i} className="bubble bubble--sys">
-                    {rlFails[Math.min(i, rlFails.length - 1)]}
-                  </div>
-                ))}
-                {rlTries === 0 && <div className="bubble bubble--sys">NO ACTIVITY RECORDED</div>}
-              </div>
-            </div>
+          <div className="streakbar">
+            <span className="tw">
+              STREAK {streak}/{NEED_STREAK}
+            </span>
+            <span className="tw" style={{ color: 'var(--cream-dim)' }}>
+              BEST {best}
+            </span>
           </div>
+          <div className="chatfield">
+            {bubble ? (
+              <button key={bubble.id} className="rbubble" onClick={reply}>
+                <span className="rb-msg">███ ████ ██ ████</span>
+                <span className="rb-cta">REPLY ▸</span>
+                <span
+                  className="rb-fuse"
+                  style={{ animationDuration: `${TEST ? 60 : Math.max(0.65, 1.25 - streak * 0.07)}s` }}
+                />
+              </button>
+            ) : (
+              <p className="meta" style={{ color: 'var(--cream-dim)' }}>…</p>
+            )}
+          </div>
+          <div className="feedback" style={{ color: 'var(--rose)' }}>
+            {fb}
+          </div>
+          <XP label="ONLINE CONVERSATION" value={Math.min(100, (streak / NEED_STREAK) * 100)} animate={false} />
+        </div>
 
-          <div className="convmeter">
-            <XP label={`ONLINE CONVERSATION — ${online}%`} value={online} animate={false} />
-            <XP label={`OFFLINE CONVERSATION — SURPRISINGLY LOW`} value={offline} animate={false} rose />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 18 }}>
-            <button
-              className="btn"
-              onClick={() => {
-                sfx.play('notify')
-                setSent((s) => Math.min(4, s + 1))
-              }}
-            >
-              SEND SOMETHING
-            </button>
-            <button
-              className="btn btn--ghost"
-              onClick={() => {
-                sfx.play('wrong')
-                setRlTries((s) => Math.min(3, s + 1))
-              }}
-            >
-              SAY SOMETHING
-              <br />
-              IN PERSON
-            </button>
-          </div>
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-            ONE OF THESE BUTTONS WORKS.
+        <div className={'stage' + (stage === 'rl' ? ' on' : '')}>
+          <p className="meta" style={{ color: 'var(--teal)', marginTop: 26, letterSpacing: '.3em' }}>
+            ONLINE MODE: MASTERED
           </p>
+          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 16 }}>
+            Now do it in person.
+          </p>
+          <div className="pane pane--offline" style={{ marginTop: 20 }}>
+            <div className="hd">REAL LIFE MODE</div>
+            <div className="bd">
+              {Array.from({ length: rlTries }).map((_, i) => (
+                <div key={i} className="bubble bubble--sys">
+                  {rlFails[Math.min(i, rlFails.length - 1)]}
+                </div>
+              ))}
+              {rlTries === 0 && <div className="bubble bubble--sys">NO ACTIVITY RECORDED</div>}
+            </div>
+          </div>
+          <button
+            className="btn btn--ghost"
+            style={{ marginTop: 16 }}
+            onClick={() => {
+              sfx.play('wrong')
+              setRlTries((s) => Math.min(3, s + 1))
+            }}
+          >
+            SAY SOMETHING IN PERSON
+          </button>
           <button
             className="btn btn--red"
             style={{ marginTop: 'auto' }}
-            disabled={!canFinish}
+            disabled={rlTries < 3}
             onClick={() => {
               sfx.play('complete')
               completeChapter('ch2')
               setStage('done')
             }}
           >
-            {canFinish ? 'DOCUMENT THE ANOMALY' : 'KEEP TRYING BOTH MODES'}
+            {rlTries < 3 ? 'KEEP TRYING. FOR SCIENCE.' : 'DOCUMENT THE ANOMALY'}
           </button>
         </div>
 
@@ -390,6 +467,170 @@ export function Ch3() {
   )
 }
 
+/* ---- Ch4 game: ROAST RALLY — return the roast while the marker is
+   in your zone. Ten returns to clear; the rally speeds up. ---- */
+function RoastRally({ onWin }: { onWin: () => void }) {
+  const NEED = 10
+  const [hits, setHits] = useState(0)
+  const [fb, setFb] = useState('')
+  const pos = useRef(0)
+  const dir = useRef(1)
+  const speed = useRef(0.055)
+  const [, force] = useState(0)
+  const raf = useRef<number | null>(null)
+  const won = useRef(false)
+
+  useEffect(() => {
+    let last = performance.now()
+    const tick = (t: number) => {
+      const dt = t - last
+      last = t
+      pos.current += dir.current * speed.current * dt
+      if (pos.current >= 100) {
+        pos.current = 100
+        dir.current = -1
+      }
+      if (pos.current <= 0) {
+        pos.current = 0
+        dir.current = 1
+      }
+      force((x) => x + 1)
+      raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current)
+    }
+  }, [])
+
+  const inZone = TEST || pos.current >= 72
+  const ret = () => {
+    if (won.current) return
+    if (inZone) {
+      sfx.play('click')
+      setFb('')
+      speed.current = Math.min(0.13, speed.current * 1.12)
+      dir.current = -1
+      setHits((h) => {
+        const nh = h + 1
+        if (nh >= NEED) {
+          won.current = true
+          sfx.play('complete')
+          setTimeout(onWin, 400)
+        }
+        return nh
+      })
+    } else {
+      sfx.play('wrong')
+      setFb('TOO EARLY. THE ROAST WHIFFED.')
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <p className="meta" style={{ textAlign: 'left', color: 'var(--ink-dim)' }}>
+        RETURN THE ROAST WHILE IT’S IN YOUR ZONE. {hits}/{NEED}
+      </p>
+      <div className="rallybar">
+        <div className="zone" />
+        <div className="marker" style={{ left: `${pos.current}%` }} />
+      </div>
+      <button className="btn btn--ink" style={{ marginTop: 12 }} onClick={ret}>
+        RETURN THE ROAST
+      </button>
+      <div className="feedback">{fb}</div>
+    </div>
+  )
+}
+
+/* ---- Ch4 game: PRANK WHACK — pranks pop up on a grid and vanish
+   fast. Block eight before they land. They get quicker. ---- */
+function PrankWhack({ onWin }: { onWin: () => void }) {
+  const NEED = 8
+  const [blocked, setBlocked] = useState(0)
+  const [landed, setLanded] = useState(0)
+  const [cell, setCell] = useState<{ idx: number; id: number } | null>(null)
+  const idc = useRef(0)
+  const timers = useRef<number[]>([])
+  const won = useRef(false)
+
+  const clearT = () => {
+    timers.current.forEach(clearTimeout)
+    timers.current = []
+  }
+
+  const spawn = (nb: number) => {
+    clearT()
+    timers.current.push(
+      window.setTimeout(() => {
+        idc.current += 1
+        const id = idc.current
+        setCell({ idx: Math.floor(Math.random() * 9), id })
+        const up = TEST ? 60000 : Math.max(500, 880 - nb * 45)
+        timers.current.push(
+          window.setTimeout(() => {
+            setCell((cur) => {
+              if (!cur || cur.id !== id) return cur
+              sfx.play('wrong')
+              setLanded((l) => l + 1)
+              spawn(nb)
+              return null
+            })
+          }, up),
+        )
+      }, 260 + Math.random() * 480),
+    )
+  }
+
+  useEffect(() => {
+    spawn(0)
+    return clearT
+  }, [])
+
+  const whack = (idx: number) => {
+    if (!cell || cell.idx !== idx || won.current) return
+    clearT()
+    setCell(null)
+    sfx.play('unlock')
+    setBlocked((b) => {
+      const nb = b + 1
+      if (nb >= NEED) {
+        won.current = true
+        sfx.play('complete')
+        setTimeout(onWin, 400)
+      } else {
+        spawn(nb)
+      }
+      return nb
+    })
+  }
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <p className="meta" style={{ textAlign: 'left', color: 'var(--ink-dim)' }}>
+        BLOCK THE PRANKS. {blocked}/{NEED} BLOCKED · {landed} LANDED
+      </p>
+      <div className="prankgrid">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <button
+            key={i}
+            className={'pcell' + (cell?.idx === i ? ' up' : '')}
+            onClick={() => whack(i)}
+            aria-label={cell?.idx === i ? 'Incoming prank' : 'Empty desk'}
+          >
+            {cell?.idx === i ? '!' : ''}
+          </button>
+        ))}
+      </div>
+      {landed > 2 && (
+        <p className="meta" style={{ textAlign: 'left', color: 'var(--red)', marginTop: 8 }}>
+          STATISTICALLY, MOST PRANKS LANDED. THIS MATCHES THE HISTORICAL RECORD.
+        </p>
+      )}
+    </div>
+  )
+}
+
 /* ============ CHAPTER 04 — THE FRIENDSHIP ARC ============ */
 export function Ch4() {
   const { completeChapter, unlock } = useGame()
@@ -425,9 +666,9 @@ export function Ch4() {
                 </p>
               )}
 
-              {isNext && !done && lv.kind === 'hold' && (
-                <HoldButton label="HOLD TO PROCESS" className="btn btn--ink holdbtn" onDone={() => advance(i)} />
-              )}
+              {isNext && !done && lv.kind === 'rally' && <RoastRally onWin={() => advance(i)} />}
+
+              {isNext && !done && lv.kind === 'whack' && <PrankWhack onWin={() => advance(i)} />}
 
               {isNext && !done && lv.kind === 'block' && (
                 <button
@@ -513,28 +754,72 @@ export function Ch4() {
   )
 }
 
-/* ============ CHAPTER 05 — FINANZA ============ */
+/* ============ CHAPTER 05 — FINANZA ============
+   Game: POST AT THE RIGHT MOMENT. A cursor sweeps the timing bar;
+   post inside the golden window to go viral. Three virals to clear.
+   Misses flop. The cursor speeds up.                                */
 export function Ch5() {
   const { completeChapter } = useGame()
-  const [accepted, setAccepted] = useState(false)
-  const [shown, setShown] = useState(0)
+  const [posts, setPosts] = useState(0)
   const [views, setViews] = useState(0)
+  const [fb, setFb] = useState('')
+  const [shown, setShown] = useState(0)
+  const done = posts >= 3
   const c = ch('ch5')
   const abilities = c.abilities!
+  const pos = useRef(0)
+  const dir = useRef(1)
+  const speed = useRef(0.06)
+  const [, force] = useState(0)
+  const raf = useRef<number | null>(null)
+  const viewTarget = useRef(0)
 
-  const accept = () => {
-    if (accepted) return
-    sfx.play('complete')
-    setAccepted(true)
-    abilities.forEach((_, i) => setTimeout(() => setShown(i + 1), 450 * i + 400))
-    const t0 = performance.now()
+  useEffect(() => {
+    let last = performance.now()
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 2200)
-      setViews(Math.floor(p * p * 184673))
-      if (p < 1) requestAnimationFrame(tick)
-      else completeChapter('ch5')
+      const dt = t - last
+      last = t
+      pos.current += dir.current * speed.current * dt
+      if (pos.current >= 100) {
+        pos.current = 100
+        dir.current = -1
+      }
+      if (pos.current <= 0) {
+        pos.current = 0
+        dir.current = 1
+      }
+      setViews((v) => (v < viewTarget.current ? Math.min(viewTarget.current, v + Math.ceil((viewTarget.current - v) * 0.06) + 7) : v))
+      force((x) => x + 1)
+      raf.current = requestAnimationFrame(tick)
     }
-    requestAnimationFrame(tick)
+    raf.current = requestAnimationFrame(tick)
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current)
+    }
+  }, [])
+
+  const inZone = TEST || (pos.current >= 40 && pos.current <= 60)
+  const post = () => {
+    if (done) return
+    if (inZone) {
+      sfx.play('unlock')
+      setFb('')
+      speed.current = Math.min(0.15, speed.current * 1.35)
+      viewTarget.current += 40000 + Math.floor(Math.random() * 30000)
+      setPosts((p) => {
+        const np = p + 1
+        if (np >= 3) {
+          sfx.play('complete')
+          abilities.forEach((_, i) => setTimeout(() => setShown(i + 1), 420 * i + 400))
+          completeChapter('ch5')
+        }
+        return np
+      })
+    } else {
+      sfx.play('wrong')
+      viewTarget.current = Math.max(0, viewTarget.current - 4000)
+      setFb('FLOPPED. THE ALGORITHM HAS NO MERCY.')
+    }
   }
 
   return (
@@ -543,13 +828,30 @@ export function Ch5() {
         <SNav back="story" label="← CHAPTERS" where="CH. 05" />
         <Head id="ch5" dark />
         <div className="crest">DM</div>
-        <Narration lines={c.intro} dark />
+        <Narration lines={c.intro.slice(0, 1)} dark />
 
-        {!accepted && (
-          <button className="btn btn--red" style={{ marginTop: 26 }} onClick={accept}>
-            ACCEPT THE ROLE
-          </button>
+        {!done && (
+          <>
+            <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
+              POST WHEN THE CURSOR HITS THE GOLDEN WINDOW.
+              <br />
+              VIRAL POSTS: {posts}/3 · IT GETS FASTER.
+            </p>
+            <div className="rallybar rallybar--gold">
+              <div className="zone" />
+              <div className="marker" style={{ left: `${pos.current}%` }} />
+            </div>
+            <button className="btn" style={{ marginTop: 12 }} onClick={post}>
+              POST
+            </button>
+            <div className="feedback">{fb}</div>
+          </>
         )}
+
+        <div className="viewcount">
+          {views.toLocaleString('en-IN')}
+          <span className="lbl">VIEWS · ILLUSTRATIVE — REAL NUMBERS PENDING</span>
+        </div>
 
         <div className="abilities">
           {abilities.map((a, i) => (
@@ -560,20 +862,9 @@ export function Ch5() {
           ))}
         </div>
 
-        {accepted && (
-          <>
-            <div className="viewcount">
-              {views.toLocaleString('en-IN')}
-              <span className="lbl">VIEWS · ILLUSTRATIVE — REAL NUMBERS PENDING</span>
-            </div>
-            <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 10 }}>
-              <P text={c.statsNote!} />
-            </p>
-          </>
-        )}
-
         {shown >= abilities.length && (
           <>
+            <Narration lines={c.complete} dark />
             <div style={{ marginTop: 'auto' }} />
             <NextBtn current="ch5" />
           </>
@@ -643,19 +934,56 @@ export function Ch7() {
   const [wave, setWave] = useState(0)
   const [side, setSide] = useState<'l' | 'r'>('l')
   const [blocked, setBlocked] = useState(false)
+  const [fb, setFb] = useState('')
+  const prog = useRef(0)
+  const [, force] = useState(0)
+  const raf = useRef<number | null>(null)
   const c = ch('ch7')
   const WAVES = 4
 
+  /* the crowd drifts in over a shrinking window; step in while it's
+     mid-approach — too early looks suspicious, too late is contact */
   useEffect(() => {
     if (stage !== 'ride') return
     setSide(Math.random() > 0.5 ? 'l' : 'r')
     setBlocked(false)
+    setFb('')
+    prog.current = 0
+    const dur = TEST ? 30000 : Math.max(950, 1700 - wave * 220)
+    let last = performance.now()
+    const tick = (t: number) => {
+      const dt = t - last
+      last = t
+      prog.current = Math.min(100, prog.current + (dt / dur) * 100)
+      force((x) => x + 1)
+      if (prog.current >= 100) {
+        sfx.play('wrong')
+        setFb('CROWD CONTACT. UNACCEPTABLE. AGAIN.')
+        prog.current = 0
+        last = performance.now()
+      }
+      raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current)
+    }
   }, [wave, stage])
 
   const stepIn = () => {
-    if (blocked) return
+    if (blocked || stage !== 'ride') return
+    const p = prog.current
+    const ok = TEST || (p >= 30 && p <= 85)
+    if (!ok) {
+      sfx.play('wrong')
+      setFb(p < 30 ? 'TOO EAGER. SUSPICIOUSLY PROTECTIVE.' : 'TOO LATE.')
+      prog.current = 0
+      return
+    }
+    if (raf.current) cancelAnimationFrame(raf.current)
     sfx.play('click')
     setBlocked(true)
+    setFb('')
     setTimeout(() => {
       if (wave + 1 >= WAVES) {
         sfx.play('complete')
@@ -710,7 +1038,10 @@ export function Ch7() {
               style={{
                 left: side === 'l' ? 10 : undefined,
                 right: side === 'r' ? 10 : undefined,
-                transform: blocked ? 'translateX(0)' : side === 'l' ? 'translateX(26px)' : 'translateX(-26px)',
+                transition: 'none',
+                transform: blocked
+                  ? 'translateX(0)'
+                  : `translateX(${(side === 'l' ? 1 : -1) * (prog.current / 100) * 74}px)`,
               }}
             />
             <div
@@ -732,11 +1063,14 @@ export function Ch7() {
           </div>
 
           <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-            THE CROWD LEANS {side === 'l' ? 'LEFT' : 'RIGHT'}.
+            THE CROWD LEANS {side === 'l' ? 'LEFT' : 'RIGHT'}. TIME IT.
           </p>
           <button className="btn btn--red" style={{ marginTop: 12 }} onClick={stepIn} disabled={blocked}>
             {blocked ? 'POSITION HELD' : 'ANAY: STEP IN'}
           </button>
+          <div className="feedback" style={{ color: 'var(--rose)' }}>
+            {fb}
+          </div>
         </div>
 
         <div className={'stage' + (stage === 'arrived' ? ' on' : '')}>
@@ -790,19 +1124,24 @@ export function Ch7() {
   )
 }
 
-/* ============ CHAPTER 08 — STREE 2 ============ */
-const SEAT_START = ['ANAY', 'RASHI', 'FRIEND', 'TANISHKA', 'FRIEND']
+/* ============ CHAPTER 08 — STREE 2 ============
+   Puzzle: exactly ONE swap. Anay must land beside Tanishka, and not
+   on an aisle seat — aisle seats look planned. Wrong swap: Rashi
+   reshuffles and you try again.                                     */
+const SEAT_START = ['TANISHKA', 'FRIEND', 'RASHI', 'FRIEND', 'ANAY']
 export function Ch8() {
   const { completeChapter, unlock } = useGame()
   const [stage, setStage] = useState<'intro' | 'seats' | 'done'>('intro')
   const [seats, setSeats] = useState<string[]>(SEAT_START)
   const [sel, setSel] = useState<number | null>(null)
+  const [fails, setFails] = useState(0)
+  const [fb, setFb] = useState('')
   const c = ch('ch8')
 
   const win = (arr: string[]) => {
     const a = arr.indexOf('ANAY')
     const t = arr.indexOf('TANISHKA')
-    return Math.abs(a - t) === 1
+    return Math.abs(a - t) === 1 && a !== 0 && a !== arr.length - 1
   }
 
   const tap = (i: number) => {
@@ -817,15 +1156,25 @@ export function Ch8() {
     }
     const next = [...seats]
     ;[next[sel], next[i]] = [next[i], next[sel]]
-    setSeats(next)
     setSel(null)
     if (win(next)) {
+      setSeats(next)
       sfx.play('complete')
+      setFb('')
       setTimeout(() => {
         setStage('done')
         unlock('strategic-seating')
         completeChapter('ch8')
       }, 600)
+    } else {
+      sfx.play('wrong')
+      setFails((f) => f + 1)
+      setFb(
+        next.indexOf('ANAY') === 0 || next.indexOf('ANAY') === 4
+          ? 'AISLE SEAT. LOOKS PLANNED. RASHI RESHUFFLES.'
+          : 'COINCIDENCE REJECTED. RASHI RESHUFFLES.',
+      )
+      setSeats(SEAT_START)
     }
   }
 
@@ -846,9 +1195,9 @@ export function Ch8() {
         <div className={'stage' + (stage === 'seats' ? ' on' : '')}>
           <div className="cinescreen">STREE 2</div>
           <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 20 }}>
-            TAP TWO SEATS TO SWAP THEM.
+            ONE SWAP. TAP TWO SEATS.
             <br />
-            THE COINCIDENCE MUST LOOK NATURAL.
+            ANAY BESIDE TANISHKA — BUT AISLE SEATS LOOK PLANNED.
           </p>
           <div className="seats">
             {seats.map((s, i) => (
@@ -865,9 +1214,14 @@ export function Ch8() {
               </button>
             ))}
           </div>
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
-            OBJECTIVE: ANAY NEXT TO TANISHKA.
-          </p>
+          <div className="feedback" style={{ color: 'var(--rose)' }}>
+            {fb}
+          </div>
+          {fails >= 3 && (
+            <p className="meta" style={{ color: 'var(--cream-dim)' }}>
+              HINT: WHO IS SITTING NEXT TO TANISHKA RIGHT NOW?
+            </p>
+          )}
         </div>
 
         <div className={'stage' + (stage === 'done' ? ' on' : '')}>
