@@ -5,7 +5,11 @@ name: fetch-photos
 # This workflow and the raw photo-drop folder are removed once the
 # photos are placed into the game.
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - claude/anay-tanishka-anniversary-game-fru2m6
+    paths:
+      - '.github/workflows/fetch-photos.yml'
 
 permissions:
   contents: write
