@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { chapters, meta } from '../data/relationshipData'
+import { arcadeMemories, chapters, meta } from '../data/relationshipData'
 import { SpaceBg } from '../components/ui'
 import { useGame } from '../state/progress'
 
@@ -55,7 +55,7 @@ export default function MainMenu() {
                 onClick={() => (arcadeOpen ? go('arcade') : info('LOCKED · REACH CHAPTER 04'))}
               >
                 <span>MEMORY ARCADE</span>
-                <span className="no">{arcadeOpen ? `${p.arcadeDone.length}/5` : '···'}</span>
+                <span className="no">{arcadeOpen ? `${p.arcadeDone.filter((id) => arcadeMemories.some((m) => m.id === id)).length}/${arcadeMemories.length}` : '···'}</span>
               </button>
               <button className="mi" onClick={() => go('ost')}>
                 <span>SOUNDTRACK</span>

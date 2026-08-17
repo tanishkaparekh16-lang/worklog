@@ -16,21 +16,14 @@ export function P({ text }: { text: string }) {
 }
 
 /* photo that shows a labeled slot until the real file is added */
+/* Every tile is the same square — landscape shots get cropped rather than
+   given a row of their own. Uniform reads better than accurate here. */
 export function ImgSlot({ src, caption }: { src: string; caption: string }) {
   const [ok, setOk] = useState(true)
   return (
     <figure className="photoslot">
       {ok ? (
-        <img
-          src={src}
-          alt={caption}
-          loading="lazy"
-          onError={() => setOk(false)}
-          onLoad={(e) => {
-            const img = e.currentTarget
-            if (img.naturalWidth > img.naturalHeight * 1.25) img.classList.add('wide')
-          }}
-        />
+        <img src={src} alt={caption} loading="lazy" onError={() => setOk(false)} />
       ) : (
         <div className="missing">
           ADD PHOTO

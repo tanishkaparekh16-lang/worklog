@@ -592,9 +592,6 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/birthday.jpg', caption: 'A birthday, celebrated properly.' },
       { src: 'assets/images/cozy.jpg', caption: 'Standard proximity, again.' },
       { src: 'assets/images/traditional-night.jpg', caption: 'Dressed up, somewhere loud.' },
-      { src: 'assets/images/car-selfie.jpg', caption: 'In transit. Still talking.' },
-      { src: 'assets/images/purple-1.jpg', caption: 'Somewhere loud and purple.' },
-      { src: 'assets/images/purple-2.jpg', caption: 'Same night, still there.' },
     ],
   },
   {
@@ -695,8 +692,28 @@ export const apologyEmail = {
 /* ---------- THE BLABBER QUESTION (Chapter 13, verbatim) ---------- */
 export const blabberQuestion = 'would u like to be my boyfriend'
 
+/* ---------- THE THREE EVERYDAY MEMORIES (Chapter 17) ----------
+   Tapped one at a time, like a photo developing. Replace each `text`
+   with the real memory — one or two sentences is plenty.          */
+export const everydayMemories = [
+  {
+    src: 'assets/images/car-selfie.jpg',
+    text: '[PLACEHOLDER — everyday memory #1]',
+  },
+  {
+    src: 'assets/images/purple-1.jpg',
+    text: '[PLACEHOLDER — everyday memory #2]',
+  },
+  {
+    src: 'assets/images/purple-2.jpg',
+    text: '[PLACEHOLDER — everyday memory #3]',
+  },
+]
+
 /* ---------- MEMORY ARCADE ----------
-   Five games, five memories. Photos go in /public/assets/images/  */
+   Four games, four memories. Photos go in /public/assets/images/
+   (Tanishka is sending four photos for these — drop them in and
+   replace the `photo` paths below.)                               */
 
 export const arcadeMemories = [
   {
@@ -729,17 +746,6 @@ export const arcadeMemories = [
     date: '[PLACEHOLDER — date]',
     location: '[PLACEHOLDER — location]',
     photo: 'assets/images/memory-03-placeholder.svg',
-    story: '[PLACEHOLDER — the story of this memory]',
-    note: '',
-  },
-  {
-    id: 'mem4',
-    game: 'REACTION',
-    gameName: 'NOTIFICATIONS',
-    title: '[PLACEHOLDER — memory title]',
-    date: '[PLACEHOLDER — date]',
-    location: '[PLACEHOLDER — location]',
-    photo: 'assets/images/memory-04-placeholder.svg',
     story: '[PLACEHOLDER — the story of this memory]',
     note: '',
   },

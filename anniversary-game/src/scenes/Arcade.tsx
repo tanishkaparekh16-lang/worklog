@@ -4,7 +4,7 @@ import { P, SNav } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
 
-type GameId = 'hub' | 'mem1' | 'mem2' | 'mem3' | 'mem4' | 'mem5'
+type GameId = 'hub' | 'mem1' | 'mem2' | 'mem3' | 'mem5'
 
 export default function Arcade() {
   const [view, setView] = useState<GameId>('hub')
@@ -75,7 +75,7 @@ function Hub({ onPick }: { onPick: (id: GameId) => void }) {
       <div className="bigttl" style={{ marginTop: 6 }}>
         MEMORY ARCADE
       </div>
-      <div className="bigsub">WIN A GAME. UNLOCK A MEMORY. FIVE OF EACH.</div>
+      <div className="bigsub">WIN A GAME. UNLOCK A MEMORY. FOUR OF EACH.</div>
       <div className="cabgrid">
         {arcadeMemories.map((m) => {
           const done = p.arcadeDone.includes(m.id)
@@ -104,7 +104,6 @@ function GameHost({ id, onWin, onQuit }: { id: GameId; onWin: () => void; onQuit
       {id === 'mem1' && <Pairs onWin={win} />}
       {id === 'mem2' && <Timeline onWin={win} />}
       {id === 'mem3' && <Maze onWin={win} />}
-      {id === 'mem4' && <AboutHer onWin={win} />}
       {id === 'mem5' && <Slide onWin={win} />}
       <button className="btn btn--ghost" style={{ marginTop: 16 }} onClick={onQuit}>
         WALK AWAY
@@ -296,94 +295,7 @@ function Maze({ onWin }: { onWin: () => void }) {
   )
 }
 
-/* ---------------- game 4: HOW WELL DO YOU KNOW HER ----------------
-   The whole website is for Anay, so this cabinet is about Tanishka.
-   Placeholders are marked; swap the answers in relationshipData.     */
-const HER = [
-  {
-    q: 'Which side of the city is she from?',
-    a: ['Vile Parle', 'Andheri', 'Bandra'],
-    correct: 0,
-    after: 'Vile Parle. The café authority herself.',
-  },
-  {
-    q: 'What did she hand him at Blabber?',
-    a: ['A playlist', 'A letter with a poem in it', 'A wrapped gift'],
-    correct: 1,
-    after: 'A poem, ending in a question. He said yes.',
-  },
-  {
-    q: 'What was she head of?',
-    a: ['Digital Media, Finanza', 'Social Media, another fest', 'Nothing, she just watched'],
-    correct: 1,
-    after: 'Head of Social Media — and very new to editing at the time.',
-  },
-  {
-    q: 'How did she answer the 5 AM message?',
-    a: ['Immediately', 'She took the day, then said it properly', 'She never replied'],
-    correct: 1,
-    after: '“ill text u in some time.” Then several paragraphs. Then: i like you too.',
-  },
-]
-
-function AboutHer({ onWin }: { onWin: () => void }) {
-  const [i, setI] = useState(0)
-  const [picked, setPicked] = useState<number | null>(null)
-  const [score, setScore] = useState(0)
-  const q = HER[i]
-
-  const pick = (k: number) => {
-    if (picked !== null) return
-    setPicked(k)
-    if (k === q.correct) {
-      sfx.play('unlock')
-      setScore((s) => s + 1)
-    } else sfx.play('click')
-  }
-  const next = () => {
-    if (i + 1 >= HER.length) {
-      sfx.play('complete')
-      setTimeout(onWin, 400)
-    } else {
-      setI(i + 1)
-      setPicked(null)
-    }
-  }
-
-  return (
-    <>
-      <div className="bigttl">ABOUT HER</div>
-      <div className="bigsub">
-        {i + 1}/{HER.length} · SCORE {score} · THIS ONE IS NOT ABOUT YOU
-      </div>
-      <p className="quizq" style={{ marginTop: 16 }}>
-        {q.q}
-      </p>
-      <div className="choices" style={{ marginTop: 12 }}>
-        {q.a.map((opt, k) => {
-          const state = picked === null ? '' : k === q.correct ? ' qright' : k === picked ? ' qwrong' : ' qdim'
-          return (
-            <button key={k} className={'choice qopt' + state} onClick={() => pick(k)}>
-              {opt}
-            </button>
-          )
-        })}
-      </div>
-      {picked !== null && (
-        <>
-          <p className="meta" style={{ marginTop: 12, textAlign: 'left', color: 'var(--cream-dim)' }}>
-            {q.after}
-          </p>
-          <button className="btn" style={{ marginTop: 12 }} onClick={next}>
-            {i + 1 >= HER.length ? 'UNLOCK THE MEMORY' : 'NEXT ▸'}
-          </button>
-        </>
-      )}
-    </>
-  )
-}
-
-/* ---------------- game 5: slide puzzle ---------------- */
+/* ---------------- game 4: slide puzzle ---------------- */
 function Slide({ onWin }: { onWin: () => void }) {
   const [tiles, setTiles] = useState<number[]>(() => scrambled())
   const [moves, setMoves] = useState(0)

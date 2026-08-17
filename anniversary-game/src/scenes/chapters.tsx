@@ -30,11 +30,13 @@ export function Head({ id }: { id: string; dark?: boolean }) {
   )
 }
 
-export function Narration({ lines, dark = false }: { lines: readonly string[]; dark?: boolean }) {
+/* colour comes from the panel (.scene--light vs dark), never inline —
+   inline colours were the cause of cream-on-cream text. */
+export function Narration({ lines }: { lines: readonly string[]; dark?: boolean }) {
   return (
     <div style={{ marginTop: 18 }}>
       {lines.map((l, i) => (
-        <p key={i} className="narr" style={{ marginTop: i ? 8 : 0, color: dark ? 'var(--cream-hi)' : undefined }}>
+        <p key={i} className="narr" style={{ marginTop: i ? 8 : 0 }}>
           <P text={l} />
         </p>
       ))}
@@ -158,7 +160,7 @@ export function Ch1() {
           </div>
           <Narration lines={c.complete} />
           <PhotoRow photos={c.photos} />
-          <p className="meta" style={{ marginTop: 16, color: 'var(--cream-dim)' }}>
+          <p className="meta" style={{ marginTop: 16 }}>
             {c.completeNote.toUpperCase()}
           </p>
                     <NextBtn current="ch1" />
@@ -210,9 +212,7 @@ export function Ch2() {
 
         <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
           <Head id="ch2" />
-          <p className="meta" style={{ color: 'var(--cream-dim)' }}>
-            SAME CLASSROOM. EVERY DAY.
-          </p>
+          <p className="meta">SAME CLASSROOM. EVERY DAY.</p>
           <Narration lines={c.intro} dark />
           <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('play')}>
             RUN THE EXPERIMENT

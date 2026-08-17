@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { achievements, chapters } from '../data/relationshipData'
+import { achievements, arcadeMemories, chapters } from '../data/relationshipData'
 import { sfx } from '../audio/sfx'
 
 const KEY = 'at-adventure-save-v2'
@@ -129,7 +129,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         setP((prev) => ({
           ...prev,
           chaptersDone: chapters.map((c) => c.id),
-          arcadeDone: ['mem1', 'mem2', 'mem3', 'mem4', 'mem5'],
+          arcadeDone: arcadeMemories.map((m) => m.id),
           finalDone: true,
         })),
       isChapterOpen: (id: string) => {

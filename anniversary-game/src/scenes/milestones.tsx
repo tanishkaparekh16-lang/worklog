@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { blabberQuestion, chapters } from '../data/relationshipData'
+import { blabberQuestion, chapters, everydayMemories } from '../data/relationshipData'
 import { Figure, HoldButton, P, PhotoRow, SNav, TEST, XP } from '../components/ui'
 import { Person, SceneArt, SceneKind } from '../components/art'
 import { useGame } from '../state/progress'
@@ -284,7 +284,7 @@ function FlowersGame({ onDone }: { onDone: () => void }) {
         which is a detail worth recording because it kept happening after the
         point where anybody would have been impressed by it.
       </p>
-      <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
+      <button className="btn" style={{ marginTop: 16 }} onClick={onDone}>
         CONFIRM GENTLEMAN STATUS
       </button>
     </>
@@ -647,24 +647,29 @@ function TorchGame({ onDone }: { onDone: () => void }) {
 /* r6 — inseparable montage */
 function MontageGame({ onDone }: { onDone: () => void }) {
   const [open, setOpen] = useState(0)
-  const slots = ['[PLACEHOLDER — everyday memory #1]', '[PLACEHOLDER — everyday memory #2]']
+  const slots = everydayMemories
   return (
     <>
-      {slots.map((s, i) => (
-        <button
-          key={i}
-          className={'polaroid' + (i < open ? ' open' : '')}
-          onClick={() => {
-            if (i === open) {
-              sfx.play('click')
-              setOpen(open + 1)
-            }
-          }}
-          disabled={i > open}
-        >
-          {i < open ? <P text={s} /> : 'TAP TO DEVELOP'}
-        </button>
-      ))}
+      <div className="devrow">
+        {slots.map((s, i) => (
+          <button
+            key={i}
+            className={'polaroid' + (i < open ? ' open' : '')}
+            onClick={() => {
+              if (i === open) {
+                sfx.play('click')
+                setOpen(open + 1)
+              }
+            }}
+            disabled={i > open}
+          >
+            <span className="dev">
+              <img src={s.src} alt="" loading="lazy" />
+            </span>
+            <span className="cap">{i < open ? <P text={s.text} /> : 'TAP TO DEVELOP'}</span>
+          </button>
+        ))}
+      </div>
       {open >= slots.length && (
         <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
           THE ALBUM NEVER REALLY ENDS
