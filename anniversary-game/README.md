@@ -5,6 +5,25 @@ A two-player anniversary game. One player. The other one built it.
 Design language: **Analog Nights** — CRTs, vintage poster ads, cassettes,
 Mumbai local trains, golden-hour light.
 
+## Live site
+
+**https://2yearsofus1908.netlify.app** — hosted on Netlify, deployed by hand.
+
+To publish a change:
+
+```bash
+cd anniversary-game
+npm run build:single
+python3 scripts/make-drop-folder.py     # → deploy/2yearsofus/
+```
+
+Then drag `deploy/2yearsofus/` onto the site's **Deploys** page on Netlify.
+
+Always deploy to the *existing* site rather than netlify.com/drop, which
+would create a second one at a new address. The save file — chapters
+unlocked, XP, achievements — lives in browser localStorage keyed to the
+domain, so a new address means a forgotten playthrough.
+
 ## Run it
 
 ```bash
@@ -54,7 +73,8 @@ lights up automatically:
 | `sunglasses-a.jpg` | Ch 17 — Anay, giant black sunglasses |
 | `plane.jpg` | Ch 20 — long distance |
 
-Also `memory-01…05` for the arcade (replace the placeholder SVGs).
+Also `memory-01…04` for the arcade (replace the placeholder SVGs) — one per
+cabinet, since the arcade has four games.
 
 ## Filling in the real content
 
@@ -62,13 +82,12 @@ Open `src/data/relationshipData.ts`. Every string that starts with
 `[PLACEHOLDER` renders **with a dashed red marker** in the game so it
 cannot be missed. Replace the text, keep the quotes. Placeholders exist for:
 
-- Chapter 4's five friendship memories
-- The Chapter 7 train-journey feeling (one honest sentence)
-- **The Chapter 8 confession + reply (use the real texts, word for word)**
-- The five arcade memories (title, date, location, story, photo)
-- The three soundtrack entries (title, artist, why it matters)
+- The four arcade memories (title, date, location, story, photo)
+- The three everyday memories in Ch 17 (`everydayMemories`)
+- Why each of the three songs matters (`soundtrack[].why`)
 - The letter (`letter.paragraphs`)
 - The final message (`finalLevel.message`)
+- The Goa and Pune chapter stories
 - Real Finanza stats if desired (`statsNote`)
 
 Nothing else needs touching. The stats, achievements, and all narration are
@@ -85,6 +104,9 @@ the game to a fresh save — use it before gifting.
 - Progression is strictly sequential; the letter unlocks only after the
   final level.
 - Sound is off by default and synthesized in-browser — nothing autoplays.
-- No real photos or names beyond the two players; characters are faceless
-  figures until real photos arrive.
+- Nothing personal is invented. Every quote, date and message in the game is
+  one Tanishka supplied; anything not yet supplied is a visible
+  `[PLACEHOLDER`, never a plausible guess.
+- The site is `noindex` and its URL is unlisted, but it is not private —
+  anyone with the address can open it.
 - Mobile-first, works on desktop, honors `prefers-reduced-motion`.
