@@ -59,6 +59,19 @@ export function NextBtn({ current }: { current: string }) {
   )
 }
 
+export function Prose({ lines }: { lines?: string[] }) {
+  if (!lines || !lines.length) return null
+  return (
+    <div className="prose">
+      {lines.map((l, i) => (
+        <p key={i} style={{ animationDelay: `${0.12 * i}s` }}>
+          <P text={l} />
+        </p>
+      ))}
+    </div>
+  )
+}
+
 export function shakeWrong(e: React.MouseEvent<HTMLButtonElement>) {
   sfx.play('wrong')
   const el = e.currentTarget
@@ -401,20 +414,17 @@ export function Ch3() {
   )
 }
 
-/* ============ CHAPTER 04 — THE FRIENDSHIP ARC ============ */
+/* ============ CHAPTER 04 — THE FRIENDSHIP ARC ============
+   One paragraph of story; the apology email sits behind a
+   single button, because it deserves to be read in full.     */
 export function Ch4() {
   const { completeChapter, unlock } = useGame()
-  const [cleared, setCleared] = useState(0)
-  const [emailOpen, setEmailOpen] = useState(false)
+  const [open, setOpen] = useState(false)
   const c = ch('ch4')
-  const levels = c.levels!
-  const done = cleared >= levels.length
 
-  const advance = (i: number) => {
-    sfx.play(i === levels.length - 1 ? 'complete' : 'unlock')
-    setCleared((x) => x + 1)
-    if (i === levels.length - 1) completeChapter('ch4')
-  }
+  useEffect(() => {
+    completeChapter('ch4')
+  }, [])
 
   return (
     <div className="scene scene--vn scene--light">
@@ -422,261 +432,106 @@ export function Ch4() {
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 04" />
         <div className="stage on">
-        <Head id="ch4" />
-        <Narration lines={c.intro} />
+          <Head id="ch4" />
+          <Prose lines={c.paragraphs} />
 
-        {levels.map((lv, i) => {
-          const open = i <= cleared
-          const isNext = i === cleared
-          return (
-            <div key={lv.id} className={'lvlcard' + (open ? '' : ' locked')}>
-              <div className="k">LEVEL {lv.id}</div>
-              <h3>{open ? lv.name : '???'}</h3>
-              {open && (
-                <p className="story">
-                  <P text={lv.story} />
-                </p>
-              )}
-
-              {isNext && !done && (lv.kind === 'rally' || lv.kind === 'whack') && (
-                <button className="btn btn--ink" style={{ marginTop: 14 }} onClick={() => advance(i)}>
-                  {lv.kind === 'rally' ? 'ROAST HER BACK' : 'ALLOW THE PRANK'}
-                </button>
-              )}
-
-              {isNext && !done && lv.kind === 'block' && (
-                <button
-                  className="btn btn--red"
-                  style={{ marginTop: 14 }}
-                  onClick={() => {
-                    sfx.play('wrong')
-                    advance(i)
-                  }}
-                >
-                  PLAY AS TANISHKA: BLOCK HIM
-                </button>
-              )}
-              {i === 2 && cleared > 2 && (
-                <p className="meta" style={{ marginTop: 12, color: 'var(--red)', textAlign: 'left' }}>
-                  BLOCKED. TERMS OF UNBLOCKING: ONE (1) FORMAL APOLOGY EMAIL.
-                </p>
-              )}
-
-              {isNext && !done && lv.kind === 'email' && !emailOpen && (
-                <button className="btn btn--ink" style={{ marginTop: 14 }} onClick={() => { sfx.play('notify'); setEmailOpen(true) }}>
-                  OPEN THE EMAIL
-                </button>
-              )}
-              {isNext && !done && lv.kind === 'email' && emailOpen && (
-                <>
-                  <div className="emailcard">
-                    <div className="eh">
-                      <span>FROM:</span> {apologyEmail.from}
-                    </div>
-                    <div className="eh">
-                      <span>TO:</span> {apologyEmail.to}
-                    </div>
-                    <div className="eh">
-                      <span>SUBJECT:</span> {apologyEmail.subject}
-                    </div>
-                    <div className="ebody">
-                      {apologyEmail.paragraphs.map((p, pi) => (
-                        <p key={pi}>{p}</p>
-                      ))}
-                    </div>
-                  </div>
-                  <button
-                    className="btn btn--red"
-                    style={{ marginTop: 14 }}
-                    onClick={() => {
-                      unlock('apology-email')
-                      advance(i)
-                    }}
-                  >
-                    ACCEPT APOLOGY · RELUCTANTLY
-                  </button>
-                </>
-              )}
-
-              {isNext && !done && lv.kind === 'pizza' && (
-                <button
-                  className="btn btn--red"
-                  style={{ marginTop: 14 }}
-                  onClick={() => {
-                    unlock('pizza-diplomacy')
-                    advance(i)
-                  }}
-                >
-                  ACCEPT THE PIZZA
-                </button>
-              )}
+          {!open ? (
+            <button
+              className="btn btn--red"
+              style={{ marginTop: 18 }}
+              onClick={() => {
+                sfx.play('notify')
+                setOpen(true)
+                unlock('apology-email')
+                unlock('pizza-diplomacy')
+              }}
+            >
+              ✉ READ THE APOLOGY EMAIL
+            </button>
+          ) : (
+            <div className="emailcard">
+              <div className="eh">
+                <span>FROM:</span> {apologyEmail.from}
+              </div>
+              <div className="eh">
+                <span>TO:</span> {apologyEmail.to}
+              </div>
+              <div className="eh">
+                <span>SUBJECT:</span> {apologyEmail.subject}
+              </div>
+              <div className="ebody">
+                {apologyEmail.paragraphs.map((par, pi) => (
+                  <p key={pi} style={{ animationDelay: `${0.1 * pi}s` }}>
+                    {par}
+                  </p>
+                ))}
+              </div>
             </div>
-          )
-        })}
+          )}
 
-        {done && (
-          <>
-            <div style={{ textAlign: 'center', marginTop: 26 }}>
-              <span className="stamp stamp--big">QUESTIONABLE</span>
-            </div>
-            <Narration lines={c.complete} />
-            <NextBtn current="ch4" />
-          </>
-        )}
+          <NextBtn current="ch4" />
         </div>
       </div>
     </div>
   )
 }
 
-/* ============ CHAPTER 05 — FINANZA ============
-   Post three things and watch the numbers climb. Nothing to miss. */
+/* ============ CHAPTER 05 — FINANZA ============ */
 export function Ch5() {
   const { completeChapter } = useGame()
-  const [posts, setPosts] = useState(0)
-  const [views, setViews] = useState(0)
-  const [shown, setShown] = useState(0)
-  const target = useRef(0)
-  const raf = useRef<number | null>(null)
   const c = ch('ch5')
-  const abilities = c.abilities!
-  const done = posts >= 3
-
   useEffect(() => {
-    const tick = () => {
-      setViews((v) => (v < target.current ? v + Math.max(1, Math.ceil((target.current - v) * 0.07)) : v))
-      raf.current = requestAnimationFrame(tick)
-    }
-    raf.current = requestAnimationFrame(tick)
-    return () => {
-      if (raf.current) cancelAnimationFrame(raf.current)
-    }
+    completeChapter('ch5')
   }, [])
-
-  const post = () => {
-    if (done) return
-    sfx.play('unlock')
-    target.current += 48000 + Math.floor(Math.random() * 26000)
-    setPosts((p) => {
-      const np = p + 1
-      if (np >= 3) {
-        sfx.play('complete')
-        abilities.forEach((_, i) => setTimeout(() => setShown(i + 1), 420 * i + 400))
-        completeChapter('ch5')
-      }
-      return np
-    })
-  }
-
-  const POST_LABELS = ['POST THE TEASER', 'POST THE REEL', 'POST THE AFTERMOVIE']
 
   return (
     <div className="scene scene--vn">
       <SceneArt kind="stage" />
-      {posts === 0 && (
-        <div className="cast">
-          <Person who="p1" h={162} />
-        </div>
-      )}
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 05" />
         <div className="stage on">
           <Head id="ch5" />
-          <Narration lines={c.intro.slice(0, 1)} dark />
-
-          <div className="viewcount">
-            {views.toLocaleString('en-IN')}
-            <span className="lbl">VIEWS · ILLUSTRATIVE — REAL NUMBERS PENDING</span>
-          </div>
-
-          {!done && (
-            <button className="btn" style={{ marginTop: 14 }} onClick={post}>
-              {POST_LABELS[posts]}
-            </button>
-          )}
-
+          <Prose lines={c.paragraphs} />
           <div className="abilities">
-            {abilities.map((a, i) => (
-              <div key={a} className={'ability' + (i < shown ? ' show' : '')}>
+            {c.abilities!.map((a, i) => (
+              <div key={a} className="ability show" style={{ transitionDelay: `${0.1 * i}s` }}>
                 <span className="st">◆</span>
                 <span>{a.toUpperCase()}</span>
               </div>
             ))}
           </div>
-
-          {shown >= abilities.length && (
-            <>
-              <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 10 }}>
-                <P text={c.statsNote!} />
-              </p>
-              <Narration lines={c.complete} dark />
-              <PhotoRow photos={c.photos} />
-              <NextBtn current="ch5" />
-            </>
-          )}
+          <p className="meta" style={{ marginTop: 12 }}>
+            <P text={c.statsNote!} />
+          </p>
+          <PhotoRow photos={c.photos} />
+          <NextBtn current="ch5" />
         </div>
       </div>
     </div>
   )
 }
 
-/* ============ CHAPTER 06 — TANISHKA'S SECRET QUEST ============
-   Game: THE EVIDENCE. Search her room for five tells. No timer,
-   nothing to fail — the case assembles itself.                  */
+/* ============ CHAPTER 06 — THE PART SHE DIDN'T SAY ============ */
 export function Ch6() {
   const { completeChapter } = useGame()
-  const [stage, setStage] = useState<'intro' | 'hunt' | 'done'>('intro')
   const c = ch('ch6')
+  useEffect(() => {
+    completeChapter('ch6')
+  }, [])
 
   return (
     <div className="scene scene--vn">
       <SceneArt kind="darkroom" />
-      {stage === 'intro' && (
-        <div className="cast">
-          <Person who="p2" h={156} />
-        </div>
-      )}
+      <div className="cast">
+        <Person who="p2" h={156} />
+      </div>
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 06" />
-
-        <div className={'stage' + (stage === 'intro' ? ' on' : '')}>
+        <div className="stage on">
           <Head id="ch6" />
-          <Narration lines={c.intro} dark />
-          <div className="qbox" style={{ marginTop: 16, borderColor: 'var(--rose)' }}>
-            <div className="who" style={{ color: 'var(--rose)' }}>
-              SIDE QUEST DETECTED
-            </div>
-            <p className="line" style={{ fontFamily: 'var(--type)', fontSize: 12.5, color: 'var(--cream-hi)' }}>
-              Status: NOT DISCLOSED.
-              <br />
-              This quest cannot currently be discussed with Player 1.
-            </p>
-          </div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('hunt')}>
-            SEARCH THE ROOM
-          </button>
-        </div>
-
-        <div className={'stage' + (stage === 'hunt' ? ' on' : '')}>
-          {stage === 'hunt' && (
-            <ClueHunt
-              onDone={() => {
-                completeChapter('ch6')
-                setStage('done')
-              }}
-            />
-          )}
-        </div>
-
-        <div className={'stage' + (stage === 'done' ? ' on' : '')}>
-          <div style={{ textAlign: 'center', marginTop: 22 }}>
-            <span className="stamp stamp--big" style={{ fontSize: 20, color: 'var(--rose)', borderColor: 'var(--rose)' }}>
-              CASE CLOSED
-            </span>
-          </div>
-          <Narration lines={c.complete} dark />
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-            SHE HAD KNOWN FOR A WHILE. SHE TOLD NO ONE. LEAST OF ALL HIM.
+          <Prose lines={c.paragraphs} />
+          <p className="meta" style={{ marginTop: 14, color: 'var(--rose)' }}>
+            THIS QUEST COULD NOT, AT THE TIME, BE DISCUSSED WITH PLAYER 1.
           </p>
           <NextBtn current="ch6" />
         </div>
@@ -1059,22 +914,10 @@ export function Ch9() {
 /* ============ CHAPTER 10 — TWO FEST HEADS ============ */
 export function Ch10() {
   const { completeChapter, go } = useGame()
-  const [a, setA] = useState(0)
-  const [t, setT] = useState(0)
-  const [crossed, setCrossed] = useState(false)
   const c = ch('ch10')
-  const both = a >= 90 && t >= 34
-
   useEffect(() => {
-    if (both && !crossed) {
-      const timer = setTimeout(() => {
-        sfx.play('complete')
-        setCrossed(true)
-        completeChapter('ch10')
-      }, 500)
-      return () => clearTimeout(timer)
-    }
-  }, [both, crossed])
+    completeChapter('ch10')
+  }, [])
 
   return (
     <div className="scene scene--vn">
@@ -1082,75 +925,13 @@ export function Ch10() {
       <div className="col">
         <SNav back="story" label="← CHAPTERS" where="CH. 10" />
         <div className="stage on">
-        <Head id="ch10" />
-        <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-          TAP EACH CREST TO POWER THEM UP.
-        </p>
-
-        <div className="duo">
-          <div className={'duocard' + (a > 0 ? ' active' : '')}>
-            <button
-              className="crest"
-              style={{ width: 76, height: 76, fontSize: 20, margin: '0 auto' }}
-              onClick={() => {
-                sfx.play('click')
-                setA((x) => Math.min(90, x + 90))
-              }}
-            >
-              DM
-            </button>
-            <div className="nm" style={{ marginTop: 12 }}>
-              {players.p1.name}
-            </div>
-            <div className="rl">HEAD OF DIGITAL MEDIA · FINANZA</div>
-            <div className="xbar">
-              <i style={{ width: `${a}%` }} />
-            </div>
-            <div className="rl" style={{ marginTop: 8 }}>
-              {a >= 90 ? 'EXPERIENCED. ANNOYINGLY.' : 'EXPERIENCE'}
-            </div>
-          </div>
-          <div className={'duocard' + (t > 0 ? ' active' : '')}>
-            <button
-              className="crest"
-              style={{ width: 76, height: 76, fontSize: 20, margin: '0 auto', borderColor: 'var(--rose)', color: 'var(--rose)' }}
-              onClick={() => {
-                sfx.play('click')
-                setT((x) => Math.min(34, x + 34))
-              }}
-            >
-              SM
-            </button>
-            <div className="nm" style={{ marginTop: 12 }}>
-              {players.p2.name}
-            </div>
-            <div className="rl">HEAD OF SOCIAL MEDIA · ANOTHER FEST</div>
-            <div className="xbar xbar--rose">
-              <i style={{ width: `${t}%` }} />
-            </div>
-            <div className="rl" style={{ marginTop: 8 }}>
-              {t >= 34 ? 'NEW TO EDITING. THE BAR IS HONEST.' : 'EXPERIENCE'}
-            </div>
-          </div>
-        </div>
-
-        <div className={'crosspath' + (crossed ? ' go' : '')} aria-hidden="true">
-          <svg viewBox="0 0 400 80" preserveAspectRatio="none">
-            <path d="M20 10 C 150 10, 250 70, 380 70" stroke="#E8A33D" />
-            <path d="M20 70 C 150 70, 250 10, 380 10" stroke="#C98A93" />
-          </svg>
-        </div>
-
-        {crossed && (
-          <>
-            <Narration lines={c.intro} dark />
-            <PhotoRow photos={c.photos} />
-            <Narration lines={c.complete} dark />
-            <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('r1')}>
-              ACT II: THE RELATIONSHIP ARC ▸
-            </button>
-          </>
-        )}
+          <Head id="ch10" />
+          <Prose lines={c.paragraphs} />
+          <PhotoRow photos={c.photos} />
+          <Narration lines={c.complete} dark />
+          <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => go('r1')}>
+            ACT II: THE RELATIONSHIP ARC ▸
+          </button>
         </div>
       </div>
     </div>

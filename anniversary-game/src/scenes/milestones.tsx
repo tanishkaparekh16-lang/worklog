@@ -275,139 +275,125 @@ function OrderGame({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* r2 — accept the flowers */
+/* r2 — the gentleman era needs no game; the photographs make the case */
 function FlowersGame({ onDone }: { onDone: () => void }) {
-  const [n, setN] = useState(0)
-  const full = n >= 2
   return (
     <>
-      <div className="bouquet" aria-hidden="true">
-        {Array.from({ length: n }).map((_, i) => (
-          <span key={i} className="bloom" style={{ transform: `rotate(${(i - 1) * 22}deg)` }} />
-        ))}
-        {n === 0 && <span className="meta" style={{ color: 'var(--cream-dim)' }}>NO FLOWERS YET</span>}
-      </div>
-      <XP label="GENTLEMAN RATING" value={Math.min(100, n * 50)} animate={false} />
-      {!full ? (
-        <button
-          className="btn"
-          style={{ marginTop: 20 }}
-          onClick={() => {
-            sfx.play('unlock')
-            setN((x) => x + 1)
-          }}
-        >
-          ACCEPT FLOWERS · DATE {n + 2}
-        </button>
-      ) : (
-        <>
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-            FLOWERS, MANNERS, CONSISTENCY. THE FULL PACKAGE.
-          </p>
-          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
-            CONFIRM GENTLEMAN STATUS
-          </button>
-        </>
-      )}
+      <p className="narr" style={{ marginTop: 6 }}>
+        Second date, third date, and whatnot. There were flowers more than once,
+        which is a detail worth recording because it kept happening after the
+        point where anybody would have been impressed by it.
+      </p>
+      <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
+        CONFIRM GENTLEMAN STATUS
+      </button>
     </>
   )
 }
 
-/* kk — the rain, and the first I love you */
+/* kk — told as a short story, one scene at a time */
 function RainGame({ onDone }: { onDone: () => void }) {
-  const [phase, setPhase] = useState<'talk' | 'rain' | 'stay' | 'said'>('talk')
-  const [fb, setFb] = useState('')
-  const dark = { borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' } as const
+  const c = chapters.find((x) => x.id === 'kk')!
+  const scenes = c.scenes ?? []
+  const [i, setI] = useState(0)
+  const sc = scenes[i]
+  const last = i >= scenes.length - 1
+
+  const advance = () => {
+    if (last) {
+      sfx.play('complete')
+      onDone()
+      return
+    }
+    sfx.play('click')
+    setI(i + 1)
+  }
 
   return (
-    <>
-      {(phase === 'rain' || phase === 'stay' || phase === 'said') && <div className="rain" aria-hidden="true" />}
+    <div className="storywrap">
+      <div className="storyart" key={sc.art + i}>
+        <ParkScene beat={sc.art} />
+      </div>
 
-      {phase === 'talk' && (
-        <>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 14, marginTop: 30 }}>
-            <Figure who="p1" h={110} />
-            <Figure who="p2" h={110} flip />
-          </div>
-          <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 16 }}>
-            KK PARK. A BENCH. A CONVERSATION WITH NO INTENTION OF ENDING.
+      <div className="storytext" key={i}>
+        {sc.line.map((l, k) => (
+          <p key={k} style={{ animationDelay: `${0.15 + k * 0.35}s` }}>
+            {l}
           </p>
-          <button className="btn" style={{ marginTop: 16 }} onClick={() => { sfx.play('notify'); setPhase('rain') }}>
-            THEN THE SKY OPENED
-          </button>
-        </>
-      )}
+        ))}
+        {sc.say && (
+          <div
+            className={'saybubble ' + (sc.say.who === 'a' ? 'say--a' : 'say--t')}
+            style={{ animationDelay: `${0.2 + sc.line.length * 0.35}s` }}
+          >
+            <span className="who">{sc.say.who === 'a' ? 'ANAY' : 'TANISHKA'}</span>
+            “{sc.say.text}”
+          </div>
+        )}
+      </div>
 
-      {phase === 'rain' && (
-        <>
-          <p className="meta" style={{ color: 'var(--cream-hi)', marginTop: 26 }}>
-            IT STARTED RAINING.
-            <br />
-            EVERYONE IS LEAVING THE PARK.
-          </p>
-          <div className="choices">
-            <button
-              className="choice"
-              style={dark}
-              onClick={(e) => {
-                sfx.play('wrong')
-                const el = e.currentTarget
-                el.classList.remove('shake')
-                void el.offsetWidth
-                el.classList.add('shake')
-                setFb('HISTORICALLY IMPOSSIBLE.')
-              }}
-            >
-              Leave. Obviously. It’s raining.
-            </button>
-            <button className="choice" style={dark} onClick={() => { sfx.play('unlock'); setFb(''); setPhase('stay') }}>
-              Stay.
-            </button>
-          </div>
-          <div className="feedback">{fb}</div>
-        </>
-      )}
+      <div className="storynav">
+        <span className="dots">
+          {scenes.map((_, k) => (
+            <i key={k} className={k <= i ? 'on' : ''} />
+          ))}
+        </span>
+        <button className="btn btn--red" onClick={advance}>
+          {last ? 'STAY A LITTLE LONGER ▸' : 'GO ON ▸'}
+        </button>
+      </div>
+    </div>
+  )
+}
 
-      {phase === 'stay' && (
-        <>
-          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 30 }}>
-            The park emptied.
-          </p>
-          <p className="narr" style={{ color: 'var(--cream-hi)', marginTop: 8 }}>
-            Two people did not notice.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 26 }}>
-            <Figure who="p1" h={110} />
-            <Figure who="p2" h={110} flip />
-          </div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={() => { sfx.play('complete'); setPhase('said') }}>
-            AND THEN HE SAID IT
-          </button>
-        </>
-      )}
+/* the park, drawn per story beat */
+function ParkScene({ beat }: { beat: string }) {
+  const raining = beat === 'rain' || beat === 'hug' || beat === 'dance' || beat === 'firstdrop'
+  const heavy = beat !== 'firstdrop'
+  return (
+    <div className={'parkscene' + (raining ? ' wet' : '')}>
+      <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="pkSkyS" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={beat === 'bench' ? '#3E5540' : '#1E3228'} />
+            <stop offset="1" stopColor={beat === 'bench' ? '#8A6A3E' : '#152219'} />
+          </linearGradient>
+        </defs>
+        <rect width="400" height="240" fill="url(#pkSkyS)" />
+        {/* canopy */}
+        <g fill={beat === 'bench' ? '#24402C' : '#16281D'}>
+          <ellipse cx="50" cy="34" rx="110" ry="56" />
+          <ellipse cx="210" cy="14" rx="120" ry="50" />
+          <ellipse cx="360" cy="40" rx="105" ry="58" />
+        </g>
+        <rect x="66" y="70" width="10" height="120" fill="#241A12" />
+        <rect x="322" y="76" width="9" height="114" fill="#241A12" />
+        {/* lamp */}
+        <rect x="196" y="86" width="4" height="104" fill="#2A322A" />
+        <path d="M186 88 h24 l-6 -12 h-12 z" fill="#37423A" />
+        <circle cx="198" cy="92" r="16" fill="#EBD9A0" opacity=".18" />
+        <circle cx="198" cy="92" r="6" fill="#EBD9A0" />
+        {/* ground */}
+        <rect y="188" width="400" height="52" fill={beat === 'bench' ? '#2E3A28' : '#16211A'} />
+        {/* bench */}
+        <g fill="#2A3626">
+          <rect x="122" y="170" width="150" height="8" rx="3" />
+          <rect x="122" y="156" width="150" height="8" rx="3" />
+          <rect x="130" y="178" width="7" height="20" />
+          <rect x="257" y="178" width="7" height="20" />
+        </g>
+        {/* puddle reflection once it rains */}
+        {raining && <ellipse cx="198" cy="214" rx="120" ry="16" fill="#EBD9A0" opacity=".07" />}
+      </svg>
 
-      {phase === 'said' && (
-        <>
-          <div className="goldpanel" style={{ marginTop: 30 }}>
-            <div className="glow" aria-hidden="true" />
-            <p className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', fontSize: 20 }}>
-              “I love you.”
-            </p>
-            <p className="narr" style={{ color: '#f5e7c8', fontStyle: 'normal', marginTop: 12 }}>
-              She hugged him in the rain and said it back.
-            </p>
-            <p className="narr" style={{ color: '#c8a97c', fontStyle: 'normal', marginTop: 12, fontSize: 14 }}>
-              They danced. They played songs into the rain.
-              <br />
-              The weather never stood a chance.
-            </p>
-          </div>
-          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
-            CHAI &amp; SAMOSAS ▸
-          </button>
-        </>
-      )}
-    </>
+      {/* the two of them, staged per beat */}
+      <div className={'parkcast beat-' + beat}>
+        <Person who="p1" h={104} />
+        <Person who="p2" h={100} flip />
+      </div>
+
+      {raining && <div className={'rainfx' + (heavy ? ' heavy' : '')} aria-hidden="true" />}
+    </div>
   )
 }
 
@@ -555,42 +541,21 @@ function MontageGame({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* r7 — meet the friends in Pune */
+/* r7 — Pune: no roll call, just the fact of it */
 function FriendsGame({ onDone }: { onDone: () => void }) {
-  const [met, setMet] = useState(0)
-  const FRIENDS = ['FRIEND 01', 'FRIEND 02', 'FRIEND 03']
   return (
     <>
-      <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>
-        THE ORIGINAL PARTY MEMBERS. APPROVAL REQUIRED. ALLEGEDLY.
+      <p className="narr" style={{ marginTop: 6 }}>
+        He took her to Pune to meet his friends — the originals, the ones who
+        knew him before any of this. That is not a small thing. You do not bring
+        someone to those people unless you have already decided something.
       </p>
-      <div style={{ marginTop: 10 }}>
-        {FRIENDS.map((f, i) => (
-          <button
-            key={f}
-            className="exrow"
-            onClick={() => {
-              if (i === met) {
-                sfx.play('unlock')
-                setMet(met + 1)
-              }
-            }}
-          >
-            <span>{f}</span>
-            <span className="v">{i < met ? 'APPROVED ✓' : i === met ? 'SAY HI' : '···'}</span>
-          </button>
-        ))}
-      </div>
-      {met >= FRIENDS.length && (
-        <>
-          <p className="meta" style={{ color: 'var(--amber)', marginTop: 18 }}>
-            UNANIMOUS. IT WAS NEVER REALLY IN DOUBT.
-          </p>
-          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={onDone}>
-            SHE UNDERSTOOD WHAT THIS MEANT
-          </button>
-        </>
-      )}
+      <p className="meta" style={{ marginTop: 14, textAlign: 'left' }}>
+        THEY APPROVED. IT WAS NEVER REALLY IN DOUBT.
+      </p>
+      <button className="btn btn--ink" style={{ marginTop: 16 }} onClick={onDone}>
+        SHE UNDERSTOOD WHAT THIS MEANT
+      </button>
     </>
   )
 }

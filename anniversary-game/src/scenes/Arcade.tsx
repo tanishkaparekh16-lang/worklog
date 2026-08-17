@@ -104,7 +104,7 @@ function GameHost({ id, onWin, onQuit }: { id: GameId; onWin: () => void; onQuit
       {id === 'mem1' && <Pairs onWin={win} />}
       {id === 'mem2' && <Timeline onWin={win} />}
       {id === 'mem3' && <Maze onWin={win} />}
-      {id === 'mem4' && <Reaction onWin={win} />}
+      {id === 'mem4' && <AboutHer onWin={win} />}
       {id === 'mem5' && <Slide onWin={win} />}
       <button className="btn btn--ghost" style={{ marginTop: 16 }} onClick={onQuit}>
         WALK AWAY
@@ -296,78 +296,89 @@ function Maze({ onWin }: { onWin: () => void }) {
   )
 }
 
-/* ---------------- game 4: reaction (with decoys) ---------------- */
-const RNOTES = ['anay sent a message', 'anay liked your story', 'anay replied', 'anay is typing…', 'anay sent a reel', 'anay: “btw”', 'anay again', 'still anay']
-const DECOYS = ['low battery', 'system update available', 'win a free car!!', 'screen time report', '47 unread emails']
-function Reaction({ onWin }: { onWin: () => void }) {
-  const NEED = 10
-  const [caught, setCaught] = useState(0)
-  const [fb, setFb] = useState('')
-  const [note, setNote] = useState<{ x: number; y: number; t: string; id: number; decoy: boolean } | null>(null)
-  const idc = useRef(0)
-  const alive = useRef(true)
+/* ---------------- game 4: HOW WELL DO YOU KNOW HER ----------------
+   The whole website is for Anay, so this cabinet is about Tanishka.
+   Placeholders are marked; swap the answers in relationshipData.     */
+const HER = [
+  {
+    q: 'Which side of the city is she from?',
+    a: ['Vile Parle', 'Andheri', 'Bandra'],
+    correct: 0,
+    after: 'Vile Parle. The café authority herself.',
+  },
+  {
+    q: 'What did she hand him at Blabber?',
+    a: ['A playlist', 'A letter with a poem in it', 'A wrapped gift'],
+    correct: 1,
+    after: 'A poem, ending in a question. He said yes.',
+  },
+  {
+    q: 'What was she head of?',
+    a: ['Digital Media, Finanza', 'Social Media, another fest', 'Nothing, she just watched'],
+    correct: 1,
+    after: 'Head of Social Media — and very new to editing at the time.',
+  },
+  {
+    q: 'How did she answer the 5 AM message?',
+    a: ['Immediately', 'She took the day, then said it properly', 'She never replied'],
+    correct: 1,
+    after: '“ill text u in some time.” Then several paragraphs. Then: i like you too.',
+  },
+]
 
-  useEffect(() => {
-    alive.current = true
-    spawn()
-    return () => {
-      alive.current = false
-    }
-  }, [])
+function AboutHer({ onWin }: { onWin: () => void }) {
+  const [i, setI] = useState(0)
+  const [picked, setPicked] = useState<number | null>(null)
+  const [score, setScore] = useState(0)
+  const q = HER[i]
 
-  const spawn = () => {
-    if (!alive.current) return
-    idc.current += 1
-    const decoy = Math.random() < 0.35
-    setNote({
-      x: Math.random() * 58 + 4,
-      y: Math.random() * 78 + 6,
-      t: decoy ? DECOYS[Math.floor(Math.random() * DECOYS.length)] : RNOTES[Math.floor(Math.random() * RNOTES.length)],
-      id: idc.current,
-      decoy,
-    })
+  const pick = (k: number) => {
+    if (picked !== null) return
+    setPicked(k)
+    if (k === q.correct) {
+      sfx.play('unlock')
+      setScore((s) => s + 1)
+    } else sfx.play('click')
   }
-
-  const catchIt = () => {
-    if (!note) return
-    setNote(null)
-    if (note.decoy) {
-      sfx.play('wrong')
-      setFb('THAT WAS NOT ANAY. FOCUS.')
-      setCaught((n) => Math.max(0, n - 1))
-      setTimeout(spawn, 300 + Math.random() * 400)
-      return
-    }
-    sfx.play('notify')
-    setFb('')
-    const n = caught + 1
-    setCaught(n)
-    if (n >= NEED) {
-      setTimeout(onWin, 500)
+  const next = () => {
+    if (i + 1 >= HER.length) {
+      sfx.play('complete')
+      setTimeout(onWin, 400)
     } else {
-      setTimeout(spawn, 260 + Math.random() * 500)
+      setI(i + 1)
+      setPicked(null)
     }
   }
 
   return (
     <>
-      <div className="bigttl">NOTIFICATIONS</div>
+      <div className="bigttl">ABOUT HER</div>
       <div className="bigsub">
-        TAP ONLY ANAY. {caught}/{NEED} — DECOYS COST YOU.
+        {i + 1}/{HER.length} · SCORE {score} · THIS ONE IS NOT ABOUT YOU
       </div>
-      <div className="reactfield">
-        {note && (
-          <button
-            key={note.id}
-            className="rnotif"
-            style={{ left: `${note.x}%`, top: `${note.y}%` }}
-            onClick={catchIt}
-          >
-            ▣ {note.t}
+      <p className="quizq" style={{ marginTop: 16 }}>
+        {q.q}
+      </p>
+      <div className="choices" style={{ marginTop: 12 }}>
+        {q.a.map((opt, k) => {
+          const state = picked === null ? '' : k === q.correct ? ' qright' : k === picked ? ' qwrong' : ' qdim'
+          return (
+            <button key={k} className={'choice qopt' + state} onClick={() => pick(k)}>
+              {opt}
+            </button>
+          )
+        })}
+      </div>
+      {picked !== null && (
+        <>
+          <p className="meta" style={{ marginTop: 12, textAlign: 'left', color: 'var(--cream-dim)' }}>
+            {q.after}
+          </p>
+          <button className="btn" style={{ marginTop: 12 }} onClick={next}>
+            {i + 1 >= HER.length ? 'UNLOCK THE MEMORY' : 'NEXT ▸'}
           </button>
-        )}
-      </div>
-      <div className="feedback" style={{ color: 'var(--rose)' }}>{fb}</div>
+        </>
+      )}
     </>
   )
 }
@@ -375,6 +386,7 @@ function Reaction({ onWin }: { onWin: () => void }) {
 /* ---------------- game 5: slide puzzle ---------------- */
 function Slide({ onWin }: { onWin: () => void }) {
   const [tiles, setTiles] = useState<number[]>(() => scrambled())
+  const [moves, setMoves] = useState(0)
   const won = useRef(false)
 
   const tap = (i: number) => {
@@ -388,6 +400,7 @@ function Slide({ onWin }: { onWin: () => void }) {
     next[e] = next[i]
     next[i] = 0
     setTiles(next)
+    setMoves((m) => m + 1)
     if (next.every((v, idx) => v === (idx + 1) % 9)) {
       won.current = true
       setTimeout(onWin, 500)
@@ -397,7 +410,9 @@ function Slide({ onWin }: { onWin: () => void }) {
   return (
     <>
       <div className="bigttl">THE PICTURE</div>
-      <div className="bigsub">SLIDE THE TILES INTO ORDER. THE PHOTO ARRIVES LATER.</div>
+      <div className="bigsub">
+        SLIDE THE TILES INTO ORDER · {moves} MOVES · ALWAYS SOLVABLE
+      </div>
       <div className="slidegrid">
         {tiles.map((v, i) => (
           <button key={i} className={'sl' + (v === 0 ? ' empty' : '')} onClick={() => tap(i)} aria-label={v === 0 ? 'Empty space' : `Tile ${v}`}>
@@ -405,6 +420,17 @@ function Slide({ onWin }: { onWin: () => void }) {
           </button>
         ))}
       </div>
+      <button
+        className="btn btn--ghost"
+        style={{ marginTop: 14 }}
+        onClick={() => {
+          sfx.play('click')
+          setTiles(scrambled())
+          setMoves(0)
+        }}
+      >
+        RESHUFFLE
+      </button>
     </>
   )
 }

@@ -67,6 +67,9 @@ export type Chapter = {
   emailParagraphs?: string[]
   story?: string
   poem?: string[]
+  /* novel-style scenes: each is one beat of the chapter */
+  scenes?: { art: string; line: string[]; say?: { who: 'a' | 't'; text: string } }[]
+  paragraphs?: string[]
   game?: 'order' | 'flowers' | 'rain' | 'letter' | 'hands' | 'torch' | 'montage' | 'friends' | 'days' | 'distance'
   photos?: { src: string; caption: string }[]
 }
@@ -151,42 +154,15 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Classification pending review.'],
     completeNote: '',
-    levels: [
-      {
-        id: '4.1',
-        name: 'THE ROASTING ERA',
-        story:
-          'They chatted constantly. They roasted the hell out of each other. Somewhere between the insults, they learned a hell of a lot about each other. This is a documented bonding strategy.',
-        kind: 'rally',
-      },
-      {
-        id: '4.2',
-        name: 'THE PRANK ECONOMY',
-        story:
-          'Silly little pranks entered circulation. The exchange rate was never fair: he pranked, she endured. Mostly him. Always him.',
-        kind: 'whack',
-      },
-      {
-        id: '4.3',
-        name: 'THE IGNORE INCIDENT',
-        story:
-          'As a joke, Anay ignored Tanishka for an entire week. Tanishka did not process this as a joke. Consequences were immediate.',
-        kind: 'block',
-      },
-      {
-        id: '4.4',
-        name: 'THE APOLOGY EMAIL',
-        story:
-          'The terms of unblocking were clear: one (1) formal apology email. He delivered. It exceeded all expectations.',
-        kind: 'email',
-      },
-      {
-        id: '4.5',
-        name: 'THE PIZZA INCIDENT',
-        story:
-          'In return for a very small favor, Anay sent Tanishka an entire pizza. She loved his guts. Over time, they got closer. Someone in this story was developing feelings.',
-        kind: 'pizza',
-      },
+    paragraphs: [
+      'They talked constantly, and most of it was insults. They roasted each other with a dedication usually reserved for sport, and somewhere between the insults they learned a startling amount about each other — the small things, the family things, the things you only mention at two in the morning.',
+      'Pranks were introduced to the economy. The exchange rate was never fair: he pranked, she endured. Then one week he took it too far and ignored her entirely as a joke. Tanishka did not receive it as a joke. She blocked him, and set exactly one condition for being unblocked: a formal apology email.',
+      'He wrote it. It remains, by any reasonable standard, the finest apology email ever sent by a nineteen-year-old.',
+      'Some time later, in return for a very small favour, he sent her an entire pizza. She loved his guts. Somewhere in all of this, quietly and without announcing itself, one of them started keeping count of the other.',
+    ],
+    photos: [
+      { src: 'assets/images/birthday-hat.jpg', caption: 'Evidence of the prank economy.' },
+      { src: 'assets/images/friends-night.jpg', caption: 'The wider cast, mid-era.' },
     ],
   },
   {
@@ -211,6 +187,10 @@ export const chapters: Chapter[] = [
       'Apparently Everyone Likes His Work',
     ],
     statsNote: '[PLACEHOLDER — real Finanza statistics can go here, e.g. view counts]',
+    paragraphs: [
+      'In August 2024, Anay was made Head of Digital Media for Finanza. It is the kind of title that sounds impressive on a poster and means, in practice, that everything is your problem.',
+      'He was very good at it. The page grew, the reels landed, the numbers went up and stayed up, and people who had no reason to care about a college fest started paying attention. Somewhere in the middle of all that competence, he was also — though he would not have said so out loud — extremely aware of one person in the audience.',
+    ],
     photos: [
       { src: 'assets/images/finanza-stage.jpg', caption: 'The numbers were, in fact, up.' },
       { src: 'assets/images/finanza-desk.jpg', caption: 'The head of digital media, at work. Allegedly.' },
@@ -220,19 +200,24 @@ export const chapters: Chapter[] = [
     id: 'ch6',
     act: 1,
     num: '06',
-    title: 'TANISHKA’S SECRET QUEST',
+    title: 'THE PART SHE DIDN’T SAY',
     place: 'Undisclosed',
     year: '2024',
     classification: '“Not discussed”',
     intro: [
       'While Anay was busy being impressive,',
-      'a side quest had been active for some time.',
+      'something quieter had already happened.',
     ],
-    complete: [
-      'Quest status: NOT DISCLOSED.',
-      'This quest cannot currently be discussed with Player 1.',
-    ],
+    complete: ['Status: not disclosed.', 'Not to him. Not to anyone.'],
     completeNote: '',
+    paragraphs: [
+      'Tanishka had caught feelings some time before any of this, and had told precisely no one. Not Rashi. Not the group chat. Certainly not him.',
+      'It arrived the way these things usually do — not as a decision but as an accumulation. Checking her phone more than she meant to. Noticing which days he came to college. Rereading things that did not need rereading. Getting quietly, unreasonably happy when he laughed at something she said.',
+      'She did the sensible thing and said nothing at all, which worked beautifully right up until it didn’t.',
+    ],
+    photos: [
+      { src: 'assets/images/red-selfie.jpg', caption: 'Saying nothing, loudly.' },
+    ],
   },
   {
     id: 'ch7',
@@ -341,8 +326,13 @@ export const chapters: Chapter[] = [
     ],
     complete: ['THE FRIENDSHIP ARC is over.', 'A new campaign begins.'],
     completeNote: '',
+    paragraphs: [
+      'Around the same time, Tanishka became Head of Social Media for a different college fest. She was very new to editing. He had a head start and an unfair amount of practice.',
+      'So they spent that season on opposite sides of Mithibai, running two different pages for two different fests, sending each other drafts at hours that no reasonable person keeps. Two departments, two deadlines, two people quietly building the same thing without saying so.',
+    ],
     photos: [
       { src: 'assets/images/classroom.jpg', caption: 'Two department heads, freshly appointed. Note the advisors on their heads.' },
+      { src: 'assets/images/fest-arch.jpg', caption: 'Fest season. Both of them on duty.' },
     ],
   },
 
@@ -391,6 +381,8 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/flowers-2.jpg', caption: 'Exhibit B. A pattern emerges.' },
       { src: 'assets/images/date-cafe.jpg', caption: 'Documented mid-date.' },
       { src: 'assets/images/date-plants.jpg', caption: 'Candid. Allegedly.' },
+      { src: 'assets/images/date-warm.jpg', caption: 'Another one of those evenings.' },
+      { src: 'assets/images/date-table.jpg', caption: 'Table for two, again.' },
     ],
   },
   {
@@ -437,22 +429,75 @@ export const chapters: Chapter[] = [
     year: 'YEAR ONE',
     classification: '“Meteorological event”',
     intro: [
-      'One of those dates was at KK Park.',
-      'The conversation was good.',
-      'The weather decided to test it.',
+      'Some days announce themselves. This one did not.',
+      'It began as an ordinary evening and then the sky got involved.',
     ],
     complete: [
-      'They danced in the rain. They listened to songs.',
-      'Later: chai and samosas.',
-      'A movie could not have written it better. It didn’t need to.',
+      'They came home soaked, holding paper cups.',
+      'Neither of them has ever described it as a bad day.',
     ],
     completeNote: '',
-    sincere: [
-      'It started raining. The park emptied. They didn’t move.',
-      'He said “I love you” first.',
-      'She hugged him in the rain and said it back.',
+    /* told as scenes — one visual and one beat at a time */
+    scenes: [
+      {
+        art: 'bench',
+        line: [
+          'They found a bench near the far end, the one with a slat missing, and sat down with no particular plan.',
+          'The park did its usual evening business around them — walkers on their third lap, a football somewhere behind the trees, the light going soft and orange the way it does just before it gives up.',
+        ],
+      },
+      {
+        art: 'bench',
+        line: [
+          'They talked. About nothing, mostly. About the week, and a professor neither of them liked, and a story she had told him before that he let her tell again anyway.',
+        ],
+        say: { who: 't', text: 'you’ve heard this one.' },
+      },
+      {
+        art: 'bench',
+        line: ['He shrugged, and did not look away.'],
+        say: { who: 'a', text: 'i like the way you tell it.' },
+      },
+      {
+        art: 'firstdrop',
+        line: [
+          'The first drop landed on the back of her hand. Then another, on the bench, dark and round.',
+          'Around them the park emptied in under a minute — bags over heads, chappals slapping the wet path, everyone suddenly urgent and going somewhere dry.',
+        ],
+      },
+      {
+        art: 'rain',
+        line: [
+          'Neither of them moved.',
+          'It was not a decision so much as an agreement nobody bothered to say out loud. The rain came down properly, the kind that soaks through in seconds, and the park became entirely theirs.',
+        ],
+      },
+      {
+        art: 'rain',
+        line: ['He said it into all that noise, without any build-up, as if it had been sitting there for a while waiting for a gap.'],
+        say: { who: 'a', text: 'i love you.' },
+      },
+      {
+        art: 'hug',
+        line: [
+          'She did not answer straight away. She got up, crossed the small distance between them, and hugged him in the middle of the downpour, both of them completely drenched and neither of them caring.',
+        ],
+        say: { who: 't', text: 'i love you too.' },
+      },
+      {
+        art: 'dance',
+        line: [
+          'After that the evening lost its shape entirely. Someone put on a song. They danced badly on wet grass, laughing at themselves, hair flat against their faces, the whole park lit only by one working lamp.',
+        ],
+      },
+      {
+        art: 'chai',
+        line: [
+          'Later, when the rain thinned out, they walked to the stall at the corner and stood under its plastic sheet with chai in paper cups and a plate of samosas between them, dripping onto the floor, saying very little.',
+          'A movie would have ended there. This one just kept going.',
+        ],
+      },
     ],
-    story: '',
     game: 'rain',
     photos: [
       { src: 'assets/images/kk-rain-park.jpg', caption: 'The park, freshly emptied.' },
@@ -536,6 +581,8 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/garba.jpg', caption: 'Festival protocol observed.' },
       { src: 'assets/images/birthday.jpg', caption: 'A birthday, celebrated properly.' },
       { src: 'assets/images/cozy.jpg', caption: 'Standard proximity, again.' },
+      { src: 'assets/images/traditional-night.jpg', caption: 'Dressed up, somewhere loud.' },
+      { src: 'assets/images/car-selfie.jpg', caption: 'In transit. Still talking.' },
     ],
   },
   {
@@ -560,6 +607,8 @@ export const chapters: Chapter[] = [
     photos: [
       { src: 'assets/images/pune-friends.jpg', caption: 'The party, expanded.' },
       { src: 'assets/images/pune-lake.jpg', caption: 'The full party, by the lake.' },
+      { src: 'assets/images/purple-1.jpg', caption: 'Somewhere loud and purple.' },
+      { src: 'assets/images/purple-2.jpg', caption: 'Same night, still there.' },
     ],
   },
   {

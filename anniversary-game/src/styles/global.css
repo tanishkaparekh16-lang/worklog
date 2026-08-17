@@ -1147,3 +1147,164 @@ img, svg { display: block; max-width: 100%; }
   .meta { font-size: 13px; }
   .btn { font-size: 14px; }
 }
+
+.sweetbox {
+  width: 100%; margin-top: 12px; padding: 14px; border-radius: 8px;
+  border: 2px solid rgba(33, 27, 18, 0.4); background: rgba(255, 255, 255, 0.7);
+  font-family: var(--serif); font-size: 16px; line-height: 1.5; color: var(--ink);
+  resize: vertical;
+}
+.sweetbox:focus { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* ============================================================
+   MOTION — ambient life in the backgrounds, and entrances that
+   feel authored rather than abrupt.
+   ============================================================ */
+/* scene art drifts almost imperceptibly, like a held camera */
+.vnart svg { animation: kenburns 26s ease-in-out infinite alternate; transform-origin: 50% 45%; }
+@keyframes kenburns {
+  from { transform: scale(1.03) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-1.2%, -1.4%, 0); }
+}
+/* lamps and bulbs breathe */
+.vnart svg circle[opacity=".18"], .vnart svg circle[opacity=".10"] { animation: glowpulse 5.5s ease-in-out infinite; }
+@keyframes glowpulse { 0%, 100% { opacity: .1 } 50% { opacity: .26 } }
+
+/* prose: paragraphs rise in sequence */
+.prose p {
+  font-family: var(--serif); font-size: 17.5px; line-height: 1.72; margin-top: 14px;
+  opacity: 0; transform: translateY(10px); animation: riseIn .7s cubic-bezier(.2,.8,.3,1) forwards;
+}
+.prose p:first-child { margin-top: 4px; }
+@keyframes riseIn { to { opacity: 1; transform: none } }
+.emailcard .ebody p { opacity: 0; animation: riseIn .6s ease forwards; }
+
+/* chapter header entrance */
+.chcard { animation: riseIn .5s ease both; }
+.chttl { animation: riseIn .6s .06s ease both; }
+.chplace { animation: riseIn .6s .12s ease both; }
+.chrule { animation: ruleIn .8s .18s cubic-bezier(.2,.8,.3,1) both; transform-origin: left; }
+@keyframes ruleIn { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+
+/* photos develop in */
+.photoslot { opacity: 0; animation: riseIn .7s ease forwards; }
+.photoslot:nth-child(2) { animation-delay: .1s }
+.photoslot:nth-child(3) { animation-delay: .2s }
+.photoslot:nth-child(4) { animation-delay: .3s }
+
+/* ============================================================
+   KK PARK — the story reader
+   ============================================================ */
+.storywrap { display: flex; flex-direction: column; }
+.storyart { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(237,224,196,.2); animation: fadeSwap .8s ease; }
+@keyframes fadeSwap { from { opacity: .2 } to { opacity: 1 } }
+.parkscene { position: relative; aspect-ratio: 5 / 3; }
+.parkscene svg { width: 100%; height: 100%; display: block; }
+.parkcast {
+  position: absolute; bottom: 14%; left: 0; right: 0; display: flex;
+  justify-content: center; align-items: flex-end; gap: 26px;
+  transition: gap .9s ease, transform .9s ease;
+}
+.parkcast .person { height: 46%; width: auto; filter: drop-shadow(0 8px 12px rgba(0,0,0,.5)); }
+.beat-bench { gap: 62px; }
+.beat-firstdrop { gap: 54px; }
+.beat-rain { gap: 40px; }
+.beat-hug { gap: 0; }
+.beat-hug .person:nth-child(2) { margin-left: -22px; }
+.beat-dance { gap: 8px; animation: sway 2.4s ease-in-out infinite; }
+@keyframes sway { 0%,100% { transform: rotate(-2deg) } 50% { transform: rotate(2deg) } }
+.beat-chai { gap: 30px; }
+
+.rainfx {
+  position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background:
+    repeating-linear-gradient(14deg, transparent 0 9px, rgba(200,222,255,.35) 9px 10px, transparent 10px 26px);
+  animation: rainfall .55s linear infinite;
+}
+.rainfx.heavy { opacity: .75; }
+@keyframes rainfall { from { background-position: 0 0 } to { background-position: -16px 70px } }
+
+.storytext { margin-top: 16px; }
+.storytext p {
+  font-family: var(--serif); font-size: 17.5px; line-height: 1.75; margin-top: 12px;
+  opacity: 0; animation: riseIn .8s ease forwards;
+}
+.saybubble {
+  display: inline-block; margin-top: 16px; padding: 12px 16px 11px; border-radius: 16px;
+  font-family: var(--serif); font-size: 18px; font-style: italic;
+  opacity: 0; animation: popIn .55s cubic-bezier(.2,1.3,.4,1) forwards; position: relative;
+}
+@keyframes popIn { from { opacity: 0; transform: translateY(8px) scale(.94) } to { opacity: 1; transform: none } }
+.saybubble .who { display: block; font-family: var(--type); font-size: 9.5px; letter-spacing: .22em; font-style: normal; margin-bottom: 5px; opacity: .8; }
+.say--a { background: #22304e; color: #cfe0f5; border-bottom-left-radius: 4px; }
+.say--t { background: #52343a; color: #f2d8dc; border-bottom-right-radius: 4px; margin-left: auto; display: block; width: fit-content; border-bottom-right-radius: 4px; }
+.storynav { display: flex; align-items: center; gap: 16px; margin-top: 20px; }
+.storynav .dots { display: flex; gap: 5px; }
+.storynav .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(237,224,196,.25); transition: background .3s; }
+.storynav .dots i.on { background: var(--amber); }
+.storynav .btn { flex: 1; margin-top: 0; }
+
+@media (min-width: 900px) {
+  .parkscene { aspect-ratio: 16 / 9; }
+  .storytext p { font-size: 19px; }
+  .saybubble { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vnart svg, .rainfx, .beat-dance { animation: none; }
+  .prose p, .storytext p, .saybubble, .photoslot, .chcard, .chttl, .chplace, .chrule { animation: none; opacity: 1; transform: none; }
+}
+
+/* story text takes the panel's own ink/cream, never a mid grey */
+.storytext p { color: var(--cream-hi); }
+.scene--light .storytext p { color: var(--ink); }
+.storyart { background: #0b120e; }
+
+/* ============================================================
+   DESKTOP, PART TWO — the screens that were still portrait.
+   ============================================================ */
+@media (min-width: 900px) {
+  /* the KK Park reader becomes a proper landscape spread */
+  .scene--vn .stage.on > .storywrap { grid-column: 1 / -1; }
+  .storywrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 30px; align-items: center; }
+  .storyart { grid-row: 1 / span 2; }
+  .storytext { margin-top: 0; }
+  .storynav { grid-column: 2; }
+
+  /* main menu: poster becomes a landscape masthead */
+  .scene--menu .col { max-width: 1000px; }
+  .poster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .poster .check { grid-column: 1 / -1; }
+  .postin { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 40px; align-items: center; text-align: left; padding: 40px 42px 34px; }
+  .postin .since, .postin .ptitle, .postin .pscript, .postin .pfine { grid-column: 1; text-align: left; }
+  .postin .ptitle { font-size: 62px; margin-top: 14px; }
+  .postin .pscript { font-size: 23px; }
+  .mlist { grid-column: 2; grid-row: 1 / span 4; margin-top: 0; }
+  .pbadge { right: 44%; top: 34px; }
+  .pfoot { text-align: left; padding-left: 42px; }
+
+  /* achievements in two columns */
+  .scene--tapes .col { max-width: 980px; }
+  .tape { display: inline-block; width: calc(50% - 10px); vertical-align: top; margin: 0 8px 18px 0; }
+
+  /* boot screen gets room */
+  .scene--boot .col { max-width: 620px; }
+  .glass { min-height: 540px; }
+
+  /* the letter reads as a real page */
+  .scene--letter .col { max-width: 780px; }
+  .paper p { font-size: 25px; }
+
+  /* map + story lists breathe */
+  .scene--story .col, .scene--stats .col, .scene--ost .col { max-width: 980px; }
+  .memcard { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+  .memcard .photo { aspect-ratio: auto; height: 100%; }
+}
+
+@media (min-width: 900px) {
+  /* the anniversary badge sits in the empty gutter, never over the menu */
+  .pbadge { left: 61%; right: auto; top: auto; bottom: 34px; }
+  /* give the story art the space it deserves */
+  .storywrap { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .storytext p { font-size: 20px; line-height: 1.7; }
+  .saybubble { font-size: 21px; }
+}

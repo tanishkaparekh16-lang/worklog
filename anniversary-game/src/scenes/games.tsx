@@ -343,48 +343,83 @@ type Q = { q: string; a: string[]; correct: number; after: string }
 
 const QUESTIONS: Q[] = [
   {
-    q: 'What was the very first text?',
-    a: ['“hey stranger”', '“sunn do you know any good cafes in VP east?”', '“are you free tomorrow?”'],
+    q: 'First date. Tanishka finishes her milkshake first and says: “loser, i finished my milkshake first.” What did Anay say back?',
+    a: [
+      'i won already when you said yes',
+      'to be fair, mera dhyaan milkshake pe tha hi nahi',
+      'mera milkshake toh mere saamne baitha hai',
+    ],
     correct: 1,
-    after: '29 August 2023. The file opens here.',
+    after: 'Smooth. Subtle. Constant. She noticed, obviously.',
   },
   {
-    q: 'At Rashi’s birthday dinner, what did Anay actually say?',
-    a: ['“i think tanishka bohot sundar hai”', '“pass”', '“nobody really”'],
-    correct: 0,
-    after: 'Said out loud. In front of everyone. Unprompted.',
-  },
-  {
-    q: 'What were the terms for getting unblocked?',
-    a: ['A phone call', 'One formal apology email', 'Flowers'],
-    correct: 1,
-    after: 'Delivered. Signed “Yours truly, Anayfiverr”.',
-  },
-  {
-    q: 'What did he send in return for one very small favour?',
-    a: ['A thank-you note', 'An entire pizza', 'Nothing'],
-    correct: 1,
-    after: 'She loved his guts.',
-  },
-  {
-    q: 'What time did the confession actually arrive?',
-    a: ['05:00 am', '05:38 am', 'Midnight'],
-    correct: 1,
-    after: 'The record says 5 am. History rounds down.',
-  },
-  {
-    q: 'What did they order on the first date?',
-    a: ['Two cold coffees', 'Two Ferrero Rocher milkshakes', 'Chai'],
-    correct: 1,
-    after: 'Chocolate Heaven. Zero awkwardness.',
+    q: 'Which chocolate did they have at KK Park?',
+    a: ['Amul Dark Chocolate', 'Cadbury Fruit & Nut', 'Temptations Rum & Raisin'],
+    correct: 2,
+    after: 'Rum and raisins. An unusual choice, defended vigorously.',
   },
 ]
+
+/* the last question isn't multiple choice — it's homework */
+function FinalQuestion({ onDone }: { onDone: () => void }) {
+  const [text, setText] = useState('')
+  const [tries, setTries] = useState(0)
+  const [msg, setMsg] = useState('')
+
+  const submit = () => {
+    if (text.trim().length < 3) {
+      setMsg('THE MARKER REQUIRES ACTUAL WORDS.')
+      return
+    }
+    const n = tries + 1
+    setTries(n)
+    if (n < 3) {
+      sfx.play('wrong')
+      setMsg(
+        n === 1
+          ? 'REJECTED. THE MARKER FEELS YOU CAN DO BETTER.'
+          : 'REJECTED AGAIN. THE MARKER IS ENJOYING THIS.',
+      )
+      setText('')
+    } else {
+      sfx.play('complete')
+      setMsg('ACCEPTED. THAT ONE WAS GOOD.')
+      setTimeout(onDone, 1400)
+    }
+  }
+
+  return (
+    <>
+      <p className="quizq">Write something sweet for Tanishka.</p>
+      <p className="meta" style={{ textAlign: 'left', marginTop: 8 }}>
+        THIS ONE IS MARKED BY HAND. {tries}/3 ATTEMPTS USED.
+      </p>
+      <textarea
+        className="sweetbox"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={3}
+        placeholder="type it here…"
+        aria-label="A message for Tanishka"
+      />
+      <button className="btn btn--red" style={{ marginTop: 12 }} onClick={submit}>
+        SUBMIT FOR APPROVAL
+      </button>
+      {msg && (
+        <p className="meta" style={{ marginTop: 12, textAlign: 'left', color: tries >= 3 ? 'var(--teal)' : 'var(--red)' }}>
+          {msg}
+        </p>
+      )}
+    </>
+  )
+}
 
 export function Quiz({ onDone }: { onDone: () => void }) {
   const [i, setI] = useState(0)
   const [picked, setPicked] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [written, setWritten] = useState(false)
   const q = QUESTIONS[i]
 
   const pick = (k: number) => {
@@ -400,20 +435,36 @@ export function Quiz({ onDone }: { onDone: () => void }) {
 
   const next = () => {
     if (i + 1 >= QUESTIONS.length) {
-      sfx.play('complete')
-      setFinished(true)
+      setWritten(true)
     } else {
       setI(i + 1)
       setPicked(null)
     }
   }
 
+  if (written && !finished) {
+    return (
+      <div className="gamewrap">
+        <div className="gamehud">
+          <span>FINAL QUESTION</span>
+          <span className="hudnote">NO OPTIONS PROVIDED</span>
+        </div>
+        <FinalQuestion
+          onDone={() => {
+            sfx.play('complete')
+            setFinished(true)
+          }}
+        />
+      </div>
+    )
+  }
+
   if (finished) {
     const verdict =
-      score >= 6
+      score >= 2
         ? 'FLAWLESS. SUSPICIOUSLY GOOD MEMORY.'
-        : score >= 4
-          ? 'SOLID. THE IMPORTANT ONES LANDED.'
+        : score >= 1
+          ? 'ACCEPTABLE. ONE SLIPPED.'
           : 'THE RECORD HAS BEEN REFRESHED FOR YOU.'
     return (
       <div className="gamewrap">
