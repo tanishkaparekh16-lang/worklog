@@ -278,7 +278,7 @@ function OrderGame({ onDone }: { onDone: () => void }) {
 /* r2 — accept the flowers */
 function FlowersGame({ onDone }: { onDone: () => void }) {
   const [n, setN] = useState(0)
-  const full = n >= 3
+  const full = n >= 2
   return (
     <>
       <div className="bouquet" aria-hidden="true">
@@ -287,7 +287,7 @@ function FlowersGame({ onDone }: { onDone: () => void }) {
         ))}
         {n === 0 && <span className="meta" style={{ color: 'var(--cream-dim)' }}>NO FLOWERS YET</span>}
       </div>
-      <XP label="GENTLEMAN RATING" value={Math.min(100, n * 34)} animate={false} />
+      <XP label="GENTLEMAN RATING" value={Math.min(100, n * 50)} animate={false} />
       {!full ? (
         <button
           className="btn"
@@ -434,36 +434,18 @@ function LetterGame({ onDone }: { onDone: () => void }) {
         PLAY AS ANAY. CHOOSE CAREFULLY.
       </p>
       <div className="choices">
-        <button
-          className="choice"
-          style={{ borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' }}
-          onClick={() => {
-            sfx.play('complete')
-            onDone()
-          }}
-        >
-          Yes.
-        </button>
-        <button
-          className="choice"
-          style={{ borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' }}
-          onClick={() => {
-            sfx.play('complete')
-            onDone()
-          }}
-        >
-          Obviously yes.
-        </button>
-        <button
-          className="choice"
-          style={{ borderColor: 'rgba(237,224,196,.5)', color: 'var(--cream-hi)' }}
-          onClick={() => {
-            sfx.play('complete')
-            onDone()
-          }}
-        >
-          (There was only ever one answer.)
-        </button>
+        {['Yes.', 'Obviously yes.', '(There was only ever one answer.)'].map((label) => (
+          <button
+            key={label}
+            className="choice"
+            onClick={() => {
+              sfx.play('complete')
+              onDone()
+            }}
+          >
+            {label}
+          </button>
+        ))}
       </div>
       <div className="feedback">{fb}</div>
     </>
@@ -546,11 +528,7 @@ function TorchGame({ onDone }: { onDone: () => void }) {
 /* r6 — inseparable montage */
 function MontageGame({ onDone }: { onDone: () => void }) {
   const [open, setOpen] = useState(0)
-  const slots = [
-    '[PLACEHOLDER — everyday memory #1]',
-    '[PLACEHOLDER — everyday memory #2]',
-    '[PLACEHOLDER — everyday memory #3]',
-  ]
+  const slots = ['[PLACEHOLDER — everyday memory #1]', '[PLACEHOLDER — everyday memory #2]']
   return (
     <>
       {slots.map((s, i) => (
@@ -580,7 +558,7 @@ function MontageGame({ onDone }: { onDone: () => void }) {
 /* r7 — meet the friends in Pune */
 function FriendsGame({ onDone }: { onDone: () => void }) {
   const [met, setMet] = useState(0)
-  const FRIENDS = ['FRIEND 01', 'FRIEND 02', 'FRIEND 03', 'FRIEND 04']
+  const FRIENDS = ['FRIEND 01', 'FRIEND 02', 'FRIEND 03']
   return (
     <>
       <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 14 }}>

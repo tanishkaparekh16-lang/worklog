@@ -181,7 +181,7 @@ export function Ch2() {
     'EYE CONTACT MADE, THEN IMMEDIATELY WITHDRAWN.',
     'CONVERSATION POSTPONED. AGAIN.',
   ]
-  const ready = sent >= 4 && rl >= 2
+  const ready = sent >= 2 && rl >= 1
 
   return (
     <div className="scene scene--vn scene--light">
@@ -267,7 +267,7 @@ export function Ch2() {
               setStage('done')
             }}
           >
-            {ready ? 'DOCUMENT THE ANOMALY' : 'TRY BOTH A FEW TIMES'}
+            {ready ? 'DOCUMENT THE ANOMALY' : 'TRY BOTH'}
           </button>
         </div>
 
@@ -370,7 +370,14 @@ export function Ch3() {
           <div className="flustermeter">
             <XP label="TANISHKA — FLUSTER LEVEL" value={100} rose />
           </div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('sincere')}>
+          <button
+            className="btn"
+            style={{ marginTop: 16 }}
+            onClick={() => {
+              completeChapter('ch3')
+              setStage('sincere')
+            }}
+          >
             AND THEN, QUIETLY —
           </button>
         </div>
@@ -387,9 +394,6 @@ export function Ch3() {
               </p>
             ))}
           </div>
-                    <button className="btn btn--red" style={{ marginTop: 18 }} onClick={() => completeChapter('ch3')}>
-            KEEP THIS ONE
-          </button>
           <NextBtn current="ch3" />
         </div>
       </div>
@@ -741,7 +745,14 @@ export function Ch7() {
               </p>
             ))}
           </div>
-          <button className="btn" style={{ marginTop: 16 }} onClick={() => setStage('debrief')}>
+          <button
+            className="btn"
+            style={{ marginTop: 16 }}
+            onClick={() => {
+              completeChapter('ch7')
+              setStage('debrief')
+            }}
+          >
             SHORTLY AFTERWARDS —
           </button>
         </div>
@@ -763,9 +774,6 @@ export function Ch7() {
               STATUS: ADOPTED.
             </p>
           </div>
-          <button className="btn btn--red" style={{ marginTop: 16 }} onClick={() => completeChapter('ch7')}>
-            REMEMBER THIS ONE
-          </button>
           <NextBtn current="ch7" />
         </div>
       </div>
@@ -1005,6 +1013,7 @@ export function Ch9() {
               onClick={() => {
                 sfx.play('complete')
                 setStage('joined')
+                completeChapter('ch9')
                 setTimeout(() => unlock('five-am'), 600)
                 setTimeout(() => unlock('player-2'), 1700)
               }}
@@ -1039,9 +1048,6 @@ export function Ch9() {
                 <Figure who="p2" h={110} flip />
               </div>
             </div>
-                        <button className="btn btn--red" onClick={() => completeChapter('ch9')}>
-              BEGIN THE CAMPAIGN
-            </button>
             <NextBtn current="ch9" />
           </>
         )}
@@ -1088,7 +1094,7 @@ export function Ch10() {
               style={{ width: 76, height: 76, fontSize: 20, margin: '0 auto' }}
               onClick={() => {
                 sfx.play('click')
-                setA((x) => Math.min(90, x + 30))
+                setA((x) => Math.min(90, x + 90))
               }}
             >
               DM
@@ -1110,7 +1116,7 @@ export function Ch10() {
               style={{ width: 76, height: 76, fontSize: 20, margin: '0 auto', borderColor: 'var(--rose)', color: 'var(--rose)' }}
               onClick={() => {
                 sfx.play('click')
-                setT((x) => Math.min(34, x + 17))
+                setT((x) => Math.min(34, x + 34))
               }}
             >
               SM

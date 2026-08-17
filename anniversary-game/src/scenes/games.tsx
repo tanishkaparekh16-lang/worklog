@@ -31,17 +31,17 @@ const LEVEL: Plat[] = [
   { x: 510, y: 366, w: 200, h: 18, k: 'ledge' },
   { x: 740, y: 312, w: 160, h: 18, k: 'ledge' },
   // upper floor
-  { x: 120, y: 244, w: 200, h: 18, k: 'ledge' },
-  { x: 370, y: 196, w: 180, h: 18, k: 'ledge' },
-  { x: 600, y: 244, w: 200, h: 18, k: 'ledge' },
+  { x: 120, y: 250, w: 210, h: 18, k: 'ledge' },
+  { x: 372, y: 224, w: 200, h: 18, k: 'ledge' },
+  { x: 610, y: 250, w: 200, h: 18, k: 'ledge' },
   // the top — a wide, unmissable landing
-  { x: 260, y: 118, w: 340, h: 20, k: 'ledge' },
+  { x: 250, y: 162, w: 380, h: 20, k: 'ledge' },
 ]
 
 const PICKUPS = [
   { x: 130, y: 330, label: 'A STAIRCASE' },
   { x: 360, y: 276, label: 'A ROOM WITH NO ROOF' },
-  { x: 210, y: 208, label: 'AN OPEN WINDOW' },
+  { x: 216, y: 214, label: 'AN OPEN WINDOW' },
 ]
 
 export function Platformer({ onDone }: { onDone: () => void }) {
@@ -160,7 +160,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
 
       /* the goal */
       const allGot = gotRef.current.length >= PICKUPS.length
-      if (allGot && !doneRef.current && me.x > 250 && me.x < 600 && me.y < 130) {
+      if (allGot && !doneRef.current && me.x > 240 && me.x < 640 && me.y < 175) {
         doneRef.current = true
         sfx.play('complete')
         setTimeout(onDone, 500)
@@ -168,7 +168,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
 
       /* ---------- draw ---------- */
       const camX = Math.max(0, Math.min(900 - W, me.x - W / 2))
-      const camY = Math.max(0, Math.min(640 - H, me.y - H / 2 + 30))
+      const camY = Math.max(0, Math.min(650 - H, me.y - H / 2 + 30))
       ctx.clearRect(0, 0, W, H)
 
       /* backdrop */
@@ -236,7 +236,7 @@ export function Platformer({ onDone }: { onDone: () => void }) {
       /* goal marker */
       if (allGot) {
         const gx = 430 - camX
-        const gy = 110 - camY
+        const gy = 162 - camY
         ctx.fillStyle = 'rgba(201,138,147,.25)'
         ctx.fillRect(gx - 26, gy - 54, 52, 54)
         ctx.fillStyle = '#C98A93'

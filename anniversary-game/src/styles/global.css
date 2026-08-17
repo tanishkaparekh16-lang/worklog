@@ -1102,3 +1102,48 @@ img, svg { display: block; max-width: 100%; }
   70% { transform: translateY(-0.6px) rotate(0.4deg); }
 }
 @media (prefers-reduced-motion: reduce) { .person .idle { animation: none; } }
+
+/* ============================================================
+   The light-panel text colour must not leak into elements that
+   carry their own dark surface (chat bubbles, panes, the gold
+   panel, canvases).
+   ============================================================ */
+.scene--light .stage.on .bubble,
+.scene--light .stage.on .bubble--a,
+.scene--light .stage.on .bubble--t,
+.scene--light .stage.on .pane .bd,
+.scene--light .stage.on .pane .hd,
+.scene--light .stage.on .goldpanel,
+.scene--light .stage.on .goldpanel * ,
+.scene--light .stage.on .cluefield,
+.scene--light .stage.on .cluefield * { color: revert-layer; }
+.scene--light .stage.on .bubble--a { color: #cfe0f5; }
+.scene--light .stage.on .bubble--t { color: #f2d8dc; }
+.scene--light .stage.on .bubble--sys { color: var(--cream-dim); }
+.scene--light .stage.on .pane--online .hd { color: var(--teal); }
+.scene--light .stage.on .pane--offline .hd { color: var(--cream-dim); }
+.scene--light .stage.on .goldpanel .narr { color: #f5e7c8 !important; }
+.scene--light .stage.on .goldpanel .meta { color: #c79b5b !important; }
+
+/* ============================================================
+   A slightly larger reading size across the board.
+   ============================================================ */
+.scene--vn .narr { font-size: 17.5px; line-height: 1.68; }
+.narr { font-size: 17.5px; }
+.meta { font-size: 12.5px; }
+.choice { font-size: 14px; }
+.quizq { font-size: 19px; }
+.btn { font-size: 13.5px; }
+.qbox .line { font-size: 17.5px; }
+.chplace { font-size: 16px; }
+.lvlcard .story { font-size: 15.5px; }
+.memcard .story { font-size: 16px; }
+.track .why { font-size: 14.5px; }
+.cluecard p { font-size: 15.5px; }
+@media (min-width: 900px) {
+  .scene--vn .narr, .narr { font-size: 19px; }
+  .choice { font-size: 15px; }
+  .quizq { font-size: 21px; }
+  .meta { font-size: 13px; }
+  .btn { font-size: 14px; }
+}

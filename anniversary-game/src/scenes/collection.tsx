@@ -211,7 +211,7 @@ export function Final() {
   const attack = () => {
     sfx.play('wrong')
     setTries((t) => t + 1)
-    if (tries >= 2) {
+    if (tries >= 1) {
       sfx.play('complete')
       setStage('reveal')
       finalLevel.journey.forEach((_, i) => setTimeout(() => setShownLines(i + 1), 700 * i + 600))
@@ -251,11 +251,11 @@ export function Final() {
               </p>
             </div>
                         <button className="btn btn--red" onClick={attack}>
-              {tries === 0 ? 'ATTACK' : tries === 1 ? 'ATTACK, HARDER' : 'FINE. CONTINUE.'}
+              {tries === 0 ? 'ATTACK' : 'FINE. CONTINUE.'}
             </button>
             {tries > 0 && (
               <p className="meta" style={{ color: 'var(--cream-dim)', marginTop: 12 }}>
-                {tries === 1 ? 'NO EFFECT. THE HP BAR SEEMS DECORATIVE.' : 'STILL NOTHING. SUSPICIOUS.'}
+                NO EFFECT. THE HP BAR APPEARS TO BE DECORATIVE.
               </p>
             )}
           </div>
