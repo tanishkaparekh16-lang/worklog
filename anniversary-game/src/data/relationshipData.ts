@@ -327,8 +327,8 @@ export const chapters: Chapter[] = [
     complete: ['THE FRIENDSHIP ARC is over.', 'A new campaign begins.'],
     completeNote: '',
     paragraphs: [
-      'Around the same time, Tanishka became Head of Social Media for a different college fest. She was very new to editing. He had a head start and an unfair amount of practice.',
-      'So they spent that season on opposite sides of Mithibai, running two different pages for two different fests, sending each other drafts at hours that no reasonable person keeps. Two departments, two deadlines, two people quietly building the same thing without saying so.',
+      'Around the same time, Tanishka became Head of Social Media for Reclamo. She was very new to editing. He had a head start and an unfair amount of practice.',
+      'So they spent that season on opposite sides of Mithibai, running two different pages — Finanza and Reclamo, sending each other drafts at hours that no reasonable person keeps. Two departments, two deadlines, two people quietly building the same thing without saying so.',
     ],
     photos: [
       { src: 'assets/images/classroom.jpg', caption: 'Two department heads, freshly appointed. Note the advisors on their heads.' },
@@ -449,7 +449,7 @@ export const chapters: Chapter[] = [
       {
         art: 'bench',
         line: [
-          'They talked. About nothing, mostly. About the week, and a professor neither of them liked, and a story she had told him before that he let her tell again anyway.',
+          'They talked. About nothing, mostly — the week, a professor neither of them liked, a story she had told him before that he let her tell again anyway.',
         ],
         say: { who: 't', text: 'you’ve heard this one.' },
       },
@@ -459,9 +459,17 @@ export const chapters: Chapter[] = [
         say: { who: 'a', text: 'i like the way you tell it.' },
       },
       {
+        art: 'talking',
+        line: [
+          'Then the conversation turned, the way it does when someone has been working up to something all evening.',
+          'He started telling her how he felt. Not the joking version — the real one, slower and less certain, the words arriving in the wrong order and him going back to fix them.',
+        ],
+        say: { who: 'a', text: 'i’ve been trying to say this properly for weeks.' },
+      },
+      {
         art: 'firstdrop',
         line: [
-          'The first drop landed on the back of her hand. Then another, on the bench, dark and round.',
+          'He was still mid-sentence when the first drop landed on the back of her hand. Then another, on the bench, dark and round.',
           'Around them the park emptied in under a minute — bags over heads, chappals slapping the wet path, everyone suddenly urgent and going somewhere dry.',
         ],
       },
@@ -474,7 +482,9 @@ export const chapters: Chapter[] = [
       },
       {
         art: 'rain',
-        line: ['He said it into all that noise, without any build-up, as if it had been sitting there for a while waiting for a gap.'],
+        line: [
+          'And then, without finishing the sentence he had been building for the last ten minutes, he said the thing underneath all of it.',
+        ],
         say: { who: 'a', text: 'i love you.' },
       },
       {
@@ -583,6 +593,8 @@ export const chapters: Chapter[] = [
       { src: 'assets/images/cozy.jpg', caption: 'Standard proximity, again.' },
       { src: 'assets/images/traditional-night.jpg', caption: 'Dressed up, somewhere loud.' },
       { src: 'assets/images/car-selfie.jpg', caption: 'In transit. Still talking.' },
+      { src: 'assets/images/purple-1.jpg', caption: 'Somewhere loud and purple.' },
+      { src: 'assets/images/purple-2.jpg', caption: 'Same night, still there.' },
     ],
   },
   {
@@ -605,10 +617,8 @@ export const chapters: Chapter[] = [
     story: '[PLACEHOLDER — a Pune memory: what you did, what made it fun]',
     game: 'friends',
     photos: [
-      { src: 'assets/images/pune-friends.jpg', caption: 'The party, expanded.' },
+      { src: 'assets/images/pune-friends.jpg', caption: 'Saurvi, Anuj, Khush, Pranjal — and the two of them.' },
       { src: 'assets/images/pune-lake.jpg', caption: 'The full party, by the lake.' },
-      { src: 'assets/images/purple-1.jpg', caption: 'Somewhere loud and purple.' },
-      { src: 'assets/images/purple-2.jpg', caption: 'Same night, still there.' },
     ],
   },
   {
@@ -757,6 +767,11 @@ export const timelineEvents = [
 ]
 
 /* ---------- SOUNDTRACK ---------- */
+/* ---------- SOUNDTRACK ----------
+   To play a real song, put an .mp3/.m4a in public/assets/audio/ and set
+   `audio` to its path, e.g. audio: 'assets/audio/die-with-a-smile.mp3'.
+   Leave `audio` empty and the track shows as a listing with no player.
+   Nothing ever autoplays.                                              */
 export const soundtrack = [
   {
     id: 's1',

@@ -346,53 +346,186 @@ function RainGame({ onDone }: { onDone: () => void }) {
   )
 }
 
-/* the park, drawn per story beat */
+/* real rain, on canvas: layered drops with depth, wind and splashes */
+function RainCanvas({ intensity }: { intensity: number }) {
+  const cv = useRef<HTMLCanvasElement | null>(null)
+  useEffect(() => {
+    const c = cv.current
+    if (!c) return
+    const ctx = c.getContext('2d')!
+    let raf = 0
+    let W = 0
+    let H = 0
+    const dpr = Math.min(2, window.devicePixelRatio || 1)
+
+    const resize = () => {
+      const r = c.getBoundingClientRect()
+      W = r.width
+      H = r.height
+      c.width = W * dpr
+      c.height = H * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+    resize()
+    const ro = new ResizeObserver(resize)
+    ro.observe(c)
+
+    type Drop = { x: number; y: number; len: number; sp: number; a: number; w: number }
+    const N = Math.round(150 * intensity)
+    const drops: Drop[] = Array.from({ length: N }, () => {
+      const depth = Math.random()
+      return {
+        x: Math.random() * (W + 120) - 60,
+        y: Math.random() * H,
+        len: 8 + depth * 26,
+        sp: 5 + depth * 13,
+        a: 0.12 + depth * 0.4,
+        w: 0.6 + depth * 1.1,
+      }
+    })
+    const splashes: { x: number; y: number; r: number; a: number }[] = []
+    const WIND = 0.28
+
+    const tick = () => {
+      ctx.clearRect(0, 0, W, H)
+      ctx.lineCap = 'round'
+      for (const d of drops) {
+        ctx.strokeStyle = `rgba(198,222,255,${d.a})`
+        ctx.lineWidth = d.w
+        ctx.beginPath()
+        ctx.moveTo(d.x, d.y)
+        ctx.lineTo(d.x - d.len * WIND, d.y + d.len)
+        ctx.stroke()
+        d.y += d.sp
+        d.x -= d.sp * WIND
+        if (d.y > H) {
+          if (splashes.length < 40 && Math.random() < 0.35) {
+            splashes.push({ x: d.x, y: H - 2 - Math.random() * 6, r: 0.5, a: 0.35 * intensity })
+          }
+          d.y = -d.len
+          d.x = Math.random() * (W + 120) - 30
+        }
+      }
+      for (let k = splashes.length - 1; k >= 0; k--) {
+        const sp = splashes[k]
+        ctx.strokeStyle = `rgba(210,232,255,${sp.a})`
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.ellipse(sp.x, sp.y, sp.r * 3.4, sp.r, 0, 0, Math.PI * 2)
+        ctx.stroke()
+        sp.r += 0.5
+        sp.a -= 0.028
+        if (sp.a <= 0) splashes.splice(k, 1)
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [intensity])
+
+  return <canvas ref={cv} className="raincv" aria-hidden="true" />
+}
+
+/* the park, drawn per story beat — layered depth, warm lamp, wet ground */
 function ParkScene({ beat }: { beat: string }) {
-  const raining = beat === 'rain' || beat === 'hug' || beat === 'dance' || beat === 'firstdrop'
-  const heavy = beat !== 'firstdrop'
+  const wet = beat === 'firstdrop' || beat === 'rain' || beat === 'hug' || beat === 'dance'
+  const dusk = beat === 'bench' || beat === 'talking'
+  const intensity = beat === 'firstdrop' ? 0.35 : beat === 'chai' ? 0 : wet ? 1 : 0
+
   return (
-    <div className={'parkscene' + (raining ? ' wet' : '')}>
+    <div className={'parkscene' + (wet ? ' wet' : '')}>
       <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice">
         <defs>
-          <linearGradient id="pkSkyS" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={beat === 'bench' ? '#3E5540' : '#1E3228'} />
-            <stop offset="1" stopColor={beat === 'bench' ? '#8A6A3E' : '#152219'} />
+          <linearGradient id="pkSky2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={dusk ? '#7E6A8C' : '#2C3A44'} />
+            <stop offset=".45" stopColor={dusk ? '#C98A5E' : '#3B4A52'} />
+            <stop offset="1" stopColor={dusk ? '#E0A96B' : '#4A5A5E'} />
           </linearGradient>
+          <linearGradient id="pkGround" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={dusk ? '#3E4A32' : '#26332B'} />
+            <stop offset="1" stopColor={dusk ? '#2A3324' : '#18211B'} />
+          </linearGradient>
+          <radialGradient id="lampGlow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stopColor="#FFE6A8" stopOpacity=".55" />
+            <stop offset="1" stopColor="#FFE6A8" stopOpacity="0" />
+          </radialGradient>
+          <filter id="soft"><feGaussianBlur stdDeviation="2.2" /></filter>
         </defs>
-        <rect width="400" height="240" fill="url(#pkSkyS)" />
-        {/* canopy */}
-        <g fill={beat === 'bench' ? '#24402C' : '#16281D'}>
-          <ellipse cx="50" cy="34" rx="110" ry="56" />
-          <ellipse cx="210" cy="14" rx="120" ry="50" />
-          <ellipse cx="360" cy="40" rx="105" ry="58" />
+
+        <rect width="400" height="240" fill="url(#pkSky2)" />
+
+        {/* far treeline, soft */}
+        <g filter="url(#soft)" opacity={dusk ? 0.85 : 0.7}>
+          <ellipse cx="40" cy="96" rx="90" ry="44" fill={dusk ? '#3A4A34' : '#1E2C24'} />
+          <ellipse cx="150" cy="84" rx="80" ry="40" fill={dusk ? '#35452F' : '#1B2921'} />
+          <ellipse cx="270" cy="90" rx="86" ry="42" fill={dusk ? '#3A4A34' : '#1E2C24'} />
+          <ellipse cx="378" cy="86" rx="76" ry="40" fill={dusk ? '#35452F' : '#1B2921'} />
         </g>
-        <rect x="66" y="70" width="10" height="120" fill="#241A12" />
-        <rect x="322" y="76" width="9" height="114" fill="#241A12" />
-        {/* lamp */}
-        <rect x="196" y="86" width="4" height="104" fill="#2A322A" />
-        <path d="M186 88 h24 l-6 -12 h-12 z" fill="#37423A" />
-        <circle cx="198" cy="92" r="16" fill="#EBD9A0" opacity=".18" />
-        <circle cx="198" cy="92" r="6" fill="#EBD9A0" />
-        {/* ground */}
-        <rect y="188" width="400" height="52" fill={beat === 'bench' ? '#2E3A28' : '#16211A'} />
-        {/* bench */}
-        <g fill="#2A3626">
-          <rect x="122" y="170" width="150" height="8" rx="3" />
-          <rect x="122" y="156" width="150" height="8" rx="3" />
-          <rect x="130" y="178" width="7" height="20" />
-          <rect x="257" y="178" width="7" height="20" />
+
+        {/* mid canopy */}
+        <g fill={dusk ? '#2C3B26' : '#16221B'}>
+          <ellipse cx="24" cy="52" rx="96" ry="52" />
+          <ellipse cx="196" cy="30" rx="112" ry="46" />
+          <ellipse cx="372" cy="50" rx="94" ry="52" />
         </g>
-        {/* puddle reflection once it rains */}
-        {raining && <ellipse cx="198" cy="214" rx="120" ry="16" fill="#EBD9A0" opacity=".07" />}
+        {/* leaf detail */}
+        <g fill={dusk ? '#3D5133' : '#1E2E24'} opacity=".9">
+          <ellipse cx="86" cy="66" rx="46" ry="24" />
+          <ellipse cx="300" cy="70" rx="50" ry="26" />
+        </g>
+
+        {/* trunks with taper */}
+        <path d="M62 76 q5 60 -2 116 h14 q-6 -58 -1 -116 z" fill="#2A1E14" />
+        <path d="M330 82 q-5 56 1 110 h13 q-6 -54 -1 -110 z" fill="#2A1E14" />
+
+        {/* path */}
+        <path d="M0 214 q120 -26 200 -24 t200 20 v30 H0 z" fill={dusk ? '#6B5B44' : '#3A3730'} />
+
+        {/* lamp with warm pool of light */}
+        <circle cx="200" cy="96" r="54" fill="url(#lampGlow)" />
+        <rect x="197" y="96" width="5" height="98" fill="#22301F" />
+        <path d="M188 96 h24 l-6 -13 h-12 z" fill="#2E3C2A" />
+        <circle cx="200" cy="100" r="6.5" fill="#FFE9B0" />
+        <circle cx="200" cy="100" r="13" fill="#FFE9B0" opacity=".28" filter="url(#soft)" />
+
+        {/* the bench, with a missing slat */}
+        <g>
+          <rect x="120" y="168" width="160" height="7" rx="3" fill="#4A3A28" />
+          <rect x="120" y="180" width="160" height="7" rx="3" fill="#4A3A28" />
+          <rect x="120" y="156" width="72" height="7" rx="3" fill="#4A3A28" />
+          <rect x="222" y="156" width="58" height="7" rx="3" fill="#4A3A28" />
+          <rect x="128" y="187" width="8" height="22" fill="#2E2418" />
+          <rect x="264" y="187" width="8" height="22" fill="#2E2418" />
+        </g>
+
+        <rect y="196" width="400" height="44" fill="url(#pkGround)" />
+
+        {/* wet sheen + lamp reflection once it rains */}
+        {wet && (
+          <>
+            <ellipse cx="200" cy="222" rx="120" ry="14" fill="#FFE9B0" opacity=".12" filter="url(#soft)" />
+            <ellipse cx="200" cy="232" rx="170" ry="10" fill="#C6DEFF" opacity=".07" />
+          </>
+        )}
+        {/* vignette */}
+        <rect width="400" height="240" fill="url(#pkVig)" />
+        <defs>
+          <radialGradient id="pkVig" cx=".5" cy=".5" r=".75">
+            <stop offset=".55" stopColor="#000" stopOpacity="0" />
+            <stop offset="1" stopColor="#000" stopOpacity=".45" />
+          </radialGradient>
+        </defs>
       </svg>
 
-      {/* the two of them, staged per beat */}
       <div className={'parkcast beat-' + beat}>
         <Person who="p1" h={104} />
         <Person who="p2" h={100} flip />
       </div>
 
-      {raining && <div className={'rainfx' + (heavy ? ' heavy' : '')} aria-hidden="true" />}
+      {intensity > 0 && <RainCanvas intensity={intensity} />}
     </div>
   )
 }
@@ -546,9 +679,10 @@ function FriendsGame({ onDone }: { onDone: () => void }) {
   return (
     <>
       <p className="narr" style={{ marginTop: 6 }}>
-        He took her to Pune to meet his friends — the originals, the ones who
-        knew him before any of this. That is not a small thing. You do not bring
-        someone to those people unless you have already decided something.
+        He took her to Pune to meet his friends — Saurvi, Anuj, Khush and
+        Pranjal. The originals, the ones who knew him before any of this. That
+        is not a small thing. You do not bring someone to those people unless
+        you have already decided something.
       </p>
       <p className="meta" style={{ marginTop: 14, textAlign: 'left' }}>
         THEY APPROVED. IT WAS NEVER REALLY IN DOUBT.

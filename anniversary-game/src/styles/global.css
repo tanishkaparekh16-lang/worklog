@@ -342,8 +342,8 @@ img, svg { display: block; max-width: 100%; }
 .choices { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
 .choice {
   font-family: var(--type); font-size: 13px; line-height: 1.6; letter-spacing: 0.06em;
-  text-align: left; border: 2px solid var(--ink); padding: 14px 14px 12px; color: var(--ink);
-  transition: transform 0.12s;
+  text-align: left; border: 2px solid rgba(237, 224, 196, 0.5); padding: 14px 14px 12px;
+  color: var(--cream-hi); transition: transform 0.12s;
 }
 .choice:active { transform: scale(0.98); }
 .choice.shake { animation: shake 0.35s ease 1; border-color: var(--red); color: var(--red); }
@@ -1215,13 +1215,12 @@ img, svg { display: block; max-width: 100%; }
 @keyframes sway { 0%,100% { transform: rotate(-2deg) } 50% { transform: rotate(2deg) } }
 .beat-chai { gap: 30px; }
 
-.rainfx {
-  position: absolute; inset: 0; pointer-events: none; opacity: .5;
-  background:
-    repeating-linear-gradient(14deg, transparent 0 9px, rgba(200,222,255,.35) 9px 10px, transparent 10px 26px);
-  animation: rainfall .55s linear infinite;
+.raincv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.parkscene.wet::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(120,150,190,.14), transparent 40%, rgba(90,120,160,.12));
 }
-.rainfx.heavy { opacity: .75; }
+.beat-talking { gap: 44px; }
 @keyframes rainfall { from { background-position: 0 0 } to { background-position: -16px 70px } }
 
 .storytext { margin-top: 16px; }
@@ -1307,4 +1306,52 @@ img, svg { display: block; max-width: 100%; }
   .storywrap { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   .storytext p { font-size: 20px; line-height: 1.7; }
   .saybubble { font-size: 21px; }
+}
+
+
+/* ============================================================
+   FINAL CONTRAST SWEEP — anything on a dark surface takes cream,
+   anything on a pale surface takes ink. No exceptions.
+   ============================================================ */
+.scene--paper .choice, .scene--lines .choice,
+.scene--light .choice, .scene--light .qopt {
+  border-color: rgba(33, 27, 18, 0.55); color: var(--ink);
+}
+.scene--arcade .quizq, .scene--arcade .bigttl { color: var(--cream-hi); }
+.scene--arcade .choice { border-color: rgba(237, 224, 196, 0.5); color: var(--cream-hi); }
+.scene--arcade .meta, .scene--arcade .bigsub { color: var(--cream-dim); }
+.scene--arcade .tl-item { color: var(--cream-hi); }
+.scene--arcade .memcard h3, .scene--arcade .memcard .story { color: var(--ink); }
+.scene--arcade .memcard .m { color: var(--ink-dim); }
+.scene--arcade .sweetbox { color: var(--ink); }
+
+/* ============================================================
+   PHOTOS AS A SCATTERED COLLAGE — no more single-file scrolling
+   ============================================================ */
+.photorow {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px; margin-top: 22px; align-items: start;
+}
+.photoslot { width: auto !important; margin: 0; }
+.photoslot:nth-child(3n) { transform: rotate(1.4deg); }
+.photoslot:nth-child(3n + 1) { transform: rotate(-1.6deg); }
+.photoslot:nth-child(3n + 2) { transform: rotate(0.8deg); }
+.photoslot:has(img.wide) { grid-column: 1 / -1; transform: none; }
+
+@media (min-width: 900px) {
+  .photorow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  /* every fourth photo spans two columns so the grid never reads as a table */
+  .photoslot:nth-child(4n + 1) { grid-column: span 2; }
+  .photoslot:nth-child(4n + 1) img { aspect-ratio: 3 / 2; }
+  .photorow:has(> :nth-child(6)) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   CHARACTER STATS — genuinely side by side
+   ============================================================ */
+.statgrid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 18px; }
+.statcard { display: block; width: auto; margin: 0; }
+@media (min-width: 760px) {
+  .statgrid { grid-template-columns: 1fr 1fr; gap: 22px; }
+  .scene--stats .col { max-width: 900px; }
 }

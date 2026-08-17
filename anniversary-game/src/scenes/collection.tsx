@@ -143,6 +143,7 @@ export function Stats() {
         <div className="bigsub" style={{ textAlign: 'left', marginTop: 6 }}>
           MEASURED SCIENTIFICALLY. NO SOURCES AVAILABLE.
         </div>
+        <div className="statgrid">
         <div className="statcard">
           <h3>ANAY</h3>
           <div className="org">PLAYER 1 · NEEMUCH → MUMBAI</div>
@@ -156,6 +157,7 @@ export function Stats() {
           {stats.tanishka.map((s) => (
             <XP key={s.label} label={s.label} value={s.value} rose />
           ))}
+        </div>
         </div>
       </div>
     </div>
