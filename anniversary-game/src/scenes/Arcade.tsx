@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { arcadeMemories, timelineEvents } from '../data/relationshipData'
+import { arcadeGames, timelineEvents } from '../data/relationshipData'
 import { P, SNav } from '../components/ui'
 import { useGame } from '../state/progress'
 import { sfx } from '../audio/sfx'
@@ -8,60 +8,15 @@ type GameId = 'hub' | 'mem1' | 'mem2' | 'mem3' | 'mem5'
 
 export default function Arcade() {
   const [view, setView] = useState<GameId>('hub')
-  const [reveal, setReveal] = useState<string | null>(null)
-  const { p } = useGame()
-
-  const mem = arcadeMemories.find((m) => m.id === reveal)
 
   return (
     <div className="scene scene--arcade">
       <div className="col">
-        <SNav where="MEMORY ARCADE" />
-        {view === 'hub' && !reveal && (
-          <Hub
-            onPick={(id) => {
-              if (p.arcadeDone.includes(id)) setReveal(id)
-              else setView(id)
-            }}
-          />
-        )}
-        {view !== 'hub' && !reveal && (
-          <GameHost
-            id={view}
-            onWin={() => {
-              setReveal(view)
-              setView('hub')
-            }}
-            onQuit={() => setView('hub')}
-          />
-        )}
-        {reveal && mem && (
-          <div className="stage on">
-            <div style={{ textAlign: 'center', marginTop: 18 }}>
-              <span className="stamp stamp--big" style={{ fontSize: 20 }}>
-                MEMORY UNLOCKED
-              </span>
-            </div>
-            <div className="memcard">
-              <div className="photo">
-                <img src={mem.photo} alt="A memory, photo pending" loading="lazy" />
-              </div>
-              <div className="bd">
-                <h3>
-                  <P text={mem.title} />
-                </h3>
-                <div className="m">
-                  <P text={mem.date} /> · <P text={mem.location} />
-                </div>
-                <p className="story">
-                  <P text={mem.story} />
-                </p>
-              </div>
-            </div>
-            <button className="btn" style={{ marginTop: 18 }} onClick={() => setReveal(null)}>
-              BACK TO THE CABINETS
-            </button>
-          </div>
+        <SNav where="ARCADE" />
+        {view === 'hub' ? (
+          <Hub onPick={(id) => setView(id)} />
+        ) : (
+          <GameHost id={view} onWin={() => setView('hub')} onQuit={() => setView('hub')} />
         )}
       </div>
     </div>
@@ -73,17 +28,17 @@ function Hub({ onPick }: { onPick: (id: GameId) => void }) {
   return (
     <>
       <div className="bigttl" style={{ marginTop: 6 }}>
-        MEMORY ARCADE
+        THE ARCADE
       </div>
-      <div className="bigsub">WIN A GAME. UNLOCK A MEMORY. FOUR OF EACH.</div>
+      <div className="bigsub">FOUR CABINETS. NO PRIZES. PLAY ANYWAY.</div>
       <div className="cabgrid">
-        {arcadeMemories.map((m) => {
+        {arcadeGames.map((m) => {
           const done = p.arcadeDone.includes(m.id)
           return (
             <button key={m.id} className={'cab' + (done ? ' done' : '')} onClick={() => onPick(m.id as GameId)}>
               <div className="marquee">{m.gameName}</div>
               <div className="scr">{m.game}</div>
-              <div className="st">{done ? 'MEMORY UNLOCKED ✓' : 'INSERT CURIOSITY'}</div>
+              <div className="st">{done ? 'CLEARED ✓' : 'INSERT CURIOSITY'}</div>
             </button>
           )
         })}

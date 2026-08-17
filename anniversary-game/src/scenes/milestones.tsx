@@ -666,7 +666,9 @@ function MontageGame({ onDone }: { onDone: () => void }) {
             <span className="dev">
               <img src={s.src} alt="" loading="lazy" />
             </span>
-            <span className="cap">{i < open ? <P text={s.text} /> : 'TAP TO DEVELOP'}</span>
+            {(i >= open || s.text) && (
+              <span className="cap">{i < open ? <P text={s.text} /> : 'TAP TO DEVELOP'}</span>
+            )}
           </button>
         ))}
       </div>

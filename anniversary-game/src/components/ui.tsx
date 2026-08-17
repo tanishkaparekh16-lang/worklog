@@ -7,11 +7,13 @@ import { useGame } from '../state/progress'
    on normal play. */
 export const TEST = typeof location !== 'undefined' && location.search.includes('test')
 
-/* text that renders with a dashed marker while still a placeholder */
-export function P({ text }: { text: string }) {
-  if (text.startsWith(PLACEHOLDER_PREFIX)) {
-    return <span className="placeholder">{text}</span>
-  }
+/* An empty field leaves no trace in the page — no empty box, no
+   caption, nothing. A field still holding a [PLACEHOLDER string keeps
+   its dashed marker, so anything genuinely unwritten stays visible
+   instead of silently rendering as a blank space. */
+export function P({ text }: { text?: string }) {
+  if (!text) return null
+  if (text.startsWith(PLACEHOLDER_PREFIX)) return <span className="placeholder">{text}</span>
   return <>{text}</>
 }
 

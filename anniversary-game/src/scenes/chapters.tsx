@@ -500,9 +500,11 @@ export function Ch5() {
               </div>
             ))}
           </div>
-          <p className="meta" style={{ marginTop: 12 }}>
-            <P text={c.statsNote!} />
-          </p>
+          {c.statsNote && (
+            <p className="meta" style={{ marginTop: 12 }}>
+              <P text={c.statsNote} />
+            </p>
+          )}
           <PhotoRow photos={c.photos} />
           <NextBtn current="ch5" />
         </div>

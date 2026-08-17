@@ -824,9 +824,9 @@ img, svg { display: block; max-width: 100%; }
 .polaroid:not([disabled]):not(.open):hover { transform: rotate(0deg) translateY(-4px); box-shadow: 0 14px 26px -10px rgba(60, 45, 20, 0.55); }
 .polaroid[disabled] { opacity: 0.45; }
 
-.polaroid .dev { display: block; position: relative; overflow: hidden; background: #2a2418; }
+.polaroid .dev { display: block; position: relative; overflow: hidden; background: #2a2418; min-height: 40px; }
 .polaroid .dev img {
-  display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+  display: block; width: 100%; height: auto; aspect-ratio: auto; object-fit: contain;
   filter: saturate(0) brightness(0.35) contrast(1.4); opacity: 0.5;
   transition: filter 1.1s ease, opacity 1.1s ease, transform 1.1s ease;
   transform: scale(1.06);
@@ -834,7 +834,7 @@ img, svg { display: block; max-width: 100%; }
 .polaroid.open .dev img { filter: none; opacity: 1; transform: scale(1); }
 
 .polaroid .cap {
-  display: block; margin-top: 10px; min-height: 42px;
+  display: block; margin-top: 10px;
   font-family: var(--type); font-size: 10px; letter-spacing: 0.14em; color: var(--ink-dim);
 }
 .polaroid.open .cap { font-family: var(--serif); font-style: italic; font-size: 14.5px; letter-spacing: 0; color: var(--ink); text-align: left; }
@@ -1019,7 +1019,7 @@ img, svg { display: block; max-width: 100%; }
   .col--wide { max-width: 1100px; }
 
   /* --- visual-novel scenes --- */
-  .scene--vn .col { max-width: 1080px; padding-bottom: 40px; padding-top: 70px; }
+  .scene--vn .col { max-width: 1220px; padding-bottom: 40px; padding-top: 70px; }
   .scene--vn .snav { width: 100%; max-width: none; padding: 18px 44px 14px; font-size: 12px; }
   .scene--vn .stage.on { padding: 28px 34px 26px; border-radius: 18px; }
 
@@ -1033,7 +1033,7 @@ img, svg { display: block; max-width: 100%; }
   .scene--vn .meta { font-size: 12.5px; }
 
   /* panel content in two columns once there is room */
-  .scene--vn .stage.on { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 8px 34px; align-items: start; }
+  .scene--vn .stage.on { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 8px 34px; align-items: start; }
   .scene--vn .stage.on > * { grid-column: 1; }
   .scene--vn .stage.on > .photorow,
   .scene--vn .stage.on > .gamewrap,
@@ -1047,8 +1047,6 @@ img, svg { display: block; max-width: 100%; }
     display: block; max-width: 720px;
   }
   .photorow { margin-top: 0; }
-  .photoslot { width: calc(50% - 8px); }
-  .photoslot:only-child { width: 100%; }
 
   /* --- boot / menu --- */
   .scene--boot .col { max-width: 560px; }
@@ -1401,37 +1399,105 @@ img, svg { display: block; max-width: 100%; }
 .scene--vn.scene--light .stage.on .btn--ghost { border-color: rgba(33, 27, 18, 0.3); color: var(--ink-dim); }
 
 /* ============================================================
-   PHOTOS — a mood-board scatter: uniform tiles, offset rows
+   PHOTOS — a wall, not a contact sheet.
+
+   Photos are the point of this site, so they get the room: a masonry
+   wall in CSS columns, each photo at its own natural shape (never
+   cropped to a square) and always full column width. Fewer columns
+   than you would expect, deliberately — two big photos beat six
+   thumbnails.
    ============================================================ */
 .photorow {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 12px; margin-top: 24px; align-items: start;
+  display: block;          /* `columns` is ignored on a flex container */
+  columns: 2;
+  column-gap: 14px;
+  margin-top: 22px;
+  width: 100%;
 }
-.photoslot { width: auto !important; margin: 0; padding: 6px 6px 8px; }
-/* every tile is the same square, whatever shape the original photo is */
-.photoslot img, .photoslot .missing { aspect-ratio: 1 / 1 !important; object-fit: cover; }
-.photoslot:only-child { width: auto !important; }
-/* The scatter. A 7-step cycle of drops and tilts, so the eye never finds
-   the repeat and the wall reads as pinned-up rather than laid out. */
-.photoslot:nth-child(7n + 1) { transform: translateY(0) rotate(-2.2deg); }
-.photoslot:nth-child(7n + 2) { transform: translateY(22px) rotate(1.6deg); }
-.photoslot:nth-child(7n + 3) { transform: translateY(9px) rotate(-1deg); }
-.photoslot:nth-child(7n + 4) { transform: translateY(30px) rotate(2.4deg); }
-.photoslot:nth-child(7n + 5) { transform: translateY(4px) rotate(-1.7deg); }
-.photoslot:nth-child(7n + 6) { transform: translateY(26px) rotate(0.9deg); }
-.photoslot:nth-child(7n + 7) { transform: translateY(14px) rotate(-2.6deg); }
-.photoslot:hover { transform: translateY(-4px) rotate(0deg) scale(1.03); z-index: 2; position: relative; }
-.photoslot { transition: transform 0.3s ease; }
-/* two lines' worth of room, so a long caption never shunts its neighbours */
-.photoslot figcaption { font-size: 8.5px; min-height: 2.4em; margin-top: 6px; }
+.photoslot {
+  width: 100% !important;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  display: inline-block;
+  margin: 0 0 16px;
+  padding: 7px 7px 9px;
+  transition: transform 0.3s ease;
+}
+/* natural shape, full width — no aspect-ratio, no cover-cropping */
+.photoslot img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  display: block;
+}
+.photoslot .missing { aspect-ratio: 4 / 5; }
 
-@media (min-width: 760px) {
-  .photorow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 16px; }
+/* A single photo has no wall to be part of — let it go large. */
+.photorow:not(:has(> :nth-child(2))) { columns: 1; }
+
+/* The scatter. A 7-step cycle of tilts, so the eye never finds the
+   repeat. No vertical offsets — the masonry already staggers them. */
+.photoslot:nth-child(7n + 1) { transform: rotate(-1.8deg); }
+.photoslot:nth-child(7n + 2) { transform: rotate(1.4deg); }
+.photoslot:nth-child(7n + 3) { transform: rotate(-0.8deg); }
+.photoslot:nth-child(7n + 4) { transform: rotate(2deg); }
+.photoslot:nth-child(7n + 5) { transform: rotate(-1.5deg); }
+.photoslot:nth-child(7n + 6) { transform: rotate(0.9deg); }
+.photoslot:nth-child(7n + 7) { transform: rotate(-2.2deg); }
+.photoslot:hover { transform: rotate(0deg) scale(1.03); position: relative; z-index: 2; }
+
+.photoslot figcaption { font-size: 9px; margin-top: 8px; }
+
+/* Phones: one big photo at a time beats two small ones. */
+@media (max-width: 560px) {
+  .photorow { columns: 1; }
+  .photoslot figcaption { font-size: 10px; }
 }
-@media (min-width: 1200px) {
-  .photorow { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px 18px; }
-}
+
 @media (prefers-reduced-motion: reduce) {
   .photoslot { transition: none; }
   .photoslot:hover { transform: none; }
+}
+
+/* ============================================================
+   WIDE PHOTO WALLS
+
+   A side column suits two or three photos. Past that it turns the
+   panel into a tall strip with a dead half beside it — so a chapter
+   with four or more photos drops the two-column split and runs the
+   wall across the full width, under the text.
+
+   Column count follows photo count, so the last column is never left
+   standing empty: four photos want two fat columns, not three thin
+   ones with a gap.
+   ============================================================ */
+@media (min-width: 1024px) {
+  .scene--vn .stage.on:has(.photorow > :nth-child(4)) {
+    display: block;
+    max-width: none;
+  }
+  /* text stays readable even though the panel is now wide */
+  .scene--vn .stage.on:has(.photorow > :nth-child(4)) > *:not(.photorow) {
+    max-width: 70ch;
+  }
+  .scene--vn .stage.on:has(.photorow > :nth-child(4)) > .photorow {
+    columns: 2;
+    column-gap: 20px;
+    margin-top: 24px;
+    max-width: none;
+  }
+  .scene--vn .stage.on:has(.photorow > :nth-child(7)) > .photorow { columns: 3; }
+
+  /* three or fewer: keep the side column, one big photo per row */
+  .scene--vn .stage.on > .photorow { columns: 1; }
+}
+@media (min-width: 1500px) {
+  .scene--vn .stage.on:has(.photorow > :nth-child(10)) > .photorow { columns: 4; }
+}
+
+/* the three developing photos want the same room the walls get */
+@media (min-width: 1024px) {
+  .scene--vn .stage.on:has(.devrow) { max-width: 1040px; }
+  .devrow { gap: 26px; }
 }

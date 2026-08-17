@@ -186,7 +186,7 @@ export const chapters: Chapter[] = [
       'Making Numbers Go Up',
       'Apparently Everyone Likes His Work',
     ],
-    statsNote: '[PLACEHOLDER — real Finanza statistics can go here, e.g. view counts]',
+    statsNote: '',
     paragraphs: [
       'In August 2024, Anay was made Head of Digital Media for Finanza. It is the kind of title that sounds impressive on a poster and means, in practice, that everything is your problem.',
       'He was very good at it. The page grew, the reels landed, the numbers went up and stayed up, and people who had no reason to care about a college fest started paying attention. Somewhere in the middle of all that competence, he was also — though he would not have said so out loud — extremely aware of one person in the audience.',
@@ -356,7 +356,7 @@ export const chapters: Chapter[] = [
       'They talked about families. They vibed. Two friends, quietly becoming something more.',
     ],
     completeNote: '',
-    story: '[PLACEHOLDER — any extra detail from the first date you want remembered]',
+    story: '',
     game: 'order',
   },
   {
@@ -374,7 +374,7 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Gentleman status: verified across multiple independent dates.'],
     completeNote: '',
-    story: '[PLACEHOLDER — a favourite moment from those early dates]',
+    story: '',
     game: 'flowers',
     photos: [
       { src: 'assets/images/flowers.jpg', caption: 'Exhibit A.' },
@@ -529,7 +529,7 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Hands: held.', 'Policy: permanent.'],
     completeNote: '',
-    story: '[PLACEHOLDER — where and when the first hand-hold happened, if you want it told]',
+    story: '',
     game: 'hands',
     photos: [
       { src: 'assets/images/hand-hold.jpg', caption: 'The first one. Policy since.' },
@@ -555,7 +555,7 @@ export const chapters: Chapter[] = [
       'Some places stop being places and become part of the story.',
       'Vasant Kunj is one of them.',
     ],
-    story: '[PLACEHOLDER — anything about that day you want remembered here]',
+    story: '',
     game: 'torch',
     photos: [
       { src: 'assets/images/vk-exterior.jpg', caption: 'VASANT KUNJ · वसंत कुंज. The nameplate survived.' },
@@ -580,7 +580,7 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Status: inseparable. Practically.'],
     completeNote: '',
-    story: '[PLACEHOLDER — everyday memories from this era: three short ones work best]',
+    story: '',
     game: 'montage',
     photos: [
       { src: 'assets/images/selfie-early.jpg', caption: 'Standard proximity.' },
@@ -611,7 +611,7 @@ export const chapters: Chapter[] = [
       'Tanishka understood what it meant that he wanted her there.',
     ],
     completeNote: '',
-    story: '[PLACEHOLDER — a Pune memory: what you did, what made it fun]',
+    story: '',
     game: 'friends',
     photos: [
       { src: 'assets/images/pune-friends.jpg', caption: 'Saurvi, Anuj, Khush, Pranjal — and the two of them.' },
@@ -633,7 +633,7 @@ export const chapters: Chapter[] = [
     ],
     complete: ['Expedition complete.', 'They came back closer than they left.'],
     completeNote: '',
-    story: '[PLACEHOLDER — Goa memories: one line per day works, or just the best ones]',
+    story: '',
     game: 'days',
     photos: [
       { src: 'assets/images/goa-beach.jpg', caption: 'Day: unknown. Mood: recorded.' },
@@ -658,7 +658,7 @@ export const chapters: Chapter[] = [
       'They survived long distance the way they do everything: talking constantly.',
     ],
     completeNote: '',
-    story: '[PLACEHOLDER — anything about the long-distance months you want remembered]',
+    story: '',
     game: 'distance',
     photos: [
       { src: 'assets/images/plane.jpg', caption: 'Geography’s preferred vehicle.' },
@@ -693,73 +693,22 @@ export const apologyEmail = {
 export const blabberQuestion = 'would u like to be my boyfriend'
 
 /* ---------- THE THREE EVERYDAY MEMORIES (Chapter 17) ----------
-   Tapped one at a time, like a photo developing. Replace each `text`
-   with the real memory — one or two sentences is plenty.          */
+   Tapped one at a time, like a photo developing. `text` is optional —
+   an empty string just shows the photo with no caption.            */
 export const everydayMemories = [
-  {
-    src: 'assets/images/car-selfie.jpg',
-    text: '[PLACEHOLDER — everyday memory #1]',
-  },
-  {
-    src: 'assets/images/purple-1.jpg',
-    text: '[PLACEHOLDER — everyday memory #2]',
-  },
-  {
-    src: 'assets/images/purple-2.jpg',
-    text: '[PLACEHOLDER — everyday memory #3]',
-  },
+  { src: 'assets/images/car-selfie.jpg', text: '' },
+  { src: 'assets/images/purple-1.jpg', text: '' },
+  { src: 'assets/images/purple-2.jpg', text: '' },
 ]
 
-/* ---------- MEMORY ARCADE ----------
-   Four games, four memories. Photos go in /public/assets/images/
-   (Tanishka is sending four photos for these — drop them in and
-   replace the `photo` paths below.)                               */
-
-export const arcadeMemories = [
-  {
-    id: 'mem1',
-    game: 'MATCH',
-    gameName: 'PAIRS',
-    title: '[PLACEHOLDER — memory title]',
-    date: '[PLACEHOLDER — date]',
-    location: '[PLACEHOLDER — location]',
-    photo: 'assets/images/memory-01-placeholder.svg',
-    story: '[PLACEHOLDER — the story of this memory, in Tanishka’s words]',
-    note: '',
-  },
-  {
-    id: 'mem2',
-    game: 'TIMELINE',
-    gameName: 'THE RECORD',
-    title: '[PLACEHOLDER — memory title]',
-    date: '[PLACEHOLDER — date]',
-    location: '[PLACEHOLDER — location]',
-    photo: 'assets/images/memory-02-placeholder.svg',
-    story: '[PLACEHOLDER — the story of this memory]',
-    note: '',
-  },
-  {
-    id: 'mem3',
-    game: 'MAZE',
-    gameName: 'CORRIDORS',
-    title: '[PLACEHOLDER — memory title]',
-    date: '[PLACEHOLDER — date]',
-    location: '[PLACEHOLDER — location]',
-    photo: 'assets/images/memory-03-placeholder.svg',
-    story: '[PLACEHOLDER — the story of this memory]',
-    note: '',
-  },
-  {
-    id: 'mem5',
-    game: 'PUZZLE',
-    gameName: 'THE PICTURE',
-    title: '[PLACEHOLDER — memory title]',
-    date: '[PLACEHOLDER — date]',
-    location: '[PLACEHOLDER — location]',
-    photo: 'assets/images/memory-05-placeholder.svg',
-    story: '[PLACEHOLDER — the story of this memory]',
-    note: '',
-  },
+/* ---------- THE ARCADE ----------
+   Four cabinets, four games. Winning one is the whole reward; there is
+   no memory card behind it.                                         */
+export const arcadeGames = [
+  { id: 'mem1', game: 'MATCH', gameName: 'PAIRS' },
+  { id: 'mem2', game: 'TIMELINE', gameName: 'THE RECORD' },
+  { id: 'mem3', game: 'MAZE', gameName: 'CORRIDORS' },
+  { id: 'mem5', game: 'PUZZLE', gameName: 'THE PICTURE' },
 ]
 
 /* ---------- TIMELINE GAME EVENTS (all canon) ---------- */
@@ -783,7 +732,7 @@ export const soundtrack = [
     id: 's1',
     title: 'Die With A Smile',
     artist: 'Bruno Mars & Lady Gaga',
-    why: '[PLACEHOLDER — why this one matters to you two]',
+    why: '',
     memory: '',
     audio: '',
   },
@@ -791,7 +740,7 @@ export const soundtrack = [
     id: 's2',
     title: 'Sailor Song',
     artist: 'Gigi Perez',
-    why: '[PLACEHOLDER — why this one matters]',
+    why: '',
     memory: '',
     audio: '',
   },
@@ -799,7 +748,7 @@ export const soundtrack = [
     id: 's3',
     title: 'Those Eyes',
     artist: 'New West',
-    why: '[PLACEHOLDER — why this one matters]',
+    why: '',
     memory: '',
     audio: '',
   },

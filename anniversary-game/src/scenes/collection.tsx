@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
   achievements,
-  arcadeMemories,
   chapters,
   finalLevel,
   letter,
@@ -59,9 +58,11 @@ export function Soundtrack() {
                   <P text={t.artist} />
                 </span>
               </div>
-              <p className="why">
-                <P text={t.why} />
-              </p>
+              {t.why && (
+                <p className="why">
+                  <P text={t.why} />
+                </p>
+              )}
               {t.audio && (
                 <audio controls preload="none" src={t.audio} style={{ width: '100%', marginTop: 10 }} />
               )}
