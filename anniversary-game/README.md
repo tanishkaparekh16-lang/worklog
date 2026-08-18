@@ -11,10 +11,11 @@ Hosted static site. The build is host-agnostic (`base: './'`), so any
 static host works. Two live options exist:
 
 - **Netlify** — `https://2yearsofus1908.netlify.app` (deployed by hand)
-- **Vercel** — connect this repo, set **Root Directory** to
-  `anniversary-game`. `vercel.json` sets the framework, build command,
-  output directory and a `noindex` header, so the import needs no other
-  configuration. Every push to the branch rebuilds and redeploys.
+- **Vercel** — import this repo and deploy. The repo root has its own
+  separate app, so a **root-level `vercel.json`** points the build at
+  this subfolder explicitly (install, build and output all run in
+  `anniversary-game/`) plus a `noindex` header. Leave Root Directory at
+  the repo root — do not change it. Every push rebuilds and redeploys.
 
 To publish a change on the Vercel deploy, push to the branch — that is
 the whole step. For the hand-deployed Netlify copy:
