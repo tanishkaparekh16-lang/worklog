@@ -696,8 +696,8 @@ export const blabberQuestion = 'would u like to be my boyfriend'
    Tapped one at a time, like a photo developing. `text` is optional —
    an empty string just shows the photo with no caption.            */
 export const everydayMemories = [
-  { src: 'assets/images/car-selfie.jpg', text: '' },
   { src: 'assets/images/purple-1.jpg', text: '' },
+  { src: 'assets/images/car-selfie.jpg', text: '' },
   { src: 'assets/images/purple-2.jpg', text: '' },
 ]
 
@@ -797,16 +797,18 @@ export const achievements = [
   { id: 'egg-vinyl', title: 'B-SIDE', desc: 'You looked under the record.', secret: true },
 ]
 
-/* ---------- THE LETTER ---------- */
+/* ---------- THE LETTER ----------
+   Tanishka's words, exactly as she wrote them. Do not tidy the
+   lowercase, the spelling or the punctuation — that is the voice.  */
 export const letter = {
   date: '19 August 2026',
-  greeting: 'Anay,',
+  greeting: 'dear babyboy,',
   paragraphs: [
-    '[PLACEHOLDER — Tanishka’s real letter goes here.]',
-    '[PLACEHOLDER — It can be as long as it needs to be. Each paragraph is a new block.]',
+    'can you believe it?? 2 years of us!',
+    "it's actually quite insane!! i think you've had your fair share of reading while going through this little gift i made for you, haha. but i still wanna say some things- i am genuinely so so so proud of the person you've become, the growth you've shown and the way you still carry same dedication that made me fall for you so hard. i am also very proud of us- the way we've handled our downs and celebrated our ups, the way we do our silly goofy shenanigans, the way we can share our deepest thoughts with each other, the way we joke about almost everything, the way we basically live life while being with each other. im not exaggerating when i say this- these two years have been the best years of my life and i honestly cant wait to spend the rest of my life with you! i love you so so so so much mr. khimesara!",
   ],
-  signoff: 'Yours,',
-  signature: 'Tanishka',
+  signoff: 'truly yours,',
+  signature: 'motuda',
 }
 
 /* ---------- FINAL LEVEL ---------- */

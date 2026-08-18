@@ -1059,9 +1059,6 @@ img, svg { display: block; max-width: 100%; }
   /* --- lists and grids --- */
   /* four cabinets read best as a 2×2 block, not a row with a gap in it */
   .cabgrid { grid-template-columns: repeat(2, 1fr); gap: 22px; width: 100%; max-width: 760px; margin-left: auto; margin-right: auto; }
-  .pairgrid { max-width: 620px; margin-left: auto; margin-right: auto; }
-  .slidegrid { width: 360px; }
-  .mazewrap { width: 420px; }
   .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .tape { margin-top: 0; }
   .scene--tapes .col > .tape { max-width: none; }
@@ -1500,4 +1497,60 @@ img, svg { display: block; max-width: 100%; }
 @media (min-width: 1024px) {
   .scene--vn .stage.on:has(.devrow) { max-width: 1040px; }
   .devrow { gap: 26px; }
+}
+
+/* ============================================================
+   ARCADE ON A DESKTOP WINDOW
+
+   The cabinets were built phone-first and kept those widths on a
+   1440px screen, which left each game marooned in the middle of a
+   dark field. Everything below scales with the viewport instead —
+   sized against height as well as width, so a game always fits the
+   window without scrolling to reach its own buttons.
+   ============================================================ */
+@media (min-width: 1024px) {
+  .scene--arcade .col { max-width: 1180px; justify-content: safe center; }
+  .scene--arcade .bigttl { font-size: 40px; }
+  .scene--arcade .bigsub { font-size: 13px; }
+
+  /* pairs — 12 cards, four across */
+  /* width:100% because .col is a flex container — without it these
+     grids shrink to their content and sit marooned mid-screen. */
+  /* 12 cards at 3/4 in four columns means the grid is roughly as tall
+     as it is wide, so height is what actually constrains it. */
+  .pairgrid {
+    width: 100%;
+    max-width: min(700px, 92vw, 64vh);
+    margin: 24px auto 0;
+    gap: 14px;
+  }
+  .pcard { font-size: 20px; border-radius: 10px; }
+
+  /* the record — two columns instead of one tall stack */
+  .tl-pool {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+    width: 100%;
+    max-width: 940px;
+    margin: 26px auto 0;
+  }
+  .tl-item { font-size: 14px; padding: 16px 18px 14px; }
+
+  /* corridors — square, so height is the binding constraint */
+  .mazewrap { width: min(520px, 48vh); margin-top: 24px; }
+  .dpad { grid-template-columns: repeat(3, 84px); gap: 10px; margin-top: 22px; }
+  .dpad button { font-size: 22px; padding: 15px 0 13px; }
+
+  /* the picture — same, square and height-bound */
+  .slidegrid { width: min(430px, 44vh); gap: 10px; margin-top: 24px; }
+  .sl { font-size: 30px; border-radius: 8px; }
+}
+
+@media (min-width: 1440px) {
+  .scene--arcade .col { max-width: 1320px; }
+  .pairgrid { max-width: min(780px, 66vh); gap: 16px; }
+  .tl-pool { max-width: 1060px; }
+  .mazewrap { width: min(600px, 54vh); }
+  .slidegrid { width: min(500px, 50vh); }
 }
