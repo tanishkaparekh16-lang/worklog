@@ -7,9 +7,17 @@ Mumbai local trains, golden-hour light.
 
 ## Live site
 
-**https://2yearsofus1908.netlify.app** — hosted on Netlify, deployed by hand.
+Hosted static site. The build is host-agnostic (`base: './'`), so any
+static host works. Two live options exist:
 
-To publish a change:
+- **Netlify** — `https://2yearsofus1908.netlify.app` (deployed by hand)
+- **Vercel** — connect this repo, set **Root Directory** to
+  `anniversary-game`. `vercel.json` sets the framework, build command,
+  output directory and a `noindex` header, so the import needs no other
+  configuration. Every push to the branch rebuilds and redeploys.
+
+To publish a change on the Vercel deploy, push to the branch — that is
+the whole step. For the hand-deployed Netlify copy:
 
 ```bash
 cd anniversary-game
@@ -17,12 +25,13 @@ npm run build:single
 python3 scripts/make-drop-folder.py     # → deploy/2yearsofus/
 ```
 
-Then drag `deploy/2yearsofus/` onto the site's **Deploys** page on Netlify.
-
-Always deploy to the *existing* site rather than netlify.com/drop, which
-would create a second one at a new address. The save file — chapters
-unlocked, XP, achievements — lives in browser localStorage keyed to the
-domain, so a new address means a forgotten playthrough.
+Then drag `deploy/2yearsofus/` onto the *existing* site's **Deploys**
+page on Netlify — never netlify.com/drop, which makes a second site at a
+new address. The save file (chapters unlocked, XP, achievements) lives
+in browser localStorage keyed to the domain, so a new address means a
+forgotten playthrough. The same caveat applies to moving between hosts:
+Netlify and Vercel are different domains, so progress does not carry
+across.
 
 ## Run it
 
